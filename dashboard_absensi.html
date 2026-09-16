@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absensi PT Santos Premium Krimer — Dashboard Kehadiran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand: #F7F4EA;
+    --paper: #FFFFFF;
+    --ink: #202A24;
+    --ink-soft: #5E6B60;
+    --line: #E1DCC8;
+    --roast: #214C3B;
+    --roast-dark: #16332A;
+    --ontime: #356839;
+    --ontime-bg: #E4EFE2;
+    --late: #8A5A12;
+    --late-bg: #FBF0DB;
+    --steel: #7A5C1E;
+    --steel-bg: #F4ECDA;
+    --radius-card: 14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--sand);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3, .num-display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--roast-dark);
+  }
+  a{color:var(--steel);}
+
+  /* Header */
+  header.topbar{
+    background:var(--paper);
+    color:var(--ink);
+    padding:18px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    flex-wrap:wrap;
+    border-bottom:3px solid var(--roast);
+  }
+  header.topbar .brand{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  header.topbar .brand-logo{
+    height:44px;
+    width:auto;
+    display:block;
+  }
+  header.topbar h1{
+    font-size:1.7rem;
+    font-weight:600;
+    letter-spacing:-0.015em;
+    margin:0;
+    color:var(--roast-dark);
+    line-height:1.15;
+  }
+  header.topbar .subtitle{
+    font-size:.82rem;
+    letter-spacing:.03em;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+  header.topbar .period{
+    font-size:.8rem;
+    color:var(--ink-soft);
+    text-align:right;
+  }
+  header.topbar .period strong{color:var(--roast-dark);}
+
+  /* Filter bar */
+  .filterbar{
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    padding:16px 32px;
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:140px;
+  }
+  .field label{
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  .field select, .field input{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:.85rem;
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:#FDFBF7;
+    color:var(--ink);
+  }
+  .field select:focus, .field input:focus{outline:2px solid var(--steel); outline-offset:1px;}
+  .field.grow{flex:1; min-width:200px;}
+  #resetBtn{
+    padding:8px 16px;
+    border-radius:8px;
+    border:1px solid var(--roast);
+    background:transparent;
+    color:var(--roast);
+    font-size:.8rem;
+    font-weight:600;
+    cursor:pointer;
+    height:34px;
+  }
+  #resetBtn:hover{background:var(--roast); color:#fff;}
+  #exportBtn{
+    padding:8px 16px;
+    border-radius:8px;
+    border:1px solid var(--roast);
+    background:var(--roast);
+    color:#fff;
+    font-size:.8rem;
+    font-weight:600;
+    cursor:pointer;
+    height:34px;
+  }
+  #exportBtn:hover{opacity:.85;}
+  #exportBtn:disabled{opacity:.5; cursor:not-allowed;}
+
+  main{padding:28px 32px 60px; max-width:1400px; margin:0 auto;}
+
+  /* KPI */
+  .kpi-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+    gap:16px;
+    margin-bottom:28px;
+  }
+  .kpi-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius-card);
+    padding:18px 18px;
+  }
+  .kpi-card .label{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin-bottom:8px;
+  }
+  .kpi-card .num-display{
+    font-size:2.1rem;
+    line-height:1;
+  }
+  .kpi-card .sub{
+    font-size:.78rem;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .kpi-card .sub .pct-highlight{
+    font-size:1.05rem;
+    font-weight:700;
+    color:var(--steel);
+  }
+  .kpi-card.ontime .num-display{color:var(--ontime);}
+  .kpi-card.late .num-display{color:var(--late);}
+
+  section.panel{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius-card);
+    padding:22px 24px;
+    margin-bottom:24px;
+  }
+  section.panel h2{
+    font-size:1.15rem;
+    margin:0 0 4px;
+  }
+  section.panel .panel-desc{
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin-bottom:16px;
+  }
+
+  .grid-2{
+    display:grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap:20px;
+    align-items:stretch;
+  }
+  @media (max-width:980px){
+    .grid-2{grid-template-columns:1fr;}
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+  }
+
+  @media (max-width:640px){
+    header.topbar{
+      flex-direction:row;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 14px;
+      gap:8px;
+    }
+    header.topbar .brand{gap:8px;}
+    header.topbar .brand-logo{height:30px;}
+    header.topbar .period{text-align:right; font-size:.68rem;}
+    header.topbar h1{font-size:1rem; letter-spacing:-0.01em;}
+    header.topbar .subtitle{font-size:.66rem; margin-top:1px;}
+    .filterbar{
+      position:static;
+      padding:10px 12px;
+      gap:8px 8px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      align-items:end;
+    }
+    .field, .field.grow{min-width:0; flex:none; width:auto;}
+    .field.grow{grid-column:1 / -1;}
+    .field label{font-size:.62rem; letter-spacing:.03em;}
+    .field select, .field input{
+      font-size:.78rem;
+      padding:6px 8px;
+      border-radius:6px;
+    }
+    #resetBtn, #exportBtn{
+      width:auto;
+      grid-column:span 1;
+      padding:7px 10px;
+      font-size:.74rem;
+      height:auto;
+    }
+    main{padding:14px 10px 32px;}
+    .kpi-row{grid-template-columns:1fr 1fr; gap:8px; margin-bottom:18px;}
+    .kpi-card{padding:10px 11px; border-radius:10px;}
+    .kpi-card .label{font-size:.6rem; margin-bottom:4px; letter-spacing:.03em;}
+    .kpi-card .num-display{font-size:1.3rem;}
+    .kpi-card .sub{font-size:.68rem; margin-top:3px;}
+    section.panel{padding:12px 10px; margin-bottom:14px; border-radius:10px;}
+    section.panel h2{font-size:.95rem; margin-bottom:2px;}
+    section.panel .panel-desc{font-size:.72rem; margin-bottom:10px;}
+    table{font-size:.76rem;}
+    thead th{padding:7px 6px; font-size:.64rem;}
+    tbody td{padding:6px 6px;}
+    .badge{font-size:.66rem; padding:1px 7px;}
+    .table-scroll table{min-width:520px;}
+  }
+
+  @media (max-width:400px){
+    .kpi-row{grid-template-columns:1fr;}
+    .filterbar{grid-template-columns:1fr;}
+    .field.grow{grid-column:1;}
+  }
+
+  .chart-box{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px;
+    margin-bottom:18px;
+  }
+  .chart-box h3{font-size:.95rem; margin:0 0 10px;}
+  .chart-box canvas{max-height:220px;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.85rem;
+  }
+  thead th{
+    text-align:left;
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--ink-soft);
+    border-bottom:2px solid var(--line);
+    padding:10px 8px;
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{color:var(--roast);}
+  thead th .arrow{opacity:.4; font-size:.7em; margin-left:2px;}
+  tbody td{
+    padding:9px 8px;
+    border-bottom:1px solid var(--line);
+    vertical-align:middle;
+  }
+  tbody tr:hover{background:#FBF6EC;}
+  .badge{
+    display:inline-block;
+    padding:2px 9px;
+    border-radius:999px;
+    font-size:.72rem;
+    font-weight:600;
+  }
+  .badge.ontime{background:var(--ontime-bg); color:var(--ontime);}
+  .badge.late{background:var(--late-bg); color:var(--late);}
+  .badge.neutral{background:var(--steel-bg); color:var(--steel);}
+  .bar-cell{position:relative;}
+  .bar-track{
+    position:relative;
+    height:8px;
+    background:#EFE7D8;
+    border-radius:5px;
+    overflow:hidden;
+    width:100%;
+  }
+  .bar-fill{
+    position:absolute; left:0; top:0; bottom:0;
+    background:var(--late);
+    border-radius:5px;
+  }
+  .table-scroll{max-height:520px; overflow:auto; border-radius:8px;}
+  .table-scroll thead th{position:sticky; top:0; background:var(--paper); z-index:2;}
+  .table-scroll table{min-width:600px;}
+
+  .toplist{list-style:none; margin:0; padding:0;}
+  .toplist li{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0; border-bottom:1px dashed var(--line);
+    font-size:.85rem;
+  }
+  .toplist li:last-child{border-bottom:none;}
+  .toplist .count{font-weight:600; color:var(--roast-dark); white-space:nowrap; margin-left:12px;}
+  .toplist-sub{font-size:.74rem; color:var(--ink-soft); font-weight:400;}
+
+  .empty-note{
+    text-align:center; color:var(--ink-soft); padding:30px; font-size:.85rem;
+  }
+
+  footer{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:.75rem;
+    padding:20px 0 40px;
+  }
+
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="data:image/jpeg;base64,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" alt="PT Santos Premium Krimer" class="brand-logo">
+    <div>
+      <h1>Absensi PT Santos Premium Krimer</h1>
+      <div class="subtitle">Dashboard Absensi PT MCS</div>
+    </div>
+  </div>
+  <div class="period">Rentang data<br><strong id="periodLabel">–</strong></div>
+</header>
+
+<div class="filterbar">
+  <div class="field">
+    <label for="fLokasi">Lokasi Absen</label>
+    <select id="fLokasi">
+      <option value="">Semua lokasi</option>
+      <option value="outlet">Outlet</option>
+      <option value="non-outlet">Non Outlet</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="fBulan">Bulan</label>
+    <select id="fBulan"><option value="">Semua bulan</option></select>
+  </div>
+  <div class="field">
+    <label for="fDariTgl">Dari tanggal</label>
+    <input type="date" id="fDariTgl">
+  </div>
+  <div class="field">
+    <label for="fSampaiTgl">Sampai tanggal</label>
+    <input type="date" id="fSampaiTgl">
+  </div>
+  <div class="field">
+    <label for="fKota">Kota</label>
+    <select id="fKota"><option value="">Semua kota</option></select>
+  </div>
+  <div class="field">
+    <label for="fOutlet">Outlet</label>
+    <select id="fOutlet"><option value="">Semua outlet</option></select>
+  </div>
+  <div class="field">
+    <label for="fDivisi">Divisi</label>
+    <select id="fDivisi"><option value="">Semua divisi</option></select>
+  </div>
+  <div class="field grow">
+    <label for="fNama">Nama karyawan</label>
+    <select id="fNama"><option value="">Semua karyawan</option></select>
+  </div>
+  <button id="resetBtn">Reset filter</button>
+  <button id="exportBtn">Export ke Excel</button>
+</div>
+
+<main>
+
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <section class="panel">
+    <h2>Karyawan dengan absensi tidak lengkap terbanyak</h2>
+    <div class="panel-desc">5 karyawan (divisi Barista &amp; Part Timer) dengan jumlah hari absensi tidak lengkap terbanyak (hanya masuk saja atau hanya keluar saja).</div>
+    <div class="table-scroll">
+      <table id="tblTidakLengkapRank">
+        <thead>
+          <tr>
+            <th data-key="no">No</th>
+            <th data-key="nama">Nama <span class="arrow"></span></th>
+            <th data-key="kota">Kota <span class="arrow"></span></th>
+            <th data-key="jabatan">Jabatan <span class="arrow"></span></th>
+            <th data-key="keterangan">Keterangan <span class="arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tblTidakLengkapRankBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Rekap jam buka outlet di atas jam 8</h2>
+    <div class="panel-desc">Jam Buka Outlet diambil dari Jam Absen Masuk Karyawan Pertama.</div>
+    <div class="table-scroll">
+      <table id="tblJamBuka">
+        <thead>
+          <tr>
+            <th data-key="tgl">Tanggal <span class="arrow"></span></th>
+            <th data-key="outlet">Nama Outlet <span class="arrow"></span></th>
+            <th data-key="jam">Jam Buka <span class="arrow"></span></th>
+            <th data-key="nama">Nama Karyawan <span class="arrow"></span></th>
+            <th data-key="keterangan">Keterangan <span class="arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tblJamBukaBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Rekap absensi karyawan</h2>
+    <div class="panel-desc">Klik judul kolom untuk mengurutkan. Kolom Keterangan menunjukkan jumlah hari absennya tidak lengkap (rinciannya ada di tabel "Rekap absensi tidak lengkap" di bawah).</div>
+    <div class="table-scroll">
+      <table id="tblAbsensiKaryawan">
+        <thead>
+          <tr>
+            <th data-key="no">No <span class="arrow"></span></th>
+            <th data-key="nama">Nama Karyawan <span class="arrow"></span></th>
+            <th data-key="divisi">Divisi <span class="arrow"></span></th>
+            <th data-key="kota">Kota <span class="arrow"></span></th>
+            <th data-key="masuk">Jmlh Absen Masuk <span class="arrow"></span></th>
+            <th data-key="keluar">Jmlh Absen Keluar <span class="arrow"></span></th>
+            <th data-key="pct">% Absen Masuk <span class="arrow"></span></th>
+            <th data-key="keterangan">Keterangan <span class="arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tblAbsensiKaryawanBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Rekap absensi tidak lengkap</h2>
+    <div class="panel-desc">Karyawan yang hanya mengisi absen masuk saja atau absen keluar saja pada tanggal tersebut.</div>
+    <div class="table-scroll">
+      <table id="tblTidakLengkap">
+        <thead>
+          <tr>
+            <th data-key="no">No</th>
+            <th data-key="nama">Nama Karyawan <span class="arrow"></span></th>
+            <th data-key="lokasi">Lokasi <span class="arrow"></span></th>
+            <th data-key="outlet">Outlet <span class="arrow"></span></th>
+            <th data-key="tgl">Keterangan <span class="arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tblTidakLengkapBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Rekap absensi per tanggal, per nama karyawan</h2>
+    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk.</div>
+    <div class="table-scroll">
+      <table id="tblRekapTanggal">
+        <thead>
+          <tr>
+            <th data-key="tgl">Tanggal Absen <span class="arrow"></span></th>
+            <th data-key="nama">Nama Karyawan <span class="arrow"></span></th>
+            <th data-key="divisi">Divisi / Jabatan <span class="arrow"></span></th>
+            <th data-key="kota">Kota <span class="arrow"></span></th>
+            <th data-key="outlet">Lokasi Outlet <span class="arrow"></span></th>
+            <th data-key="jamMasuk">Jam Masuk <span class="arrow"></span></th>
+            <th data-key="jamKeluar">Jam Keluar <span class="arrow"></span></th>
+            <th data-key="jamKerja">Jam Kerja <span class="arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tblRekapTanggalBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Dashboard dibuat dari data ABSENSI_MASUK &amp; ABSENSI_KELUAR.</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+let RAW_DATA = [];
+
+// ---------- CSV parsing helpers ----------
+function pick(row, candidates){
+  for(const c of candidates){
+    if(row[c] !== undefined && row[c] !== null && row[c] !== '') return row[c];
+  }
+  return '';
+}
+
+// Google Sheets kadang publish jam TANPA angka nol di depan (mis. "6:48:00"
+// alih-alih "06:48"). Ini merusak perbandingan teks (mis. "14:50" < "6:48"
+// secara teks). Normalisasi ke format HH:MM 2-digit supaya perbandingan aman.
+function normalizeJam(raw){
+  if(!raw) return '';
+  const s = String(raw).trim();
+  const m = s.match(/^(\d{1,2}):(\d{2})/);
+  if(!m) return s;
+  const h = m[1].padStart(2, '0');
+  return `${h}:${m[2]}`;
+}
+
+function parseIndoNumber(s){
+  if(s === undefined || s === null || s === '') return null;
+  const n = parseFloat(String(s).trim().replace(',', '.'));
+  return isNaN(n) ? null : n;
+}
+
+const BULAN_MAP = {
+  januari:1, februari:2, maret:3, april:4, mei:5, juni:6,
+  juli:7, agustus:8, september:9, oktober:10, november:11, desember:12
+};
+// "Tgl Absen System" / "Tanggal Absen System" berisi tanggal + jam ASLI saat
+// karyawan submit absen, mis. "15 September 2026 pukul 07.53 WIB". Ini sumber
+// yang dipakai untuk tanggal (tgl) & jam absen (jam) — bukan kolom "Tanggal"
+// (yang cuma jadwal tetap jam 07.00) atau kolom "JAM" terpisah.
+function parseTglJamAbsenSystem(s){
+  if(!s) return {tgl:'', jam:''};
+  const str = String(s).trim();
+  const mTgl = str.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  const mJam = str.match(/(\d{1,2})[.:](\d{2})/);
+  let tgl = '';
+  if(mTgl){
+    const day = parseInt(mTgl[1],10);
+    const bulan = BULAN_MAP[mTgl[2].toLowerCase()];
+    const year = parseInt(mTgl[3],10);
+    if(bulan) tgl = `${year}-${String(bulan).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  }
+  let jam = '';
+  if(mJam){
+    jam = `${mJam[1].padStart(2,'0')}:${mJam[2]}`;
+  }
+  return {tgl, jam};
+}
+
+function hitungTelat(t, jam){
+  if(!jam) return {telat:false, menit_telat:0};
+  const [h,mn] = jam.split(':').map(Number);
+  const menitAktual = h*60 + mn;
+  if(t === 'masuk'){
+    const batas = 8*60; // jam masuk seharusnya 08:00
+    const telatMenit = menitAktual - batas;
+    return {telat: telatMenit > 0, menit_telat: telatMenit > 0 ? telatMenit : 0};
+  } else {
+    const batas = 16*60; // jam pulang seharusnya 16:00
+    const cepatMenit = batas - menitAktual;
+    return {telat: cepatMenit > 0, menit_telat: cepatMenit > 0 ? cepatMenit : 0};
+  }
+}
+
+function mapRow(row, t){
+  const absenSystemRaw = pick(row, ['Tanggal By System','Tgl Absen System','Tanggal Absen System']);
+  const { tgl, jam } = parseTglJamAbsenSystem(absenSystemRaw);
+  const tel = hitungTelat(t, jam);
+  return {
+    t,
+    nama: (pick(row, ['Nama Karyawan']) || '').trim(),
+    divisi: (pick(row, ['Divisi / Jabatan','Divisi']) || '').trim(),
+    outlet: (pick(row, ['Nama Outlet / Kantor','Lokasi Outlet']) || '').trim(),
+    tgl,
+    jam,
+    lat: parseIndoNumber(pick(row, ['Latitude'])),
+    lng: parseIndoNumber(pick(row, ['Longtitude','Longitude'])),
+    alamat: pick(row, ['Lokasi Absensi','Lokasi Outlet / Lokasi Absensi Di lakukan','Lokasi Absensi (alamat terdekat)','Lokasi Absensi (alamat Terdekat)']),
+    foto: pick(row, ['Foto']),
+    telat: tel.telat,
+    menit_telat: tel.menit_telat,
+    kota_norm: (pick(row, ['Kota','Kota - JANGAN ISI MANUAL']) || '').trim(),
+  };
+}
+
+// Google Sheets yang di-publish sebagai CSV (File > Share > Publish to web > CSV)
+const SHEET_IN_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQYP91vQr2jZZ_LLBOlLuDk-ZybHyFmO1843lMmysuKa6YdLFzK3FdFGTeIuJCPAw038JKcicOAkAga/pub?output=csv';
+const SHEET_OUT_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRdIw4uOcBof5i4I2AV0rfhvnm1N3nPJ801DYXRIgXGbfcO6kkHygDL9Co-3EWHxc2OdalnGYZcVxoB/pub?output=csv';
+
+function loadCsv(url){
+  // tambahkan parameter waktu supaya browser/Google tidak mengembalikan versi cache lama
+  const bustedUrl = url + (url.includes('?') ? '&' : '?') + 'cachebust=' + Date.now();
+  return new Promise((resolve, reject) => {
+    Papa.parse(bustedUrl, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => resolve(results.data),
+      error: (err) => reject(err),
+    });
+  });
+}
+
+async function loadData(){
+  try {
+    const [inRows, outRows] = await Promise.all([
+      loadCsv(SHEET_IN_URL),
+      loadCsv(SHEET_OUT_URL),
+    ]);
+    RAW_DATA = [
+      ...inRows.map(r => mapRow(r, 'masuk')),
+      ...outRows.map(r => mapRow(r, 'keluar')),
+    ].filter(r => r.nama && r.tgl && r.jam);
+  } catch(err) {
+    console.error('Gagal memuat data dari Google Sheets (IN/OUT):', err);
+    document.querySelector('main').insertAdjacentHTML('afterbegin',
+      `<div style="background:#fdecea;color:#611a15;padding:12px 16px;border-radius:8px;margin-bottom:16px;">
+        Gagal memuat data dari Google Sheets. Pastikan sheet IN &amp; OUT masih ter-publish ke web (File &gt; Share &gt; Publish to web) dan koneksi internet aktif.
+      </div>`);
+    RAW_DATA = [];
+  }
+  init();
+}
+</script>
+<script>
+// ---------- Helpers ----------
+const fmtNum = n => n.toLocaleString('id-ID');
+const COLORS = {
+  ontime: '#356839',
+  late: '#8A5A12',
+  keluar: '#7A5C1E',
+  roast: '#214C3B',
+};
+
+function uniqueSorted(arr){
+  return [...new Set(arr.filter(v => v !== undefined && v !== null && v !== ''))].sort((a,b)=>a.localeCompare(b,'id'));
+}
+
+function populateSelect(id, values){
+  const sel = document.getElementById(id);
+  values.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    sel.appendChild(opt);
+  });
+}
+
+// ---------- Normalisasi nama karyawan yang mirip (typo/beda kapitalisasi) ----------
+function namaNormalizeKey(name){
+  return (name||'')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z\s]/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function levenshtein(a,b){
+  const m = a.length, n = b.length;
+  const dp = [];
+  for(let i=0;i<=m;i++){ dp.push(new Array(n+1).fill(0)); dp[i][0] = i; }
+  for(let j=0;j<=n;j++) dp[0][j] = j;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function buildNamaCanonicalMap(records){
+  const freq = {};
+  records.forEach(r => { freq[r.nama] = (freq[r.nama]||0)+1; });
+
+  const groups = {};
+  Object.keys(freq).forEach(name => {
+    const key = namaNormalizeKey(name);
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(name);
+  });
+
+  const keys = Object.keys(groups);
+  const parent = {};
+  keys.forEach(k => { parent[k] = k; });
+  function find(k){ while(parent[k] !== k) k = parent[k]; return k; }
+  function union(a,b){ const ra = find(a), rb = find(b); if(ra !== rb) parent[ra] = rb; }
+
+  for(let i=0;i<keys.length;i++){
+    for(let j=i+1;j<keys.length;j++){
+      if(Math.abs(keys[i].length - keys[j].length) > 2) continue;
+      if(levenshtein(keys[i], keys[j]) <= 1) union(keys[i], keys[j]);
+    }
+  }
+
+  const clusters = {};
+  keys.forEach(k => {
+    const root = find(k);
+    if(!clusters[root]) clusters[root] = [];
+    clusters[root].push(...groups[k]);
+  });
+
+  const map = {};
+  Object.values(clusters).forEach(names => {
+    const canonical = names.reduce((best,n) => freq[n] > freq[best] ? n : best, names[0]);
+    names.forEach(n => { map[n] = canonical; });
+  });
+  return map;
+}
+
+let allDates = [], minDate = '', maxDate = '', monthValues = [];
+const BULAN_NAMA = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+function populateBulan(){
+  const sel = document.getElementById('fBulan');
+  sel.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
+  monthValues.forEach(ym => {
+    const [y,m] = ym.split('-');
+    const opt = document.createElement('option');
+    opt.value = ym;
+    opt.textContent = `${BULAN_NAMA[parseInt(m)-1]} ${y}`;
+    sel.appendChild(opt);
+  });
+}
+
+function init(){
+  const map = buildNamaCanonicalMap(RAW_DATA);
+  RAW_DATA.forEach(r => { r.nama = map[r.nama] || r.nama; });
+
+  // ---------- Init filter options ----------
+  allDates = uniqueSorted(RAW_DATA.map(r => r.tgl));
+  minDate = allDates[0];
+  maxDate = allDates[allDates.length-1];
+  document.getElementById('fDariTgl').value = minDate;
+  document.getElementById('fSampaiTgl').value = maxDate;
+  document.getElementById('fDariTgl').min = minDate;
+  document.getElementById('fDariTgl').max = maxDate;
+  document.getElementById('fSampaiTgl').min = minDate;
+  document.getElementById('fSampaiTgl').max = maxDate;
+  document.getElementById('periodLabel').textContent = `${fmtDate(minDate)} — ${fmtDate(maxDate)}`;
+
+  // fKota, fOutlet, fDivisi options are populated by refreshDependentOptions() below.
+  monthValues = uniqueSorted(RAW_DATA.map(r => r.tgl.slice(0,7)));
+  populateBulan();
+
+  updateArrows('#tblJamBuka', jamBukaSort);
+  updateArrows('#tblTidakLengkap', tidakLengkapSort);
+  updateArrows('#tblAbsensiKaryawan', absensiKaryawanSort);
+  updateArrows('#tblTidakLengkapRank', tidakLengkapRankSort);
+  updateArrows('#tblRekapTanggal', rekapTanggalSort);
+  refreshDependentOptions();
+  renderAll();
+}
+
+document.getElementById('fBulan').addEventListener('change', (e) => {
+  const ym = e.target.value;
+  if(!ym){
+    document.getElementById('fDariTgl').value = minDate;
+    document.getElementById('fSampaiTgl').value = maxDate;
+  } else {
+    const [y,m] = ym.split('-').map(Number);
+    const firstDay = `${ym}-01`;
+    const lastDayNum = new Date(y, m, 0).getDate();
+    const lastDay = `${ym}-${String(lastDayNum).padStart(2,'0')}`;
+    document.getElementById('fDariTgl').value = firstDay < minDate ? minDate : firstDay;
+    document.getElementById('fSampaiTgl').value = lastDay > maxDate ? maxDate : lastDay;
+  }
+  refreshDependentOptions();
+  renderAll();
+});
+
+function fmtDate(d){
+  if(!d) return '-';
+  const [y,m,day] = d.split('-');
+  const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  return `${parseInt(day)} ${bulan[parseInt(m)-1]} ${y}`;
+}
+
+// ---------- Chart instances ----------
+
+// ---------- Filtering ----------
+const OUTLET_LIST = ['Tunjungan','Tebet','Petra University','Kelapa Dua Depok','Untar','Mulyosari'];
+const OUTLET_LIST_LOWER = OUTLET_LIST.map(o => o.toLowerCase());
+function isOutletLokasi(outlet){
+  return OUTLET_LIST_LOWER.includes((outlet||'').toLowerCase());
+}
+
+function getFilters(){
+  return {
+    dari: document.getElementById('fDariTgl').value,
+    sampai: document.getElementById('fSampaiTgl').value,
+    kota: document.getElementById('fKota').value,
+    outlet: document.getElementById('fOutlet').value,
+    lokasi: document.getElementById('fLokasi').value,
+    divisi: document.getElementById('fDivisi').value,
+    nama: document.getElementById('fNama').value,
+  };
+}
+
+function matchesFilters(r, f, excludeKey){
+  if(f.dari && r.tgl < f.dari) return false;
+  if(f.sampai && r.tgl > f.sampai) return false;
+  if(excludeKey !== 'kota' && f.kota && r.kota_norm !== f.kota) return false;
+  if(excludeKey !== 'outlet' && f.outlet && r.outlet !== f.outlet) return false;
+  if(excludeKey !== 'lokasi'){
+    if(f.lokasi === 'outlet' && !isOutletLokasi(r.outlet)) return false;
+    if(f.lokasi === 'non-outlet' && isOutletLokasi(r.outlet)) return false;
+  }
+  if(excludeKey !== 'divisi' && f.divisi && r.divisi !== f.divisi) return false;
+  if(excludeKey !== 'nama' && f.nama && r.nama !== f.nama) return false;
+  return true;
+}
+
+function applyFilters(){
+  const f = getFilters();
+  return RAW_DATA.filter(r => matchesFilters(r, f, null));
+}
+
+// ---------- Cascading filter options ----------
+function rebuildSelect(id, values, allLabel){
+  const sel = document.getElementById(id);
+  const current = sel.value;
+  sel.innerHTML = `<option value="">${allLabel}</option>` +
+    values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  sel.value = values.includes(current) ? current : '';
+}
+
+function refreshDependentOptions(){
+  const f = getFilters();
+  const kotaValues = uniqueSorted(RAW_DATA.filter(r => matchesFilters(r, f, 'kota')).map(r => r.kota_norm));
+  rebuildSelect('fKota', kotaValues, 'Semua kota');
+
+  const outletValues = uniqueSorted(RAW_DATA.filter(r => matchesFilters(r, f, 'outlet')).map(r => r.outlet));
+  rebuildSelect('fOutlet', outletValues, 'Semua outlet');
+
+  const divisiValues = uniqueSorted(RAW_DATA.filter(r => matchesFilters(r, f, 'divisi')).map(r => r.divisi));
+  rebuildSelect('fDivisi', divisiValues, 'Semua divisi');
+
+  const namaValues = uniqueSorted(RAW_DATA.filter(r => matchesFilters(r, f, 'nama')).map(r => r.nama));
+  rebuildSelect('fNama', namaValues, 'Semua karyawan');
+}
+
+// ---------- KPI ----------
+function renderKPI(data){
+  const masuk = data.filter(r => r.t === 'masuk');
+  const keluar = data.filter(r => r.t === 'keluar');
+  const hkSet = new Set(masuk.map(r => r.tgl));
+  const jamBukaRows = buildJamBuka(data);
+  const bukaBawah = jamBukaRows.filter(r => r.jam <= '08:00');
+  const buka0800_0830 = jamBukaRows.filter(r => r.jam > '08:00' && r.jam <= '08:30');
+  const buka0830_0900 = jamBukaRows.filter(r => r.jam > '08:30' && r.jam <= '09:00');
+  const bukaAtas900 = jamBukaRows.filter(r => r.jam > '09:00');
+
+  const f = getFilters();
+  const periodeDari = f.dari || minDate;
+  const periodeSampai = f.sampai || maxDate;
+  const periodeNote = `Periode: ${fmtDate(periodeDari)} – ${fmtDate(periodeSampai)}`;
+
+  const totalBuka = jamBukaRows.length;
+  const pct = (n) => totalBuka ? Math.round(n/totalBuka*100) : 0;
+  const pctLine = (n) => `<span class="pct-highlight">${pct(n)}%</span> dari outlet buka<br>${periodeNote}`;
+
+  const cards = [
+    {label:'Jumlah HK', value: fmtNum(hkSet.size), sub:'hari terdeteksi absen masuk', cls:''},
+    {label:'Total absen masuk', value: fmtNum(masuk.length), sub:`${uniqueSorted(masuk.map(r=>r.nama)).length} karyawan`, cls:''},
+    {label:'Total absen keluar', value: fmtNum(keluar.length), sub:`<span class="pct-highlight">${masuk.length ? Math.round(keluar.length/masuk.length*100) : 0}%</span> dari absen masuk`, cls:''},
+    {label:'Jumlah outlet yang buka', value: fmtNum(totalBuka), sub: periodeNote, cls:''},
+    {label:'Outlet buka di bawah jam 8', value: fmtNum(bukaBawah.length), sub: pctLine(bukaBawah.length), cls:'ontime'},
+    {label:'Outlet buka jam 08.00 - 08.30', value: fmtNum(buka0800_0830.length), sub: pctLine(buka0800_0830.length), cls:'late'},
+    {label:'Outlet buka jam 08.30 - 09.00', value: fmtNum(buka0830_0900.length), sub: pctLine(buka0830_0900.length), cls:'late'},
+    {label:'Outlet buka di atas jam 09.00', value: fmtNum(bukaAtas900.length), sub: pctLine(bukaAtas900.length), cls:'late'},
+  ];
+  document.getElementById('kpiRow').innerHTML = cards.map(c => `
+    <div class="kpi-card ${c.cls}">
+      <div class="label">${c.label}</div>
+      <div class="num-display">${c.value}</div>
+      <div class="sub">${c.sub}</div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ---------- Charts ----------
+// ---------- Employee recap table ----------
+let jamBukaSort = {key:'tgl', dir:'desc'};
+let tidakLengkapSort = {key:'tgl', dir:'desc'};
+let absensiKaryawanSort = {key:'masuk', dir:'desc'};
+
+function buildJamBuka(data){
+  // "Outlet buka" hanya berlaku untuk outlet resmi: Tunjungan, Tebet, Petra University,
+  // Kelapa Dua Depok, Untar, Mulyosari. Lokasi di luar itu (Non Outlet) tidak dihitung
+  // sebagai outlet yang buka, sehingga akan menghasilkan 0 bila difilter Non Outlet.
+  const masuk = data.filter(r => r.t === 'masuk' && r.jam && isOutletLokasi(r.outlet));
+  const map = {};
+  masuk.forEach(r => {
+    const key = r.tgl + '||' + r.outlet;
+    if(!map[key] || r.jam < map[key].jam){
+      map[key] = {tgl:r.tgl, outlet:r.outlet, jam:r.jam, nama:r.nama};
+    }
+  });
+  return Object.values(map);
+}
+
+function kategoriJamBuka(jam){
+  if(jam <= '08:00') return 'Di bawah jam 8';
+  if(jam <= '08:30') return '08.00 - 08.30';
+  if(jam <= '09:00') return '08.30 - 09.00';
+  return 'Di atas 09.00';
+}
+
+function renderJamBukaTable(data){
+  let rows = buildJamBuka(data)
+    .filter(r => r.jam > '08:00')
+    .map(r => ({...r, keterangan: kategoriJamBuka(r.jam)}));
+  rows = sortRows(rows, jamBukaSort);
+  const body = document.getElementById('tblJamBukaBody');
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="5" class="empty-note">Tidak ada data sesuai filter.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td>${fmtDate(r.tgl)}</td>
+      <td>${escapeHtml(r.outlet)}</td>
+      <td>${r.jam}</td>
+      <td>${escapeHtml(r.nama)}</td>
+      <td><span class="badge late">${r.keterangan}</span></td>
+    </tr>
+  `).join('');
+}
+
+function buildAbsensiKaryawan(data){
+  const map = {};
+  data.forEach(r => {
+    if(!map[r.nama]) map[r.nama] = {nama:r.nama, divisi:r.divisi, kotas:{}, masuk:0, keluar:0, incompleteDates:{}};
+    const rec = map[r.nama];
+    rec.kotas[r.kota_norm] = (rec.kotas[r.kota_norm]||0)+1;
+    if(r.t === 'masuk') rec.masuk++;
+    else rec.keluar++;
+    const dateKey = r.tgl;
+    if(!rec.incompleteDates[dateKey]) rec.incompleteDates[dateKey] = {masuk:0, keluar:0};
+    rec.incompleteDates[dateKey][r.t]++;
+  });
+  return Object.values(map).map(rec => {
+    const kotaUtama = Object.entries(rec.kotas).sort((a,b)=>b[1]-a[1])[0][0];
+    const pct = rec.masuk ? Math.round(rec.keluar/rec.masuk*100) : 0;
+    const incompleteCount = Object.values(rec.incompleteDates)
+      .filter(c => (c.masuk>0 && c.keluar===0) || (c.keluar>0 && c.masuk===0)).length;
+    return {
+      nama: rec.nama, divisi: rec.divisi, kota: kotaUtama,
+      masuk: rec.masuk, keluar: rec.keluar, pct,
+      keterangan: incompleteCount,
+    };
+  });
+}
+
+function renderAbsensiKaryawanTable(data){
+  let rows = buildAbsensiKaryawan(data);
+  rows = sortRows(rows, absensiKaryawanSort);
+  const body = document.getElementById('tblAbsensiKaryawanBody');
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="8" class="empty-note">Tidak ada data sesuai filter.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map((r,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${escapeHtml(r.nama)}</td>
+      <td>${escapeHtml(r.divisi)}</td>
+      <td>${escapeHtml(r.kota)}</td>
+      <td>${r.masuk}</td>
+      <td>${r.keluar}</td>
+      <td>${r.pct}%</td>
+      <td>${r.keterangan > 0 ? `<span class="badge late">${r.keterangan} hari</span>` : `<span class="badge ontime">Lengkap</span>`}</td>
+    </tr>
+  `).join('');
+}
+
+let tidakLengkapRankSort = {key:'keterangan', dir:'desc'};
+let rekapTanggalSort = {key:'tgl', dir:'desc'};
+
+function renderTidakLengkapRanking(data){
+  const scoped = data.filter(r => r.divisi === 'Barista' || r.divisi === 'Part Timer');
+  const rows = buildTidakLengkap(scoped);
+  const agg = {};
+  rows.forEach(r => {
+    if(!agg[r.nama]) agg[r.nama] = {nama:r.nama, divisi:r.divisi, count:0, kotas:{}};
+    agg[r.nama].count++;
+    agg[r.nama].kotas[r.kota] = (agg[r.nama].kotas[r.kota]||0)+1;
+  });
+  // simpan divisi dari record scoped (nama -> divisi) karena agg belum tentu terisi saat baris pertama
+  scoped.forEach(r => { if(agg[r.nama]) agg[r.nama].divisi = r.divisi; });
+
+  let list = Object.values(agg).map(info => {
+    const kotaUtama = Object.entries(info.kotas).sort((a,b)=>b[1]-a[1])[0][0];
+    return {
+      nama: info.nama,
+      kota: kotaUtama,
+      jabatan: info.divisi,
+      keterangan: info.count,
+    };
+  });
+  list.sort((a,b) => b.keterangan - a.keterangan);
+  list = list.slice(0,5);
+  list = sortRows(list, tidakLengkapRankSort);
+
+  const body = document.getElementById('tblTidakLengkapRankBody');
+  if(!list.length){
+    body.innerHTML = `<tr><td colspan="5" class="empty-note">Tidak ada absensi tidak lengkap pada rentang ini.</td></tr>`;
+    return;
+  }
+  body.innerHTML = list.map((r,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${escapeHtml(r.nama)}</td>
+      <td>${escapeHtml(r.kota)}</td>
+      <td>${escapeHtml(r.jabatan)}</td>
+      <td><span class="badge late">${r.keterangan} kali</span></td>
+    </tr>
+  `).join('');
+}
+
+function buildTidakLengkap(data){
+  const map = {};
+  data.forEach(r => {
+    const key = r.nama + '||' + r.tgl;
+    if(!map[key]) map[key] = {nama:r.nama, tgl:r.tgl, masuk:0, keluar:0, outletMasuk:'', outletKeluar:'', kotaMasuk:'', kotaKeluar:''};
+    const rec = map[key];
+    if(r.t === 'masuk'){ rec.masuk++; rec.outletMasuk = r.outlet; rec.kotaMasuk = r.kota_norm; }
+    else { rec.keluar++; rec.outletKeluar = r.outlet; rec.kotaKeluar = r.kota_norm; }
+  });
+  const rows = [];
+  Object.values(map).forEach(rec => {
+    if(rec.masuk > 0 && rec.keluar === 0){
+      rows.push({tgl:rec.tgl, outlet:rec.outletMasuk, kota:rec.kotaMasuk, nama:rec.nama, keterangan:'Tidak ada absen keluar'});
+    } else if(rec.keluar > 0 && rec.masuk === 0){
+      rows.push({tgl:rec.tgl, outlet:rec.outletKeluar, kota:rec.kotaKeluar, nama:rec.nama, keterangan:'Tidak ada absen masuk'});
+    }
+  });
+  return rows;
+}
+
+function hitungJamKerja(jamMasuk, jamKeluar){
+  if(!jamMasuk || !jamKeluar) return '';
+  const [h1,m1] = jamMasuk.split(':').map(Number);
+  const [h2,m2] = jamKeluar.split(':').map(Number);
+  let totalMenit = (h2*60+m2) - (h1*60+m1);
+  if(totalMenit < 0) return '';
+  const jam = Math.floor(totalMenit/60);
+  const menit = totalMenit % 60;
+  return `${jam}j ${String(menit).padStart(2,'0')}m`;
+}
+
+function buildRekapTanggal(data){
+  const map = {};
+  data.forEach(r => {
+    const key = r.nama + '||' + r.tgl;
+    if(!map[key]) map[key] = {
+      tgl:r.tgl, nama:r.nama, divisi:'', kotaMasuk:'', kotaKeluar:'',
+      outletMasuk:'', outletKeluar:'', jamMasuk:'', jamKeluar:''
+    };
+    const rec = map[key];
+    rec.divisi = r.divisi;
+    if(r.t === 'masuk'){ rec.jamMasuk = r.jam; rec.outletMasuk = r.outlet; rec.kotaMasuk = r.kota_norm; }
+    else { rec.jamKeluar = r.jam; rec.outletKeluar = r.outlet; rec.kotaKeluar = r.kota_norm; }
+  });
+  return Object.values(map).map(rec => ({
+    tgl: rec.tgl,
+    nama: rec.nama,
+    divisi: rec.divisi,
+    kota: rec.kotaMasuk || rec.kotaKeluar,
+    outlet: rec.outletMasuk || rec.outletKeluar,
+    jamMasuk: rec.jamMasuk,
+    jamKeluar: rec.jamKeluar,
+    jamKerja: hitungJamKerja(rec.jamMasuk, rec.jamKeluar),
+  }));
+}
+
+function renderRekapTanggalTable(data){
+  let rows = buildRekapTanggal(data);
+  rows = sortRows(rows, rekapTanggalSort);
+  const body = document.getElementById('tblRekapTanggalBody');
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="8" class="empty-note">Tidak ada data sesuai filter.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td>${fmtDate(r.tgl)}</td>
+      <td>${escapeHtml(r.nama)}</td>
+      <td>${escapeHtml(r.divisi)}</td>
+      <td>${escapeHtml(r.kota)}</td>
+      <td>${escapeHtml(r.outlet)}</td>
+      <td>${r.jamMasuk || '-'}</td>
+      <td>${r.jamKeluar || '-'}</td>
+      <td>${r.jamKerja || '-'}</td>
+    </tr>
+  `).join('');
+}
+
+
+function renderTidakLengkapTable(data){
+  let rows = buildTidakLengkap(data);
+  rows = sortRows(rows, tidakLengkapSort);
+  const body = document.getElementById('tblTidakLengkapBody');
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="5" class="empty-note">Tidak ada absensi yang belum lengkap pada rentang ini.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map((r,i) => {
+    const jenis = r.keterangan.includes('keluar') ? 'keluar' : 'masuk';
+    const lokasi = isOutletLokasi(r.outlet) ? 'Outlet' : 'Non Outlet';
+    return `
+    <tr>
+      <td>${i+1}</td>
+      <td>${escapeHtml(r.nama)}</td>
+      <td>${escapeHtml(lokasi)}</td>
+      <td>${escapeHtml(r.outlet)}</td>
+      <td><span class="badge late">${fmtDate(r.tgl)} tidak absen ${jenis}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function sortRows(rows, sortState){
+  const {key, dir} = sortState;
+  const mul = dir === 'asc' ? 1 : -1;
+  return [...rows].sort((a,b) => {
+    const va = a[key], vb = b[key];
+    if(typeof va === 'number' && typeof vb === 'number') return (va-vb)*mul;
+    return String(va).localeCompare(String(vb),'id')*mul;
+  });
+}
+
+// ---------- Sorting interactions ----------
+document.querySelectorAll('#tblJamBuka thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if(jamBukaSort.key === key) jamBukaSort.dir = jamBukaSort.dir === 'asc' ? 'desc' : 'asc';
+    else { jamBukaSort.key = key; jamBukaSort.dir = 'desc'; }
+    updateArrows('#tblJamBuka', jamBukaSort);
+    renderAll();
+  });
+});
+document.querySelectorAll('#tblTidakLengkap thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if(key === 'no') return;
+    if(tidakLengkapSort.key === key) tidakLengkapSort.dir = tidakLengkapSort.dir === 'asc' ? 'desc' : 'asc';
+    else { tidakLengkapSort.key = key; tidakLengkapSort.dir = 'desc'; }
+    updateArrows('#tblTidakLengkap', tidakLengkapSort);
+    renderAll();
+  });
+});
+document.querySelectorAll('#tblAbsensiKaryawan thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if(key === 'no') return;
+    if(absensiKaryawanSort.key === key) absensiKaryawanSort.dir = absensiKaryawanSort.dir === 'asc' ? 'desc' : 'asc';
+    else { absensiKaryawanSort.key = key; absensiKaryawanSort.dir = 'desc'; }
+    updateArrows('#tblAbsensiKaryawan', absensiKaryawanSort);
+    renderAll();
+  });
+});
+document.querySelectorAll('#tblTidakLengkapRank thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if(key === 'no') return;
+    if(tidakLengkapRankSort.key === key) tidakLengkapRankSort.dir = tidakLengkapRankSort.dir === 'asc' ? 'desc' : 'asc';
+    else { tidakLengkapRankSort.key = key; tidakLengkapRankSort.dir = 'desc'; }
+    updateArrows('#tblTidakLengkapRank', tidakLengkapRankSort);
+    renderAll();
+  });
+});
+document.querySelectorAll('#tblRekapTanggal thead th').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if(rekapTanggalSort.key === key) rekapTanggalSort.dir = rekapTanggalSort.dir === 'asc' ? 'desc' : 'asc';
+    else { rekapTanggalSort.key = key; rekapTanggalSort.dir = 'desc'; }
+    updateArrows('#tblRekapTanggal', rekapTanggalSort);
+    renderAll();
+  });
+});
+function updateArrows(tableSel, state){
+  document.querySelectorAll(`${tableSel} thead th`).forEach(th => {
+    const arrow = th.querySelector('.arrow');
+    if(!arrow) return;
+    if(th.dataset.key === state.key) arrow.textContent = state.dir === 'asc' ? '▲' : '▼';
+    else arrow.textContent = '';
+  });
+}
+
+// ---------- Main render ----------
+function renderAll(){
+  const data = applyFilters();
+  renderKPI(data);
+  renderTidakLengkapRanking(data);
+  renderAbsensiKaryawanTable(data);
+  renderJamBukaTable(data);
+  renderTidakLengkapTable(data);
+  renderRekapTanggalTable(data);
+}
+
+['fDariTgl','fSampaiTgl','fKota','fOutlet','fLokasi','fDivisi','fNama'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    refreshDependentOptions();
+    renderAll();
+  });
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('fBulan').value = '';
+  document.getElementById('fDariTgl').value = minDate;
+  document.getElementById('fSampaiTgl').value = maxDate;
+  document.getElementById('fKota').value = '';
+  document.getElementById('fOutlet').value = '';
+  document.getElementById('fLokasi').value = '';
+  document.getElementById('fDivisi').value = '';
+  document.getElementById('fNama').value = '';
+  refreshDependentOptions();
+  renderAll();
+});
+
+// ---------- Export ke Excel ----------
+function exportToExcel(){
+  const data = applyFilters();
+
+  // 1. Top 5 karyawan absensi tidak lengkap
+  const scoped = data.filter(r => r.divisi === 'Barista' || r.divisi === 'Part Timer');
+  const tidakLengkapRows = buildTidakLengkap(scoped);
+  const aggRank = {};
+  tidakLengkapRows.forEach(r => {
+    if(!aggRank[r.nama]) aggRank[r.nama] = {nama:r.nama, divisi:r.divisi, count:0, kotas:{}};
+    aggRank[r.nama].count++;
+    aggRank[r.nama].kotas[r.kota] = (aggRank[r.nama].kotas[r.kota]||0)+1;
+  });
+  scoped.forEach(r => { if(aggRank[r.nama]) aggRank[r.nama].divisi = r.divisi; });
+  let top5 = Object.values(aggRank).map(info => ({
+    nama: info.nama,
+    kota: Object.entries(info.kotas).sort((a,b)=>b[1]-a[1])[0][0],
+    jabatan: info.divisi,
+    keterangan: info.count,
+  }));
+  top5.sort((a,b) => b.keterangan - a.keterangan);
+  top5 = top5.slice(0,5);
+  const sheetTop5 = top5.map((r,i) => ({
+    'No': i+1,
+    'Nama Karyawan': r.nama,
+    'Kota': r.kota,
+    'Jabatan': r.jabatan,
+    'Jumlah Hari Tidak Lengkap': r.keterangan,
+  }));
+
+  // 2. Jam buka outlet (di atas jam 08:00, sama seperti yang tampil di tabel)
+  const jamBukaRows = buildJamBuka(data)
+    .filter(r => r.jam > '08:00')
+    .map(r => ({...r, keterangan: kategoriJamBuka(r.jam)}));
+  const sheetJamBuka = jamBukaRows.map(r => ({
+    'Tanggal': fmtDate(r.tgl),
+    'Nama Outlet': r.outlet,
+    'Jam Buka': r.jam,
+    'Nama Karyawan': r.nama,
+    'Keterangan': r.keterangan,
+  }));
+
+  // 3. Rekap absensi karyawan
+  const absensiRows = buildAbsensiKaryawan(data);
+  const sheetAbsensi = absensiRows.map((r,i) => ({
+    'No': i+1,
+    'Nama': r.nama,
+    'Divisi': r.divisi,
+    'Kota': r.kota,
+    'Absen Masuk': r.masuk,
+    'Absen Keluar': r.keluar,
+    '% Kelengkapan': r.pct + '%',
+    'Keterangan': r.keterangan > 0 ? `${r.keterangan} hari tidak lengkap` : 'Lengkap',
+  }));
+
+  // 4. Detail absensi tidak lengkap
+  const detailRows = buildTidakLengkap(data);
+  const sheetDetail = detailRows.map((r,i) => {
+    const jenis = r.keterangan.includes('keluar') ? 'keluar' : 'masuk';
+    const lokasi = isOutletLokasi(r.outlet) ? 'Outlet' : 'Non Outlet';
+    return {
+      'No': i+1,
+      'Nama Karyawan': r.nama,
+      'Lokasi': lokasi,
+      'Outlet': r.outlet,
+      'Tanggal': fmtDate(r.tgl),
+      'Keterangan': `Tidak absen ${jenis}`,
+    };
+  });
+
+  // 5. Rekap absensi per tanggal, per nama karyawan
+  const rekapTanggalRows = buildRekapTanggal(data);
+  const sheetRekapTanggal = rekapTanggalRows.map(r => ({
+    'Tanggal Absen': fmtDate(r.tgl),
+    'Nama Karyawan': r.nama,
+    'Divisi / Jabatan': r.divisi,
+    'Kota': r.kota,
+    'Lokasi Outlet': r.outlet,
+    'Jam Masuk': r.jamMasuk || '-',
+    'Jam Keluar': r.jamKeluar || '-',
+    'Jam Kerja': r.jamKerja || '-',
+  }));
+
+  const wb = XLSX.utils.book_new();
+  const addSheet = (rows, name, emptyMsg) => {
+    const ws = rows.length
+      ? XLSX.utils.json_to_sheet(rows)
+      : XLSX.utils.aoa_to_sheet([[emptyMsg]]);
+    XLSX.utils.book_append_sheet(wb, ws, name);
+  };
+  addSheet(sheetTop5, 'Top 5 Tidak Lengkap', 'Tidak ada data sesuai filter');
+  addSheet(sheetJamBuka, 'Jam Buka Outlet', 'Tidak ada data sesuai filter');
+  addSheet(sheetAbsensi, 'Rekap Absensi Karyawan', 'Tidak ada data sesuai filter');
+  addSheet(sheetDetail, 'Detail Tidak Lengkap', 'Tidak ada data sesuai filter');
+  addSheet(sheetRekapTanggal, 'Rekap Per Tanggal Karyawan', 'Tidak ada data sesuai filter');
+
+  const stamp = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `Rekap_Absensi_${stamp}.xlsx`);
+}
+
+document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+
+loadData();
+
+</script>
+</body>
+</html>
