@@ -436,25 +436,6 @@
   </section>
 
   <section class="panel">
-    <h2>Rekap jam buka outlet di atas jam 8</h2>
-    <div class="panel-desc">Jam Buka Outlet diambil dari Jam Absen Masuk Karyawan Pertama.</div>
-    <div class="table-scroll">
-      <table id="tblJamBuka">
-        <thead>
-          <tr>
-            <th data-key="tgl">Tanggal <span class="arrow"></span></th>
-            <th data-key="outlet">Nama Outlet <span class="arrow"></span></th>
-            <th data-key="jam">Jam Buka <span class="arrow"></span></th>
-            <th data-key="nama">Nama Karyawan <span class="arrow"></span></th>
-            <th data-key="keterangan">Keterangan <span class="arrow"></span></th>
-          </tr>
-        </thead>
-        <tbody id="tblJamBukaBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="panel">
     <h2>Rekap absensi karyawan</h2>
     <div class="panel-desc">Klik judul kolom untuk mengurutkan. Kolom Keterangan menunjukkan jumlah hari absennya tidak lengkap (rinciannya ada di tabel "Rekap absensi tidak lengkap" di bawah).</div>
     <div class="table-scroll">
@@ -497,7 +478,7 @@
 
   <section class="panel">
     <h2>Rekap absensi per tanggal, per nama karyawan</h2>
-    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk.</div>
+    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk. Keterangan "Tidak Sesuai" muncul jika Jam Kerja di bawah 8 jam.</div>
     <div class="table-scroll">
       <table id="tblRekapTanggal">
         <thead>
@@ -510,6 +491,7 @@
             <th data-key="jamMasuk">Jam Masuk <span class="arrow"></span></th>
             <th data-key="jamKeluar">Jam Keluar <span class="arrow"></span></th>
             <th data-key="jamKerja">Jam Kerja <span class="arrow"></span></th>
+            <th data-key="keterangan">Keterangan <span class="arrow"></span></th>
           </tr>
         </thead>
         <tbody id="tblRekapTanggalBody"></tbody>
@@ -773,7 +755,6 @@ function init(){
   monthValues = uniqueSorted(RAW_DATA.map(r => r.tgl.slice(0,7)));
   populateBulan();
 
-  updateArrows('#tblJamBuka', jamBukaSort);
   updateArrows('#tblTidakLengkap', tidakLengkapSort);
   updateArrows('#tblAbsensiKaryawan', absensiKaryawanSort);
   updateArrows('#tblTidakLengkapRank', tidakLengkapRankSort);
@@ -876,10 +857,26 @@ function renderKPI(data){
   const keluar = data.filter(r => r.t === 'keluar');
   const hkSet = new Set(masuk.map(r => r.tgl));
 
+  const kunjunganTSR = masuk.filter(r => r.divisi === 'TSR - SPK');
+  const kunjunganSPG = masuk.filter(r => r.divisi === 'SPG Elite Creme');
+  const outletTSR = uniqueSorted(kunjunganTSR.map(r => r.outlet));
+  const outletSPG = uniqueSorted(kunjunganSPG.map(r => r.outlet));
+
+  const rekapTanggalRows = buildRekapTanggal(data);
+  let jamSesuai = 0, jamTidakSesuai = 0;
+  rekapTanggalRows.forEach(r => {
+    const menit = hitungMenitKerja(r.jamMasuk, r.jamKeluar);
+    if(menit === null) return;
+    if(menit < 480) jamTidakSesuai++; else jamSesuai++;
+  });
+
   const cards = [
-    {label:'Jumlah HK', value: fmtNum(hkSet.size), sub:'hari terdeteksi absen masuk', cls:''},
     {label:'Total absen masuk', value: fmtNum(masuk.length), sub:`${uniqueSorted(masuk.map(r=>r.nama)).length} karyawan`, cls:''},
     {label:'Total absen keluar', value: fmtNum(keluar.length), sub:`<span class="pct-highlight">${masuk.length ? Math.round(keluar.length/masuk.length*100) : 0}%</span> dari absen masuk`, cls:''},
+    {label:'Jumlah HK', value: fmtNum(hkSet.size), sub:'hari terdeteksi absen masuk', cls:''},
+    {label:'Jumlah Kunjungan TSR - SPK', value: fmtNum(kunjunganTSR.length), sub:`${fmtNum(outletTSR.length)} Lokasi dikunjungi`, cls:''},
+    {label:'Jumlah Kunjungan SPG Elite Creme', value: fmtNum(kunjunganSPG.length), sub:`${fmtNum(outletSPG.length)} outlet dikunjungi`, cls:''},
+    {label:'Jam Kerja', value: `${fmtNum(jamSesuai)} / ${fmtNum(jamTidakSesuai)}`, sub:'Sesuai / Tidak Sesuai', cls:''},
   ];
   document.getElementById('kpiRow').innerHTML = cards.map(c => `
     <div class="kpi-card ${c.cls}">
@@ -896,7 +893,6 @@ function escapeHtml(s){
 
 // ---------- Charts ----------
 // ---------- Employee recap table ----------
-let jamBukaSort = {key:'tgl', dir:'desc'};
 let tidakLengkapSort = {key:'tgl', dir:'desc'};
 let absensiKaryawanSort = {key:'masuk', dir:'desc'};
 
@@ -920,27 +916,6 @@ function kategoriJamBuka(jam){
   if(jam <= '08:30') return '08.00 - 08.30';
   if(jam <= '09:00') return '08.30 - 09.00';
   return 'Di atas 09.00';
-}
-
-function renderJamBukaTable(data){
-  let rows = buildJamBuka(data)
-    .filter(r => r.jam > '08:00')
-    .map(r => ({...r, keterangan: kategoriJamBuka(r.jam)}));
-  rows = sortRows(rows, jamBukaSort);
-  const body = document.getElementById('tblJamBukaBody');
-  if(!rows.length){
-    body.innerHTML = `<tr><td colspan="5" class="empty-note">Tidak ada data sesuai filter.</td></tr>`;
-    return;
-  }
-  body.innerHTML = rows.map(r => `
-    <tr>
-      <td>${fmtDate(r.tgl)}</td>
-      <td>${escapeHtml(r.outlet)}</td>
-      <td>${r.jam}</td>
-      <td>${escapeHtml(r.nama)}</td>
-      <td><span class="badge late">${r.keterangan}</span></td>
-    </tr>
-  `).join('');
 }
 
 function buildAbsensiKaryawan(data){
@@ -1054,12 +1029,17 @@ function buildTidakLengkap(data){
   return rows;
 }
 
-function hitungJamKerja(jamMasuk, jamKeluar){
-  if(!jamMasuk || !jamKeluar) return '';
+function hitungMenitKerja(jamMasuk, jamKeluar){
+  if(!jamMasuk || !jamKeluar) return null;
   const [h1,m1] = jamMasuk.split(':').map(Number);
   const [h2,m2] = jamKeluar.split(':').map(Number);
-  let totalMenit = (h2*60+m2) - (h1*60+m1);
-  if(totalMenit < 0) return '';
+  const totalMenit = (h2*60+m2) - (h1*60+m1);
+  return totalMenit >= 0 ? totalMenit : null;
+}
+
+function hitungJamKerja(jamMasuk, jamKeluar){
+  const totalMenit = hitungMenitKerja(jamMasuk, jamKeluar);
+  if(totalMenit === null) return '';
   const jam = Math.floor(totalMenit/60);
   const menit = totalMenit % 60;
   return `${jam}j ${String(menit).padStart(2,'0')}m`;
@@ -1087,6 +1067,10 @@ function buildRekapTanggal(data){
     jamMasuk: rec.jamMasuk,
     jamKeluar: rec.jamKeluar,
     jamKerja: hitungJamKerja(rec.jamMasuk, rec.jamKeluar),
+    keterangan: (() => {
+      const menit = hitungMenitKerja(rec.jamMasuk, rec.jamKeluar);
+      return menit !== null && menit < 480 ? 'Tidak Sesuai' : '';
+    })(),
   }));
 }
 
@@ -1095,7 +1079,7 @@ function renderRekapTanggalTable(data){
   rows = sortRows(rows, rekapTanggalSort);
   const body = document.getElementById('tblRekapTanggalBody');
   if(!rows.length){
-    body.innerHTML = `<tr><td colspan="8" class="empty-note">Tidak ada data sesuai filter.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="9" class="empty-note">Tidak ada data sesuai filter.</td></tr>`;
     return;
   }
   body.innerHTML = rows.map(r => `
@@ -1108,6 +1092,7 @@ function renderRekapTanggalTable(data){
       <td>${r.jamMasuk || '-'}</td>
       <td>${r.jamKeluar || '-'}</td>
       <td>${r.jamKerja || '-'}</td>
+      <td>${r.keterangan ? `<span class="badge late">${r.keterangan}</span>` : '-'}</td>
     </tr>
   `).join('');
 }
@@ -1146,15 +1131,6 @@ function sortRows(rows, sortState){
 }
 
 // ---------- Sorting interactions ----------
-document.querySelectorAll('#tblJamBuka thead th').forEach(th => {
-  th.addEventListener('click', () => {
-    const key = th.dataset.key;
-    if(jamBukaSort.key === key) jamBukaSort.dir = jamBukaSort.dir === 'asc' ? 'desc' : 'asc';
-    else { jamBukaSort.key = key; jamBukaSort.dir = 'desc'; }
-    updateArrows('#tblJamBuka', jamBukaSort);
-    renderAll();
-  });
-});
 document.querySelectorAll('#tblTidakLengkap thead th').forEach(th => {
   th.addEventListener('click', () => {
     const key = th.dataset.key;
@@ -1209,7 +1185,6 @@ function renderAll(){
   renderKPI(data);
   renderTidakLengkapRanking(data);
   renderAbsensiKaryawanTable(data);
-  renderJamBukaTable(data);
   renderTidakLengkapTable(data);
   renderRekapTanggalTable(data);
 }
@@ -1314,6 +1289,7 @@ function exportToExcel(){
     'Jam Masuk': r.jamMasuk || '-',
     'Jam Keluar': r.jamKeluar || '-',
     'Jam Kerja': r.jamKerja || '-',
+    'Keterangan': r.keterangan || '-',
   }));
 
   const wb = XLSX.utils.book_new();
