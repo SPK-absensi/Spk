@@ -120,7 +120,7 @@
   }
   .field select:focus, .field input:focus{outline:2px solid var(--steel); outline-offset:1px;}
   .field.grow{flex:1; min-width:200px;}
-  #resetBtn{
+  #resetBtn, #todayBtn, #yesterdayBtn{
     padding:8px 16px;
     border-radius:8px;
     border:1px solid var(--roast);
@@ -131,7 +131,7 @@
     cursor:pointer;
     height:34px;
   }
-  #resetBtn:hover{background:var(--roast); color:#fff;}
+  #resetBtn:hover, #todayBtn:hover, #yesterdayBtn:hover{background:var(--roast); color:#fff;}
   #exportBtn{
     padding:8px 16px;
     border-radius:8px;
@@ -202,6 +202,12 @@
     color:var(--ink-soft);
     margin-bottom:16px;
   }
+  section.panel .period-info{
+    font-size:.76rem;
+    color:var(--steel);
+    font-weight:600;
+    margin:-8px 0 14px;
+  }
 
   .grid-2{
     display:grid;
@@ -243,7 +249,7 @@
       padding:6px 8px;
       border-radius:6px;
     }
-    #resetBtn, #exportBtn{
+    #resetBtn, #exportBtn, #todayBtn, #yesterdayBtn{
       width:auto;
       grid-column:span 1;
       padding:7px 10px;
@@ -404,6 +410,8 @@
     <label for="fNama">Nama karyawan</label>
     <select id="fNama"><option value="">Semua karyawan</option></select>
   </div>
+  <button id="todayBtn" type="button">Hari Ini</button>
+  <button id="yesterdayBtn" type="button">Kemarin</button>
   <button id="resetBtn">Reset filter</button>
   <button id="exportBtn">Export ke Excel</button>
 </div>
@@ -415,6 +423,7 @@
   <section class="panel">
     <h2>Karyawan dengan absensi tidak lengkap terbanyak</h2>
     <div class="panel-desc">5 karyawan (divisi Barista &amp; Part Timer) dengan jumlah hari absensi tidak lengkap terbanyak (hanya masuk saja atau hanya keluar saja).</div>
+    <div class="period-info"></div>
     <div class="table-scroll">
       <table id="tblTidakLengkapRank">
         <thead>
@@ -434,6 +443,7 @@
   <section class="panel">
     <h2>Rekap absensi karyawan</h2>
     <div class="panel-desc">Klik judul kolom untuk mengurutkan. Kolom Keterangan menunjukkan jumlah hari absennya tidak lengkap (rinciannya ada di tabel "Rekap absensi tidak lengkap" di bawah).</div>
+    <div class="period-info"></div>
     <div class="table-scroll">
       <table id="tblAbsensiKaryawan">
         <thead>
@@ -456,6 +466,7 @@
   <section class="panel">
     <h2>Rekap absensi tidak lengkap</h2>
     <div class="panel-desc">Karyawan yang hanya mengisi absen masuk saja atau absen keluar saja pada tanggal tersebut.</div>
+    <div class="period-info"></div>
     <div class="table-scroll">
       <table id="tblTidakLengkap">
         <thead>
@@ -475,6 +486,7 @@
   <section class="panel">
     <h2>Rekap absensi per tanggal, per nama karyawan</h2>
     <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk. Keterangan "Tidak Sesuai" muncul jika Jam Kerja di bawah 8 jam.</div>
+    <div class="period-info"></div>
     <div class="table-scroll">
       <table id="tblRekapTanggal">
         <thead>
@@ -1175,6 +1187,16 @@ function updateArrows(tableSel, state){
   });
 }
 
+// ---------- Info periode & divisi per panel ----------
+function updatePeriodInfo(){
+  const f = getFilters();
+  const dariLabel = f.dari ? fmtDate(f.dari) : '-';
+  const sampaiLabel = f.sampai ? fmtDate(f.sampai) : '-';
+  const divisiLabel = f.divisi || f.jabatan || 'Semua divisi';
+  const text = `Periode: ${dariLabel} – ${sampaiLabel} · Divisi: ${divisiLabel}`;
+  document.querySelectorAll('.period-info').forEach(el => { el.textContent = text; });
+}
+
 // ---------- Main render ----------
 function renderAll(){
   const data = applyFilters();
@@ -1183,6 +1205,7 @@ function renderAll(){
   renderAbsensiKaryawanTable(data);
   renderTidakLengkapTable(data);
   renderRekapTanggalTable(data);
+  updatePeriodInfo();
 }
 
 ['fDariTgl','fSampaiTgl','fKota','fOutlet','fJabatan','fDivisi','fNama'].forEach(id => {
@@ -1200,6 +1223,32 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   document.getElementById('fJabatan').value = '';
   document.getElementById('fDivisi').value = '';
   document.getElementById('fNama').value = '';
+  refreshDependentOptions();
+  renderAll();
+});
+
+// ---------- Quick filter: Hari Ini / Kemarin ----------
+function toLocalISODate(d){
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+document.getElementById('todayBtn').addEventListener('click', () => {
+  const today = toLocalISODate(new Date());
+  document.getElementById('fBulan').value = '';
+  document.getElementById('fDariTgl').value = today;
+  document.getElementById('fSampaiTgl').value = today;
+  refreshDependentOptions();
+  renderAll();
+});
+document.getElementById('yesterdayBtn').addEventListener('click', () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const yesterday = toLocalISODate(d);
+  document.getElementById('fBulan').value = '';
+  document.getElementById('fDariTgl').value = yesterday;
+  document.getElementById('fSampaiTgl').value = yesterday;
   refreshDependentOptions();
   renderAll();
 });
