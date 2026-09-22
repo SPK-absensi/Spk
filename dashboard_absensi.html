@@ -373,12 +373,8 @@
 
 <div class="filterbar">
   <div class="field">
-    <label for="fLokasi">Lokasi Absen</label>
-    <select id="fLokasi">
-      <option value="">Semua lokasi</option>
-      <option value="outlet">Outlet</option>
-      <option value="non-outlet">Non Outlet</option>
-    </select>
+    <label for="fJabatan">Jabatan</label>
+    <select id="fJabatan"><option value="">Semua jabatan</option></select>
   </div>
   <div class="field">
     <label for="fBulan">Bulan</label>
@@ -597,8 +593,8 @@ function mapRow(row, t){
 }
 
 // Google Sheets yang di-publish sebagai CSV (File > Share > Publish to web > CSV)
-const SHEET_IN_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQXjxw9LL5BHVt33p8ooG-u4EX1IlGtodKbQB_dngiV-NDSn-khQV4NoB8EjpxrPA/pub?gid=1667824322&single=true&output=csv';
-const SHEET_OUT_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcyzQP1TtdAmKgjwXUQaLeMhcEyroG_PD8jsZG4KhHBIoSKMScr_BAMa9SE-O1BQ/pub?gid=2091139702&single=true&output=csv';
+const SHEET_IN_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRQzFAE_FHh_sC8nA_cRJtDBnS3XxkC1dyanQfjAGyndrJj_dMgRQqAtB7r51sZIkX3YTt18jfOjRX_/pub?gid=110113345&single=true&output=csv';
+const SHEET_OUT_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfNdMVFkxmMU3JKJklrAQh1LPZ6VvO8OExuXyf1D2aCPj5vU_4R9WET82VR0Y8iiLUvPQA77NFcEBF/pub?gid=962304231&single=true&output=csv';
 
 function loadCsv(url){
   // tambahkan parameter waktu supaya browser/Google tidak mengembalikan versi cache lama
@@ -802,7 +798,7 @@ function getFilters(){
     sampai: document.getElementById('fSampaiTgl').value,
     kota: document.getElementById('fKota').value,
     outlet: document.getElementById('fOutlet').value,
-    lokasi: document.getElementById('fLokasi').value,
+    jabatan: document.getElementById('fJabatan').value,
     divisi: document.getElementById('fDivisi').value,
     nama: document.getElementById('fNama').value,
   };
@@ -813,10 +809,7 @@ function matchesFilters(r, f, excludeKey){
   if(f.sampai && r.tgl > f.sampai) return false;
   if(excludeKey !== 'kota' && f.kota && r.kota_norm !== f.kota) return false;
   if(excludeKey !== 'outlet' && f.outlet && r.outlet !== f.outlet) return false;
-  if(excludeKey !== 'lokasi'){
-    if(f.lokasi === 'outlet' && !isOutletLokasi(r.outlet)) return false;
-    if(f.lokasi === 'non-outlet' && isOutletLokasi(r.outlet)) return false;
-  }
+  if(excludeKey !== 'jabatan' && f.jabatan && r.divisi !== f.jabatan) return false;
   if(excludeKey !== 'divisi' && f.divisi && r.divisi !== f.divisi) return false;
   if(excludeKey !== 'nama' && f.nama && r.nama !== f.nama) return false;
   return true;
@@ -846,6 +839,9 @@ function refreshDependentOptions(){
 
   const divisiValues = uniqueSorted(RAW_DATA.filter(r => matchesFilters(r, f, 'divisi')).map(r => r.divisi));
   rebuildSelect('fDivisi', divisiValues, 'Semua divisi');
+
+  const jabatanValues = uniqueSorted(RAW_DATA.filter(r => matchesFilters(r, f, 'jabatan')).map(r => r.divisi));
+  rebuildSelect('fJabatan', jabatanValues, 'Semua jabatan');
 
   const namaValues = uniqueSorted(RAW_DATA.filter(r => matchesFilters(r, f, 'nama')).map(r => r.nama));
   rebuildSelect('fNama', namaValues, 'Semua karyawan');
@@ -1189,7 +1185,7 @@ function renderAll(){
   renderRekapTanggalTable(data);
 }
 
-['fDariTgl','fSampaiTgl','fKota','fOutlet','fLokasi','fDivisi','fNama'].forEach(id => {
+['fDariTgl','fSampaiTgl','fKota','fOutlet','fJabatan','fDivisi','fNama'].forEach(id => {
   document.getElementById(id).addEventListener('change', () => {
     refreshDependentOptions();
     renderAll();
@@ -1201,7 +1197,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   document.getElementById('fSampaiTgl').value = maxDate;
   document.getElementById('fKota').value = '';
   document.getElementById('fOutlet').value = '';
-  document.getElementById('fLokasi').value = '';
+  document.getElementById('fJabatan').value = '';
   document.getElementById('fDivisi').value = '';
   document.getElementById('fNama').value = '';
   refreshDependentOptions();
