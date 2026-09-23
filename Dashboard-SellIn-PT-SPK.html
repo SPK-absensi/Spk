@@ -238,11 +238,28 @@
       --text-1:#111111; --text-2:#444444; --text-muted:#666666;
       --border:rgba(0,0,0,0.15); --grid:#e5e5e5; --axis:#999999;
     }
+    /* Paksa browser tetap mencetak warna latar (background-color) — tanpa ini
+       bar chart (.bar-fill), dot status, dan legenda donut jadi kosong/putih
+       saat print / simpan ke PDF, karena sebagian besar browser secara default
+       tidak mencetak background. */
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
     body{background:#fff;}
-    .tabs, .filter-head-actions, .filter-dd, .period-range, .fcount{display:none !important;}
+    .tabs, .filter-head-actions, .filter-dd, .period-range, .fcount, .sync-bar{display:none !important;}
     .card{break-inside:avoid; box-shadow:none; border:1px solid #ddd;}
     .perbaikan-box{border:1px solid #ccc; resize:none;}
     .wrap{max-width:100%;}
+    /* Tabel & daftar panjang biasanya dibatasi tinggi + scroll di layar;
+       saat print, batasan itu harus dilepas supaya semua baris ikut tercetak,
+       bukan hanya bagian yang terlihat di layar. */
+    .table-scroll{max-height:none !important; overflow:visible !important;}
+    .filter-dd-list{max-height:none !important; overflow:visible !important;}
+    table{break-inside:auto;}
+    tr{break-inside:avoid; break-after:auto;}
+    thead{display:table-header-group;}
+    /* Grafik SVG (tren, donut, diff) dirender via JS berdasarkan lebar
+       elemen saat itu; pastikan tidak collapse ke 0 lebar saat layout print
+       berubah kolom. */
+    svg{width:100% !important;}
   }
 </style>
 
