@@ -198,6 +198,22 @@
   .diff-neg{color:var(--warn);}
   .diff-pos{color:var(--good);}
 
+  .target-input{width:88px; padding:5px 7px; border:1px solid var(--border); border-radius:6px; background:var(--surface-raised); color:var(--text-1); font:inherit; font-size:12.5px; text-align:right; font-variant-numeric:tabular-nums;}
+  .target-input:focus{outline:none; border-color:var(--s1);}
+  .year-toggle{display:inline-flex; gap:4px; background:var(--surface-raised); border:1px solid var(--border); border-radius:9px; padding:3px;}
+  .year-toggle button{background:none; border:none; font:inherit; font-size:12.5px; font-weight:600; color:var(--text-muted); padding:6px 14px; border-radius:7px; cursor:pointer;}
+  .year-toggle button.active{background:var(--s1); color:#fff;}
+  .target-status{font-size:12px; color:var(--text-muted);}
+  .target-status.saved{color:var(--good);}
+  .ach-bar{display:inline-block; height:6px; border-radius:3px; background:var(--s1); vertical-align:middle; margin-right:6px;}
+  .ach-good{color:var(--good); font-weight:600;}
+  .ach-warn{color:var(--warn); font-weight:600;}
+  .master-input{width:100%; min-width:160px; padding:6px 8px; border:1px solid var(--border); border-radius:6px; background:var(--surface-raised); color:var(--text-1); font:inherit; font-size:12.5px;}
+  .master-input:focus{outline:none; border-color:var(--s1);}
+  .master-del-btn{background:none; border:1px solid var(--border); color:var(--bad,#e5484d); font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; padding:5px 10px; border-radius:7px;}
+  .master-del-btn:hover{border-color:var(--bad,#e5484d); background:rgba(229,72,77,0.08);}
+  .master-add-row{margin-top:12px;}
+
   .table-foot{display:flex; justify-content:space-between; align-items:center; margin-top:12px; font-size:12.5px; color:var(--text-2);}
   .pager{display:flex; gap:6px; align-items:center;}
   .pager button{background:var(--surface-raised); border:1px solid var(--border); color:var(--text-1); border-radius:7px; padding:6px 11px; font-size:12.5px; cursor:pointer; font-family:inherit;}
@@ -286,6 +302,8 @@
     <button type="button" class="tab-btn" data-page="pageMonthly">Monthly <span class="tab-n">&middot; data bisa difilter</span></button>
     <button type="button" class="tab-btn" data-page="pageWeekly">Weekly <span class="tab-n">&middot; rekap mingguan</span></button>
     <button type="button" class="tab-btn" data-page="pageDaily">Daily <span class="tab-n">&middot; rekap harian</span></button>
+    <button type="button" class="tab-btn" data-page="pageTarget">Target <span class="tab-n">&middot; target vs realisasi</span></button>
+    <button type="button" class="tab-btn" data-page="pageMaster">Master Data <span class="tab-n">&middot; distributor &amp; PIC</span></button>
   </div>
 
   <div class="page active" id="pageSummary">
@@ -682,6 +700,27 @@
           <button type="button" class="pr-preset-btn" id="preset4WeekW">4 Minggu Terakhir</button>
         </span>
       </div>
+      <div class="filter-dd" id="ddDistributorW">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Nama Distributor</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddStatusW">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddPicW">
+        <button type="button" class="filter-dd-btn"><span class="lbl">PIC</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
     </div>
     <p class="card-sub" id="filterSummaryW" style="margin:12px 0 0;">&mdash;</p>
   </div>
@@ -752,6 +791,27 @@
           <button type="button" class="pr-preset-btn" id="presetAllD">Semua Data</button>
         </span>
       </div>
+      <div class="filter-dd" id="ddDistributorD">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Nama Distributor</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddStatusD">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddPicD">
+        <button type="button" class="filter-dd-btn"><span class="lbl">PIC</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
     </div>
     <p class="card-sub" id="filterSummaryD" style="margin:12px 0 0;">&mdash;</p>
   </div>
@@ -798,6 +858,63 @@
     </div>
   </div>
   </div><!-- /pageDaily -->
+
+  <div class="page" id="pageTarget">
+  <div class="card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#127919;</span>
+      <span class="ttl">Target Sell In Elite Cr&egrave;me per Distributor</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportTarget" class="export-btn">&#128190; Export Target</button>
+        <label class="export-btn" style="cursor:pointer; margin:0;">&#128194; Import Target<input type="file" id="importTargetFile" accept="application/json" style="display:none;"></label>
+      </div>
+    </div>
+    <p class="card-sub" style="margin-top:10px;">Target dalam satuan Pcs, diinput per distributor untuk masing-masing produk Elite Cr&egrave;me, per tahun (2026 &amp; 2027 saja). Data tersimpan otomatis di browser ini &mdash; karena dashboard adalah halaman statis, gunakan Export/Import (file .json) untuk memindahkan data target ke perangkat atau orang lain.</p>
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:10px;">
+      <span class="year-toggle" id="targetYearToggle">
+        <button type="button" data-year="2026" class="active">2026</button>
+        <button type="button" data-year="2027">2027</button>
+      </span>
+      <span class="target-status" id="targetStatus">&mdash;</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Input Target (Pcs)</h2>
+    <p class="card-sub">Isi target per produk untuk setiap distributor &middot; otomatis tersimpan saat kolom diubah.</p>
+    <div class="table-scroll" id="targetTableWrap" style="max-height:520px;"></div>
+  </div>
+
+  <div class="card">
+    <h2>Pencapaian Target vs Realisasi</h2>
+    <p class="card-sub">Total realisasi Sell In Elite Cr&egrave;me (Pcs, seluruh produk) dibandingkan total target, untuk tahun yang dipilih.</p>
+    <div class="table-scroll" id="targetSummaryWrap" style="max-height:420px;"></div>
+  </div>
+  </div><!-- /pageTarget -->
+
+  <div class="page" id="pageMaster">
+  <div class="card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#128203;</span>
+      <span class="ttl">Master Data &mdash; Distributor &amp; Nama PIC</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportMaster" class="export-btn">&#128190; Export Master</button>
+        <label class="export-btn" style="cursor:pointer; margin:0;">&#128194; Import Master<input type="file" id="importMasterFile" accept="application/json" style="display:none;"></label>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:10px;">
+      <span class="target-status" id="masterStatus">&mdash;</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Daftar Distributor &amp; PIC</h2>
+    <div class="table-scroll" id="masterTableWrap" style="max-height:520px;"></div>
+    <div class="master-add-row">
+      <button type="button" id="btnAddMasterRow" class="export-btn">&#10133; Tambah Distributor</button>
+    </div>
+  </div>
+  </div><!-- /pageMaster -->
 
   <footer>Dashboard dibuat dari file &ldquo;Surat Jalan vs Invoice &mdash; YTD 2026&rdquo; &middot; Diperbarui berdasarkan data hingga <span id="footDate">&mdash;</span></footer>
 </div>
@@ -1537,7 +1654,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   allRows.forEach(function(r){ r.ym = r.dt.slice(0,7); });
   var totalPoAll = computeKpi(allRows).total_po;
   var ddState = { ddDistributor: new Set(), ddStatus: new Set(), ddPic: new Set(), ddCategory: new Set(), ddSubcat: new Set(), ddItem: new Set(),
-                  ddDistributorS: new Set(), ddStatusS: new Set(), ddPicS: new Set() };
+                  ddDistributorS: new Set(), ddStatusS: new Set(), ddPicS: new Set(),
+                  ddDistributorW: new Set(), ddStatusW: new Set(), ddPicW: new Set(),
+                  ddDistributorD: new Set(), ddStatusD: new Set(), ddPicD: new Set() };
   var periodRangeS = { from:'', to:'' };
   var sortKey = 'dt', sortDir = -1;
   var page = 0, pageSize = 25;
@@ -1550,7 +1669,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   var ddKeyMap = {
     ddDistributor:'ad', ddStatus:'status', ddPic:'pic',
     ddCategory:'cat', ddSubcat:'subcat', ddItem:'nama',
-    ddDistributorS:'ad', ddStatusS:'status', ddPicS:'pic'
+    ddDistributorS:'ad', ddStatusS:'status', ddPicS:'pic',
+    ddDistributorW:'ad', ddStatusW:'status', ddPicW:'pic',
+    ddDistributorD:'ad', ddStatusD:'status', ddPicD:'pic'
   };
   var ddGroups = {
     ddDistributor:['ddDistributor','ddStatus','ddPic'],
@@ -1561,18 +1682,39 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddItem:['ddCategory','ddSubcat','ddItem'],
     ddDistributorS:['ddDistributorS','ddStatusS','ddPicS'],
     ddStatusS:['ddDistributorS','ddStatusS','ddPicS'],
-    ddPicS:['ddDistributorS','ddStatusS','ddPicS']
+    ddPicS:['ddDistributorS','ddStatusS','ddPicS'],
+    ddDistributorW:['ddDistributorW','ddStatusW','ddPicW'],
+    ddStatusW:['ddDistributorW','ddStatusW','ddPicW'],
+    ddPicW:['ddDistributorW','ddStatusW','ddPicW'],
+    ddDistributorD:['ddDistributorD','ddStatusD','ddPicD'],
+    ddStatusD:['ddDistributorD','ddStatusD','ddPicD'],
+    ddPicD:['ddDistributorD','ddStatusD','ddPicD']
   };
   function inPeriodRange(r){
     if(periodRangeS.from && r.ym < periodRangeS.from) return false;
     if(periodRangeS.to && r.ym > periodRangeS.to) return false;
     return true;
   }
+  function inWeekRangeDd(r){
+    var wk = weekKeyOf(r.dt);
+    if(periodRangeW.from && wk < periodRangeW.from) return false;
+    if(periodRangeW.to && wk > periodRangeW.to) return false;
+    return true;
+  }
+  function inDayRangeDd(r){
+    if(periodRangeD.from && r.dt < periodRangeD.from) return false;
+    if(periodRangeD.to && r.dt > periodRangeD.to) return false;
+    return true;
+  }
   function crossFilteredRows(ddId){
     var group = ddGroups[ddId] || [ddId];
     var isSummaryGroup = group.indexOf('ddDistributorS') !== -1;
+    var isWeeklyGroup = group.indexOf('ddDistributorW') !== -1;
+    var isDailyGroup = group.indexOf('ddDistributorD') !== -1;
     return allRows.filter(function(r){
       if(isSummaryGroup && !inPeriodRange(r)) return false;
+      if(isWeeklyGroup && !inWeekRangeDd(r)) return false;
+      if(isDailyGroup && !inDayRangeDd(r)) return false;
       return group.every(function(gid){
         if(gid === ddId) return true;
         var set = ddState[gid];
@@ -1832,6 +1974,12 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       periodFromW.value = allWks[0]; periodRangeW.from = allWks[0];
       periodToW.value = allWks[allWks.length-1]; periodRangeW.to = allWks[allWks.length-1];
     }
+    var idsW = ['ddDistributorW','ddStatusW','ddPicW'];
+    idsW.forEach(function(id){ ddState[id].clear(); });
+    idsW.forEach(function(id){
+      var root = document.getElementById(id);
+      if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    });
     renderWeekly();
   });
 
@@ -1885,18 +2033,43 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       periodFromD.value = allDys[defFromIdx2]; periodRangeD.from = allDys[defFromIdx2];
       periodToD.value = allDys[allDys.length-1]; periodRangeD.to = allDys[allDys.length-1];
     }
+    var idsD = ['ddDistributorD','ddStatusD','ddPicD'];
+    idsD.forEach(function(id){ ddState[id].clear(); });
+    idsD.forEach(function(id){
+      var root = document.getElementById(id);
+      if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    });
     renderDaily();
   });
 
+  buildChecklist('ddDistributorW', 'ad', function(){ renderWeekly(); });
+  buildChecklist('ddStatusW', 'status', function(){ renderWeekly(); });
+  buildChecklist('ddPicW', 'pic', function(){ renderWeekly(); });
+  buildChecklist('ddDistributorD', 'ad', function(){ renderDaily(); });
+  buildChecklist('ddStatusD', 'status', function(){ renderDaily(); });
+  buildChecklist('ddPicD', 'pic', function(){ renderDaily(); });
+
   function getWeeklyFilteredRows(){
+    var distSet = ddState.ddDistributorW, statusSet = ddState.ddStatusW, picSet = ddState.ddPicW;
     return allRows.filter(function(r){
       var wk = weekKeyOf(r.dt);
-      return (!periodRangeW.from || wk >= periodRangeW.from) && (!periodRangeW.to || wk <= periodRangeW.to);
+      if(periodRangeW.from && wk < periodRangeW.from) return false;
+      if(periodRangeW.to && wk > periodRangeW.to) return false;
+      if(distSet.size && !distSet.has(r.ad)) return false;
+      if(statusSet.size && !statusSet.has(r.status)) return false;
+      if(picSet.size && !picSet.has(r.pic)) return false;
+      return true;
     });
   }
   function getDailyFilteredRows(){
+    var distSet = ddState.ddDistributorD, statusSet = ddState.ddStatusD, picSet = ddState.ddPicD;
     return allRows.filter(function(r){
-      return (!periodRangeD.from || r.dt >= periodRangeD.from) && (!periodRangeD.to || r.dt <= periodRangeD.to);
+      if(periodRangeD.from && r.dt < periodRangeD.from) return false;
+      if(periodRangeD.to && r.dt > periodRangeD.to) return false;
+      if(distSet.size && !distSet.has(r.ad)) return false;
+      if(statusSet.size && !statusSet.has(r.status)) return false;
+      if(picSet.size && !picSet.has(r.pic)) return false;
+      return true;
     });
   }
 
@@ -1917,11 +2090,18 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     drawPeriodTrend('trendChartW', weeks);
     drawPeriodTable('tbodyW', weeks);
 
-    var isDefault = allWks.length && periodRangeW.from === allWks[0] && periodRangeW.to === allWks[allWks.length-1];
+    var isDefaultPeriodW = allWks.length && periodRangeW.from === allWks[0] && periodRangeW.to === allWks[allWks.length-1];
+    var ddCountW = ['ddDistributorW','ddStatusW','ddPicW'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
+    var activeCountW = (isDefaultPeriodW ? 0 : 1) + ddCountW;
     var fc = document.getElementById('fcountW');
-    fc.textContent = isDefault ? 0 : 1; fc.classList.toggle('show', !isDefault);
+    fc.textContent = activeCountW; fc.classList.toggle('show', activeCountW > 0);
+    var filterBitsW = [
+      filterSetLabel(ddState.ddDistributorW, 'Distributor'),
+      filterSetLabel(ddState.ddStatusW, 'Status'),
+      filterSetLabel(ddState.ddPicW, 'PIC')
+    ].filter(Boolean);
     document.getElementById('filterSummaryW').textContent = weeks.length ?
-      ('Menampilkan '+weeks.length+' minggu · '+weekLabelOf(periodRangeW.from)+' s.d. '+weekLabelOf(periodRangeW.to)) : '—';
+      ('Menampilkan '+weeks.length+' minggu · '+weekLabelOf(periodRangeW.from)+' s.d. '+weekLabelOf(periodRangeW.to) + (filterBitsW.length ? (' · '+filterBitsW.join(' · ')) : '')) : '—';
     setTagText(['tagTrendW','tagTableW'], weeks.length ? (weekLabelOf(periodRangeW.from)+' – '+weekLabelOf(periodRangeW.to)) : '');
   }
 
@@ -1942,11 +2122,18 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     drawPeriodTrend('trendChartD', days, {maxLabels: 16});
     drawPeriodTable('tbodyD', days);
 
-    var isDefaultD = periodRangeD.to === (allDys.length ? allDys[allDys.length-1] : '') && periodRangeD.from === (allDys.length ? allDys[Math.max(0, allDys.length-30)] : '');
+    var isDefaultPeriodD = periodRangeD.to === (allDys.length ? allDys[allDys.length-1] : '') && periodRangeD.from === (allDys.length ? allDys[Math.max(0, allDys.length-30)] : '');
+    var ddCountD = ['ddDistributorD','ddStatusD','ddPicD'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
+    var activeCountD = (isDefaultPeriodD ? 0 : 1) + ddCountD;
     var fcD = document.getElementById('fcountD');
-    fcD.textContent = isDefaultD ? 0 : 1; fcD.classList.toggle('show', !isDefaultD);
+    fcD.textContent = activeCountD; fcD.classList.toggle('show', activeCountD > 0);
+    var filterBitsD = [
+      filterSetLabel(ddState.ddDistributorD, 'Distributor'),
+      filterSetLabel(ddState.ddStatusD, 'Status'),
+      filterSetLabel(ddState.ddPicD, 'PIC')
+    ].filter(Boolean);
     document.getElementById('filterSummaryD').textContent = days.length ?
-      ('Menampilkan '+days.length+' hari · '+fmtDate(periodRangeD.from)+' s.d. '+fmtDate(periodRangeD.to)) : '—';
+      ('Menampilkan '+days.length+' hari · '+fmtDate(periodRangeD.from)+' s.d. '+fmtDate(periodRangeD.to) + (filterBitsD.length ? (' · '+filterBitsD.join(' · ')) : '')) : '—';
     setTagText(['tagTrendD','tagTableD'], days.length ? (fmtDate(periodRangeD.from)+' – '+fmtDate(periodRangeD.to)) : '');
   }
 
@@ -1959,6 +2146,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     sheets.push({name:'Ringkasan', rows:[
       ['Dashboard Sell In SPK - Rekap Mingguan'],
       ['Periode', (weeks.length ? (weekLabelOf(periodRangeW.from)+' s.d. '+weekLabelOf(periodRangeW.to)) : '-')],
+      ['Filter aktif', [filterSetLabel(ddState.ddDistributorW,'Distributor'), filterSetLabel(ddState.ddStatusW,'Status'), filterSetLabel(ddState.ddPicW,'PIC')].filter(Boolean).join(' · ') || 'Semua data'],
       ['Diekspor pada', new Date().toLocaleString('id-ID')],
       [],
       ['Total Sell In (Rp)', k.total_sellin],
@@ -1990,6 +2178,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     sheets.push({name:'Ringkasan', rows:[
       ['Dashboard Sell In SPK - Rekap Harian'],
       ['Periode', (days.length ? (fmtDate(periodRangeD.from)+' s.d. '+fmtDate(periodRangeD.to)) : '-')],
+      ['Filter aktif', [filterSetLabel(ddState.ddDistributorD,'Distributor'), filterSetLabel(ddState.ddStatusD,'Status'), filterSetLabel(ddState.ddPicD,'PIC')].filter(Boolean).join(' · ') || 'Semua data'],
       ['Diekspor pada', new Date().toLocaleString('id-ID')],
       [],
       ['Total Sell In (Rp)', k.total_sellin],
@@ -2011,6 +2200,264 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     buildXlsxAndDownload('Rekap-Harian-SellIn-SPK.xlsx', sheets);
   }
   document.getElementById('btnExportExcelD').addEventListener('click', exportDailyExcel);
+
+  // ---------- Tab Target: Target Pcs per distributor & produk Elite Crème (2026 & 2027) ----------
+  var ELITE_ITEMS = ['Matcha 1 kg','Chocolate 1 kg','Taro 1 kg','Reguler 500 gr','Light Flavor 500 gr','Cold Soluble 500 gr'];
+  var TARGET_YEARS = ['2026','2027'];
+  var TARGET_KEY = 'sellin_target_v1';
+  var targetData = {};
+  var targetYear = '2026';
+
+  function loadTargetData(){
+    try{
+      var raw = localStorage.getItem(TARGET_KEY);
+      if(raw) targetData = JSON.parse(raw) || {};
+    }catch(e){ targetData = {}; }
+    TARGET_YEARS.forEach(function(y){ if(!targetData[y]) targetData[y] = {}; });
+  }
+  function saveTargetData(){
+    try{
+      localStorage.setItem(TARGET_KEY, JSON.stringify(targetData));
+      var st = document.getElementById('targetStatus');
+      if(st){ st.textContent = 'Tersimpan di browser ini · ' + new Date().toLocaleTimeString('id-ID'); st.classList.add('saved'); }
+    }catch(e){
+      var st2 = document.getElementById('targetStatus');
+      if(st2){ st2.textContent = 'Gagal menyimpan (penyimpanan browser penuh/tidak tersedia).'; st2.classList.remove('saved'); }
+    }
+  }
+  function getTargetVal(year, ad, item){
+    return (targetData[year] && targetData[year][ad] && targetData[year][ad][item]) || 0;
+  }
+  function setTargetVal(year, ad, item, val){
+    if(!targetData[year]) targetData[year] = {};
+    if(!targetData[year][ad]) targetData[year][ad] = {};
+    targetData[year][ad][item] = val;
+  }
+  function allDistributorsAd(){
+    var s = {};
+    allRows.forEach(function(r){ s[r.ad] = true; });
+    return Object.keys(s).sort();
+  }
+  function realizedPcs(ad, item, year){
+    var sum = 0;
+    allRows.forEach(function(r){
+      if(r.ad === ad && r.nama === item && r.cat === 'Elite Crème' && r.dt.slice(0,4) === year) sum += r.qp;
+    });
+    return sum;
+  }
+
+  function drawTargetTable(){
+    var wrap = document.getElementById('targetTableWrap');
+    var dists = allDistributorsAd();
+    var year = targetYear;
+    if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
+    var html = '<table><thead><tr><th>Distributor</th>';
+    ELITE_ITEMS.forEach(function(item){ html += '<th class="num">'+item+'</th>'; });
+    html += '<th class="num">Total Target</th></tr></thead><tbody>';
+    dists.forEach(function(ad){
+      var rowTotal = 0;
+      html += '<tr><td>'+ad+'</td>';
+      ELITE_ITEMS.forEach(function(item){
+        var v = getTargetVal(year, ad, item);
+        rowTotal += v;
+        html += '<td class="num"><input type="number" min="0" step="1" class="target-input" data-ad="'+ad.replace(/"/g,'&quot;')+'" data-item="'+item.replace(/"/g,'&quot;')+'" value="'+(v||'')+'" placeholder="0"></td>';
+      });
+      html += '<td class="num" data-total><b>'+fmtNum(rowTotal)+'</b></td></tr>';
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+
+    wrap.querySelectorAll('.target-input').forEach(function(inp){
+      inp.addEventListener('change', function(){
+        var ad = inp.getAttribute('data-ad');
+        var item = inp.getAttribute('data-item');
+        var val = Math.max(0, Math.round(+inp.value || 0));
+        inp.value = val || '';
+        setTargetVal(targetYear, ad, item, val);
+        saveTargetData();
+        var rowIdx = dists.indexOf(ad);
+        var tr = wrap.querySelectorAll('tbody tr')[rowIdx];
+        if(tr){
+          var total = 0;
+          ELITE_ITEMS.forEach(function(it){ total += getTargetVal(targetYear, ad, it); });
+          var totalCell = tr.querySelector('[data-total]');
+          if(totalCell) totalCell.innerHTML = '<b>'+fmtNum(total)+'</b>';
+        }
+        drawTargetSummary();
+      });
+    });
+  }
+
+  function drawTargetSummary(){
+    var wrap = document.getElementById('targetSummaryWrap');
+    var dists = allDistributorsAd();
+    var year = targetYear;
+    if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
+    var grandTarget = 0, grandReal = 0;
+    var html = '<table><thead><tr><th>Distributor</th><th class="num">Total Target (Pcs)</th><th class="num">Realisasi (Pcs)</th><th class="num">Pencapaian</th></tr></thead><tbody>';
+    dists.forEach(function(ad){
+      var target = 0, real = 0;
+      ELITE_ITEMS.forEach(function(item){
+        target += getTargetVal(year, ad, item);
+        real += realizedPcs(ad, item, year);
+      });
+      grandTarget += target; grandReal += real;
+      var pct = target ? (real/target*100) : null;
+      var pctText = pct === null ? '—' : pct.toFixed(1)+'%';
+      var pctClass = pct === null ? '' : (pct >= 100 ? 'ach-good' : (pct < 70 ? 'ach-warn' : ''));
+      html += '<tr><td>'+ad+'</td><td class="num">'+fmtNum(target)+'</td><td class="num">'+fmtNum(real)+'</td><td class="num '+pctClass+'">'+pctText+'</td></tr>';
+    });
+    var grandPct = grandTarget ? (grandReal/grandTarget*100) : null;
+    html += '</tbody><tfoot><tr style="font-weight:700; border-top:2px solid var(--border);"><td>Total</td><td class="num">'+fmtNum(grandTarget)+'</td><td class="num">'+fmtNum(grandReal)+'</td><td class="num">'+(grandPct===null?'—':grandPct.toFixed(1)+'%')+'</td></tr></tfoot></table>';
+    wrap.innerHTML = html;
+  }
+
+  document.querySelectorAll('#targetYearToggle button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#targetYearToggle button').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      targetYear = btn.getAttribute('data-year');
+      drawTargetTable();
+      drawTargetSummary();
+    });
+  });
+  document.getElementById('btnExportTarget').addEventListener('click', function(){
+    var payload = JSON.stringify(targetData, null, 2);
+    downloadBlob('Target-SellIn-EliteCreme-SPK.json', payload, 'application/json');
+  });
+  document.getElementById('importTargetFile').addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var parsed = JSON.parse(reader.result);
+        if(parsed && typeof parsed === 'object'){
+          targetData = parsed;
+          TARGET_YEARS.forEach(function(y){ if(!targetData[y]) targetData[y] = {}; });
+          saveTargetData();
+          drawTargetTable();
+          drawTargetSummary();
+          alert('Data target berhasil diimpor.');
+        } else {
+          alert('Gagal membaca file: format JSON tidak sesuai.');
+        }
+      }catch(err){
+        alert('Gagal membaca file: format JSON tidak valid.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  loadTargetData();
+
+  // ---------- Tab Master Data: Distributor & Nama PIC ----------
+  var MASTER_KEY = 'sellin_master_dist_v1';
+  var masterData = []; // [{ad:'...', pic:'...'}]
+
+  function picModeForAd(ad){
+    var counts = {};
+    allRows.forEach(function(r){
+      if(r.ad === ad && r.pic){ counts[r.pic] = (counts[r.pic]||0) + 1; }
+    });
+    var best = '', bestN = 0;
+    Object.keys(counts).forEach(function(p){ if(counts[p] > bestN){ best = p; bestN = counts[p]; } });
+    return best;
+  }
+  function seedMasterData(){
+    var dists = allDistributorsAd();
+    return dists.map(function(ad){ return { ad: ad, pic: picModeForAd(ad) }; });
+  }
+  function loadMasterData(){
+    try{
+      var raw = localStorage.getItem(MASTER_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        masterData = (parsed && parsed.length) ? parsed : seedMasterData();
+      } else {
+        masterData = seedMasterData();
+      }
+    }catch(e){ masterData = seedMasterData(); }
+  }
+  function saveMasterData(){
+    try{
+      localStorage.setItem(MASTER_KEY, JSON.stringify(masterData));
+      var st = document.getElementById('masterStatus');
+      if(st){ st.textContent = 'Tersimpan di browser ini · ' + new Date().toLocaleTimeString('id-ID'); st.classList.add('saved'); }
+    }catch(e){
+      var st2 = document.getElementById('masterStatus');
+      if(st2){ st2.textContent = 'Gagal menyimpan (penyimpanan browser penuh/tidak tersedia).'; st2.classList.remove('saved'); }
+    }
+  }
+
+  function drawMasterTable(){
+    var wrap = document.getElementById('masterTableWrap');
+    if(!masterData.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Belum ada data distributor. Klik &ldquo;Tambah Distributor&rdquo; untuk menambahkan.</p>'; return; }
+    var html = '<table><thead><tr><th>Nama Distributor</th><th>Nama PIC</th><th style="width:80px;"></th></tr></thead><tbody>';
+    masterData.forEach(function(row, idx){
+      html += '<tr>'
+        + '<td><input type="text" class="master-input" data-idx="'+idx+'" data-field="ad" value="'+String(row.ad||'').replace(/"/g,'&quot;')+'" placeholder="Nama distributor"></td>'
+        + '<td><input type="text" class="master-input" data-idx="'+idx+'" data-field="pic" value="'+String(row.pic||'').replace(/"/g,'&quot;')+'" placeholder="Nama PIC"></td>'
+        + '<td><button type="button" class="master-del-btn" data-idx="'+idx+'">Hapus</button></td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+
+    wrap.querySelectorAll('.master-input').forEach(function(inp){
+      inp.addEventListener('change', function(){
+        var idx = +inp.getAttribute('data-idx');
+        var field = inp.getAttribute('data-field');
+        if(masterData[idx]) masterData[idx][field] = inp.value.trim();
+        saveMasterData();
+      });
+    });
+    wrap.querySelectorAll('.master-del-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = +btn.getAttribute('data-idx');
+        masterData.splice(idx, 1);
+        saveMasterData();
+        drawMasterTable();
+      });
+    });
+  }
+
+  var btnAddMasterRow = document.getElementById('btnAddMasterRow');
+  if(btnAddMasterRow) btnAddMasterRow.addEventListener('click', function(){
+    masterData.push({ ad: '', pic: '' });
+    saveMasterData();
+    drawMasterTable();
+    var inputs = document.querySelectorAll('#masterTableWrap .master-input[data-field="ad"]');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  });
+  var btnExportMaster = document.getElementById('btnExportMaster');
+  if(btnExportMaster) btnExportMaster.addEventListener('click', function(){
+    downloadBlob('Master-Distributor-PIC-SPK.json', JSON.stringify(masterData, null, 2), 'application/json');
+  });
+  var importMasterFile = document.getElementById('importMasterFile');
+  if(importMasterFile) importMasterFile.addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var parsed = JSON.parse(reader.result);
+        if(Array.isArray(parsed)){
+          masterData = parsed;
+          saveMasterData();
+          drawMasterTable();
+          alert('Data master berhasil diimpor.');
+        } else {
+          alert('Gagal membaca file: format JSON tidak sesuai (harus berupa daftar/array).');
+        }
+      }catch(err){
+        alert('Gagal membaca file: format JSON tidak valid.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  loadMasterData();
 
   // ---------- Export halaman Summary (PDF & Excel/CSV) ----------
   function stripHtml(s){ return String(s).replace(/<[^>]+>/g, ''); }
@@ -2651,6 +3098,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       if(pageId === 'pageSummary') renderSummary();
       else if(pageId === 'pageWeekly') renderWeekly();
       else if(pageId === 'pageDaily') renderDaily();
+      else if(pageId === 'pageTarget'){ drawTargetTable(); drawTargetSummary(); }
+      else if(pageId === 'pageMaster'){ drawMasterTable(); }
       else render();
     });
   });
@@ -2659,6 +3108,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   render();
   renderWeekly();
   renderDaily();
+  drawTargetTable();
+  drawTargetSummary();
+  drawMasterTable();
 })();
 </script>
 
