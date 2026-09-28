@@ -284,6 +284,8 @@
   <div class="tabs">
     <button type="button" class="tab-btn active" data-page="pageSummary">Summary <span class="tab-n">&middot; ringkasan tahunan</span></button>
     <button type="button" class="tab-btn" data-page="pageMonthly">Monthly <span class="tab-n">&middot; data bisa difilter</span></button>
+    <button type="button" class="tab-btn" data-page="pageWeekly">Weekly <span class="tab-n">&middot; rekap mingguan</span></button>
+    <button type="button" class="tab-btn" data-page="pageDaily">Daily <span class="tab-n">&middot; rekap harian</span></button>
   </div>
 
   <div class="page active" id="pageSummary">
@@ -657,6 +659,146 @@
   </div>
   </div><!-- /pageMonthly -->
 
+  <div class="page" id="pageWeekly">
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#128197;</span>
+      <span class="ttl">Filter Rekap Mingguan</span>
+      <span class="fcount" id="fcountW">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportExcelW" class="export-btn">&#128202; Export Excel</button>
+        <button type="button" id="resetFiltersW" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="period-range">
+        <span class="prlbl">Periode Minggu</span>
+        <select id="periodFromW"></select>
+        <span class="prsep">&ndash;</span>
+        <select id="periodToW"></select>
+        <span class="pr-presets">
+          <button type="button" class="pr-preset-btn" id="presetThisWeekW">Minggu Ini</button>
+          <button type="button" class="pr-preset-btn" id="presetLastWeekW">Minggu Lalu</button>
+          <button type="button" class="pr-preset-btn" id="preset4WeekW">4 Minggu Terakhir</button>
+        </span>
+      </div>
+    </div>
+    <p class="card-sub" id="filterSummaryW" style="margin:12px 0 0;">&mdash;</p>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi accent">
+      <div class="label">Total Sell In (Exc. PPN)</div>
+      <div class="value" id="kpiSellinW">&mdash;</div>
+      <div class="foot" id="kpiSellinFootW">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Qty Terkirim (Zak)</div>
+      <div class="value" id="kpiQtyZakW">&mdash;</div>
+      <div class="foot" id="kpiQtyZakFootW">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Qty Terkirim (Pcs)</div>
+      <div class="value" id="kpiQtyPcsW">&mdash;</div>
+      <div class="foot" id="kpiQtyPcsFootW">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Jumlah PO (Order Number)</div>
+      <div class="value" id="kpiPoW">&mdash;</div>
+      <div class="foot" id="kpiPoFootW">&mdash;</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Tren Sell In per Minggu<span class="chart-tag" id="tagTrendW"></span></h2>
+    <p class="card-sub">Total nilai Sell In (Exc. PPN) per minggu (Senin&ndash;Minggu)</p>
+    <div id="trendChartW"></div>
+  </div>
+
+  <div class="card">
+    <h2>Rekap per Minggu<span class="chart-tag" id="tagTableW"></span></h2>
+    <p class="card-sub">Minggu terbaru ditampilkan lebih dulu</p>
+    <div class="table-scroll" style="max-height:420px;">
+      <table>
+        <thead>
+          <tr><th>Minggu</th><th class="num">Nilai Sell In (Rp)</th><th class="num">Qty ZAK</th><th class="num">Qty Elite Cr&egrave;me</th><th class="num">Jumlah PO</th><th class="num">Jumlah Distributor</th></tr>
+        </thead>
+        <tbody id="tbodyW"></tbody>
+      </table>
+    </div>
+  </div>
+  </div><!-- /pageWeekly -->
+
+  <div class="page" id="pageDaily">
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#128197;</span>
+      <span class="ttl">Filter Rekap Harian</span>
+      <span class="fcount" id="fcountD">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportExcelD" class="export-btn">&#128202; Export Excel</button>
+        <button type="button" id="resetFiltersD" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="period-range">
+        <span class="prlbl">Periode Tanggal</span>
+        <select id="periodFromD"></select>
+        <span class="prsep">&ndash;</span>
+        <select id="periodToD"></select>
+        <span class="pr-presets">
+          <button type="button" class="pr-preset-btn" id="preset7DayD">7 Hari Terakhir</button>
+          <button type="button" class="pr-preset-btn" id="preset30DayD">30 Hari Terakhir</button>
+          <button type="button" class="pr-preset-btn" id="presetAllD">Semua Data</button>
+        </span>
+      </div>
+    </div>
+    <p class="card-sub" id="filterSummaryD" style="margin:12px 0 0;">&mdash;</p>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi accent">
+      <div class="label">Total Sell In (Exc. PPN)</div>
+      <div class="value" id="kpiSellinD">&mdash;</div>
+      <div class="foot" id="kpiSellinFootD">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Qty Terkirim (Zak)</div>
+      <div class="value" id="kpiQtyZakD">&mdash;</div>
+      <div class="foot" id="kpiQtyZakFootD">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Qty Terkirim (Pcs)</div>
+      <div class="value" id="kpiQtyPcsD">&mdash;</div>
+      <div class="foot" id="kpiQtyPcsFootD">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Jumlah PO (Order Number)</div>
+      <div class="value" id="kpiPoD">&mdash;</div>
+      <div class="foot" id="kpiPoFootD">&mdash;</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Tren Sell In per Hari<span class="chart-tag" id="tagTrendD"></span></h2>
+    <p class="card-sub">Total nilai Sell In (Exc. PPN) per tanggal Surat Jalan</p>
+    <div id="trendChartD"></div>
+  </div>
+
+  <div class="card">
+    <h2>Rekap per Hari<span class="chart-tag" id="tagTableD"></span></h2>
+    <p class="card-sub">Tanggal terbaru ditampilkan lebih dulu</p>
+    <div class="table-scroll" style="max-height:420px;">
+      <table>
+        <thead>
+          <tr><th>Tanggal</th><th class="num">Nilai Sell In (Rp)</th><th class="num">Qty ZAK</th><th class="num">Qty Elite Cr&egrave;me</th><th class="num">Jumlah PO</th><th class="num">Jumlah Distributor</th></tr>
+        </thead>
+        <tbody id="tbodyD"></tbody>
+      </table>
+    </div>
+  </div>
+  </div><!-- /pageDaily -->
+
   <footer>Dashboard dibuat dari file &ldquo;Surat Jalan vs Invoice &mdash; YTD 2026&rdquo; &middot; Diperbarui berdasarkan data hingga <span id="footDate">&mdash;</span></footer>
 </div>
 
@@ -941,6 +1083,150 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       return got[ym] || {Month:ym, MonthName:monthNames[ym.slice(5,7)]||ym, value:0, invoice:0, diff:0, qty_pcs:0, qty_bag:0, qty_setara:0, lines:0, po:0};
     });
   }
+
+  // ---------- Helper periode Mingguan & Harian (dipakai tab Weekly & Daily) ----------
+  function addDays(dateStr, n){
+    var d = new Date(dateStr+'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate()+n);
+    return d.toISOString().slice(0,10);
+  }
+  function weekKeyOf(dateStr){
+    // Kunci minggu = tanggal hari Senin pada minggu yang memuat dateStr.
+    var d = new Date(dateStr+'T00:00:00Z');
+    var dow = (d.getUTCDay()+6)%7; // Senin=0 ... Minggu=6
+    d.setUTCDate(d.getUTCDate()-dow);
+    return d.toISOString().slice(0,10);
+  }
+  var bulanShort = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  function fmtDateShort(s){
+    var d = new Date(s+'T00:00:00Z');
+    return d.getUTCDate()+' '+bulanShort[d.getUTCMonth()];
+  }
+  function weekLabelOf(mondayKey){
+    var endKey = addDays(mondayKey, 6);
+    return fmtDateShort(mondayKey) + ' – ' + fmtDate(endKey);
+  }
+  function dayLabelOf(dayKey){ return fmtDate(dayKey); }
+  function weekKeysInRange(fromKey, toKey){
+    var keys = []; var k = fromKey; var guard = 0;
+    if(!fromKey || !toKey) return keys;
+    while(k <= toKey && guard < 500){ keys.push(k); k = addDays(k,7); guard++; }
+    return keys;
+  }
+  function dayKeysInRange(fromKey, toKey){
+    var keys = []; var k = fromKey; var guard = 0;
+    if(!fromKey || !toKey) return keys;
+    while(k <= toKey && guard < 3000){ keys.push(k); k = addDays(k,1); guard++; }
+    return keys;
+  }
+  function allWeekKeys(){
+    var s = {};
+    allRows.forEach(function(r){ s[weekKeyOf(r.dt)] = true; });
+    return Object.keys(s).sort();
+  }
+  function allDayKeys(){
+    var s = {};
+    allRows.forEach(function(r){ s[r.dt] = true; });
+    return Object.keys(s).sort();
+  }
+  function aggByPeriod(rs, keyFn){
+    var map = {};
+    rs.forEach(function(r){
+      var k = keyFn(r);
+      if(!map[k]) map[k] = {key:k, value:0, qty_pcs:0, qty_bag:0, qty_setara:0, po:0, _po:{}, dist:0, _dist:{}};
+      var m = map[k];
+      m.value += r.v; m.qty_pcs += r.qp; m.qty_bag += r.qb; m.qty_setara += r.qs;
+      if(!m._po[r.on]){ m._po[r.on] = true; m.po += 1; }
+      var dn = distName(r);
+      if(!m._dist[dn]){ m._dist[dn] = true; m.dist += 1; }
+    });
+    return map;
+  }
+  function periodSeriesFilled(rs, keys, keyFn, labelFn){
+    var map = aggByPeriod(rs, keyFn);
+    return keys.map(function(k){
+      var m = map[k];
+      return {
+        key:k, label:labelFn(k),
+        value: m?m.value:0, qty_pcs: m?m.qty_pcs:0, qty_bag: m?m.qty_bag:0, qty_setara: m?m.qty_setara:0,
+        po: m?m.po:0, dist: m?m.dist:0
+      };
+    });
+  }
+  function drawPeriodTrend(containerId, rows, opts){
+    opts = opts || {};
+    var el = document.getElementById(containerId);
+    if(!rows.length){ el.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data untuk filter ini.</p>'; return; }
+    var W = el.clientWidth || 900, H = 260;
+    var padL = 54, padR = 16, padT = 24, padB = 40;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
+    var maxV = Math.max.apply(null, rows.map(function(m){return m.value;})) * 1.18 || 1;
+    var n = rows.length;
+    function x(i){ return padL + innerW * (n<=1 ? 0.5 : i/(n-1)); }
+    function y(v){ return padT + innerH * (1 - v/maxV); }
+
+    var svg = '<svg viewBox="0 0 '+W+' '+H+'" style="height:'+H+'px">';
+    var steps = 4;
+    for(var s=0;s<=steps;s++){
+      var v = maxV * s/steps;
+      var yy = y(v);
+      svg += '<line class="gridline" x1="'+padL+'" x2="'+(W-padR)+'" y1="'+yy+'" y2="'+yy+'"/>';
+      svg += '<text class="axistext" x="'+(padL-8)+'" y="'+(yy+3)+'" text-anchor="end">'+fmtRp(v,true)+'</text>';
+    }
+    var maxLabels = opts.maxLabels || 14;
+    var labelStep = Math.max(1, Math.ceil(n / maxLabels));
+    rows.forEach(function(m,i){
+      if(i % labelStep === 0 || i === n-1){
+        svg += '<text class="axistext" x="'+x(i)+'" y="'+(H-10)+'" text-anchor="end" transform="rotate(-40 '+x(i)+' '+(H-10)+')">'+(m.shortLabel||m.label)+'</text>';
+      }
+    });
+
+    function pathFor(){ return rows.map(function(m,i){ return (i===0?'M':'L') + x(i).toFixed(1) + ' ' + y(m.value).toFixed(1); }).join(' '); }
+    var areaPath = pathFor() + ' L ' + x(n-1).toFixed(1) + ' ' + y(0).toFixed(1) + ' L ' + x(0).toFixed(1) + ' ' + y(0).toFixed(1) + ' Z';
+    svg += '<path d="'+areaPath+'" fill="'+cv('--s1')+'" opacity="0.10"/>';
+    svg += '<path d="'+pathFor()+'" fill="none" stroke="'+cv('--s1')+'" stroke-width="2.2"/>';
+    rows.forEach(function(m,i){
+      svg += '<circle cx="'+x(i)+'" cy="'+y(m.value)+'" r="'+(n>40?1.6:3)+'" fill="'+cv('--s1')+'"/>';
+    });
+    svg += '<line class="hover-line" id="'+containerId+'-hover" x1="0" x2="0" y1="'+padT+'" y2="'+(H-padB)+'"/>';
+    svg += '<rect id="'+containerId+'-capture" x="'+padL+'" y="0" width="'+innerW+'" height="'+H+'" fill="transparent"/>';
+    svg += '</svg>';
+    el.innerHTML = svg;
+
+    var capture = document.getElementById(containerId+'-capture');
+    var hoverLine = document.getElementById(containerId+'-hover');
+    capture.addEventListener('mousemove', function(e){
+      var rect = el.querySelector('svg').getBoundingClientRect();
+      var scaleX = W / rect.width;
+      var mx = (e.clientX - rect.left) * scaleX;
+      var i = Math.round((mx - padL) / innerW * (n-1));
+      i = Math.max(0, Math.min(n-1, i));
+      var m = rows[i];
+      hoverLine.setAttribute('x1', x(i)); hoverLine.setAttribute('x2', x(i)); hoverLine.style.opacity = 1;
+      showTip(
+        '<div class="tt-title">'+m.label+'</div>' +
+        '<div class="tt-row">Sell In <b>'+fmtRp(m.value)+'</b></div>' +
+        '<div class="tt-row">Jumlah PO <b>'+m.po+'</b></div>',
+        e.clientX, e.clientY
+      );
+    });
+    capture.addEventListener('mouseleave', function(){ hoverLine.style.opacity = 0; hideTip(); });
+  }
+  function drawPeriodTable(tbodyId, rows){
+    var tbody = document.getElementById(tbodyId);
+    if(!rows.length){ tbody.innerHTML = '<tr><td colspan="6" class="card-sub">Tidak ada data untuk filter ini.</td></tr>'; return; }
+    tbody.innerHTML = rows.slice().reverse().map(function(r){
+      return '<tr>' +
+        '<td>'+r.label+'</td>' +
+        '<td class="num">'+fmtRp(r.value, true)+'</td>' +
+        '<td class="num">'+fmtNum(r.qty_bag)+'</td>' +
+        '<td class="num">'+fmtNum(r.qty_pcs)+'</td>' +
+        '<td class="num">'+r.po+'</td>' +
+        '<td class="num">'+r.dist+'</td>' +
+      '</tr>';
+    }).join('');
+  }
+
   function distName(r){
     if(r.c.toUpperCase().indexOf('ADYACEDA') !== -1){
       var base = r.c.replace(/,?\s*PT\.?$/i, '').trim();
@@ -1437,6 +1723,237 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     }
     renderSummary();
   });
+
+  // ---------- Filter periode: tab Weekly ----------
+  var periodRangeW = { from:'', to:'' };
+  var allWks = allWeekKeys();
+  var periodFromW = document.getElementById('periodFromW');
+  var periodToW = document.getElementById('periodToW');
+  allWks.forEach(function(wk){
+    var o1 = document.createElement('option'); o1.value = wk; o1.textContent = weekLabelOf(wk); periodFromW.appendChild(o1);
+    var o2 = document.createElement('option'); o2.value = wk; o2.textContent = weekLabelOf(wk); periodToW.appendChild(o2);
+  });
+  if(allWks.length){
+    periodFromW.value = allWks[0]; periodRangeW.from = allWks[0];
+    periodToW.value = allWks[allWks.length-1]; periodRangeW.to = allWks[allWks.length-1];
+  }
+  periodFromW.addEventListener('change', function(){
+    periodRangeW.from = periodFromW.value;
+    if(periodRangeW.to && periodRangeW.from > periodRangeW.to){ periodToW.value = periodFromW.value; periodRangeW.to = periodFromW.value; }
+    renderWeekly();
+  });
+  periodToW.addEventListener('change', function(){
+    periodRangeW.to = periodToW.value;
+    if(periodRangeW.from && periodRangeW.to < periodRangeW.from){ periodFromW.value = periodToW.value; periodRangeW.from = periodToW.value; }
+    renderWeekly();
+  });
+  document.getElementById('presetThisWeekW').addEventListener('click', function(){
+    if(!allWks.length) return;
+    var wk = allWks[allWks.length-1];
+    periodFromW.value = wk; periodRangeW.from = wk;
+    periodToW.value = wk; periodRangeW.to = wk;
+    renderWeekly();
+  });
+  document.getElementById('presetLastWeekW').addEventListener('click', function(){
+    if(!allWks.length) return;
+    var idx = allWks.length >= 2 ? allWks.length-2 : allWks.length-1;
+    var wk = allWks[idx];
+    periodFromW.value = wk; periodRangeW.from = wk;
+    periodToW.value = wk; periodRangeW.to = wk;
+    renderWeekly();
+  });
+  document.getElementById('preset4WeekW').addEventListener('click', function(){
+    if(!allWks.length) return;
+    var toIdx = allWks.length-1;
+    var fromIdx = Math.max(0, toIdx-3);
+    periodFromW.value = allWks[fromIdx]; periodRangeW.from = allWks[fromIdx];
+    periodToW.value = allWks[toIdx]; periodRangeW.to = allWks[toIdx];
+    renderWeekly();
+  });
+  document.getElementById('resetFiltersW').addEventListener('click', function(){
+    if(allWks.length){
+      periodFromW.value = allWks[0]; periodRangeW.from = allWks[0];
+      periodToW.value = allWks[allWks.length-1]; periodRangeW.to = allWks[allWks.length-1];
+    }
+    renderWeekly();
+  });
+
+  // ---------- Filter periode: tab Daily ----------
+  var periodRangeD = { from:'', to:'' };
+  var allDys = allDayKeys();
+  var periodFromD = document.getElementById('periodFromD');
+  var periodToD = document.getElementById('periodToD');
+  allDys.forEach(function(dy){
+    var o1 = document.createElement('option'); o1.value = dy; o1.textContent = dayLabelOf(dy); periodFromD.appendChild(o1);
+    var o2 = document.createElement('option'); o2.value = dy; o2.textContent = dayLabelOf(dy); periodToD.appendChild(o2);
+  });
+  if(allDys.length){
+    var defFromIdx = Math.max(0, allDys.length-30);
+    periodFromD.value = allDys[defFromIdx]; periodRangeD.from = allDys[defFromIdx];
+    periodToD.value = allDys[allDys.length-1]; periodRangeD.to = allDys[allDys.length-1];
+  }
+  periodFromD.addEventListener('change', function(){
+    periodRangeD.from = periodFromD.value;
+    if(periodRangeD.to && periodRangeD.from > periodRangeD.to){ periodToD.value = periodFromD.value; periodRangeD.to = periodFromD.value; }
+    renderDaily();
+  });
+  periodToD.addEventListener('change', function(){
+    periodRangeD.to = periodToD.value;
+    if(periodRangeD.from && periodRangeD.to < periodRangeD.from){ periodFromD.value = periodToD.value; periodRangeD.from = periodToD.value; }
+    renderDaily();
+  });
+  document.getElementById('preset7DayD').addEventListener('click', function(){
+    if(!allDys.length) return;
+    var toIdx = allDys.length-1, fromIdx = Math.max(0, toIdx-6);
+    periodFromD.value = allDys[fromIdx]; periodRangeD.from = allDys[fromIdx];
+    periodToD.value = allDys[toIdx]; periodRangeD.to = allDys[toIdx];
+    renderDaily();
+  });
+  document.getElementById('preset30DayD').addEventListener('click', function(){
+    if(!allDys.length) return;
+    var toIdx = allDys.length-1, fromIdx = Math.max(0, toIdx-29);
+    periodFromD.value = allDys[fromIdx]; periodRangeD.from = allDys[fromIdx];
+    periodToD.value = allDys[toIdx]; periodRangeD.to = allDys[toIdx];
+    renderDaily();
+  });
+  document.getElementById('presetAllD').addEventListener('click', function(){
+    if(!allDys.length) return;
+    periodFromD.value = allDys[0]; periodRangeD.from = allDys[0];
+    periodToD.value = allDys[allDys.length-1]; periodRangeD.to = allDys[allDys.length-1];
+    renderDaily();
+  });
+  document.getElementById('resetFiltersD').addEventListener('click', function(){
+    if(allDys.length){
+      var defFromIdx2 = Math.max(0, allDys.length-30);
+      periodFromD.value = allDys[defFromIdx2]; periodRangeD.from = allDys[defFromIdx2];
+      periodToD.value = allDys[allDys.length-1]; periodRangeD.to = allDys[allDys.length-1];
+    }
+    renderDaily();
+  });
+
+  function getWeeklyFilteredRows(){
+    return allRows.filter(function(r){
+      var wk = weekKeyOf(r.dt);
+      return (!periodRangeW.from || wk >= periodRangeW.from) && (!periodRangeW.to || wk <= periodRangeW.to);
+    });
+  }
+  function getDailyFilteredRows(){
+    return allRows.filter(function(r){
+      return (!periodRangeD.from || r.dt >= periodRangeD.from) && (!periodRangeD.to || r.dt <= periodRangeD.to);
+    });
+  }
+
+  function renderWeekly(){
+    var rs = getWeeklyFilteredRows();
+    var k = computeKpi(rs);
+    document.getElementById('kpiSellinW').textContent = fmtRp(k.total_sellin);
+    document.getElementById('kpiSellinFootW').textContent = k.total_po+' PO · '+k.total_customers+' distributor';
+    document.getElementById('kpiQtyZakW').textContent = fmtNum(k.total_qty_bag)+' zak';
+    document.getElementById('kpiQtyZakFootW').textContent = k.total_branches+' branch';
+    document.getElementById('kpiQtyPcsW').textContent = fmtNum(k.total_qty_pcs)+' pcs';
+    document.getElementById('kpiQtyPcsFootW').textContent = k.total_items+' item';
+    document.getElementById('kpiPoW').textContent = k.total_po;
+    document.getElementById('kpiPoFootW').textContent = rs.length ? (k.date_min+' – '+k.date_max) : '—';
+
+    var keys = weekKeysInRange(periodRangeW.from, periodRangeW.to);
+    var weeks = periodSeriesFilled(rs, keys, function(r){ return weekKeyOf(r.dt); }, weekLabelOf);
+    drawPeriodTrend('trendChartW', weeks);
+    drawPeriodTable('tbodyW', weeks);
+
+    var isDefault = allWks.length && periodRangeW.from === allWks[0] && periodRangeW.to === allWks[allWks.length-1];
+    var fc = document.getElementById('fcountW');
+    fc.textContent = isDefault ? 0 : 1; fc.classList.toggle('show', !isDefault);
+    document.getElementById('filterSummaryW').textContent = weeks.length ?
+      ('Menampilkan '+weeks.length+' minggu · '+weekLabelOf(periodRangeW.from)+' s.d. '+weekLabelOf(periodRangeW.to)) : '—';
+    setTagText(['tagTrendW','tagTableW'], weeks.length ? (weekLabelOf(periodRangeW.from)+' – '+weekLabelOf(periodRangeW.to)) : '');
+  }
+
+  function renderDaily(){
+    var rs = getDailyFilteredRows();
+    var k = computeKpi(rs);
+    document.getElementById('kpiSellinD').textContent = fmtRp(k.total_sellin);
+    document.getElementById('kpiSellinFootD').textContent = k.total_po+' PO · '+k.total_customers+' distributor';
+    document.getElementById('kpiQtyZakD').textContent = fmtNum(k.total_qty_bag)+' zak';
+    document.getElementById('kpiQtyZakFootD').textContent = k.total_branches+' branch';
+    document.getElementById('kpiQtyPcsD').textContent = fmtNum(k.total_qty_pcs)+' pcs';
+    document.getElementById('kpiQtyPcsFootD').textContent = k.total_items+' item';
+    document.getElementById('kpiPoD').textContent = k.total_po;
+    document.getElementById('kpiPoFootD').textContent = rs.length ? (k.date_min+' – '+k.date_max) : '—';
+
+    var keys = dayKeysInRange(periodRangeD.from, periodRangeD.to);
+    var days = periodSeriesFilled(rs, keys, function(r){ return r.dt; }, dayLabelOf);
+    drawPeriodTrend('trendChartD', days, {maxLabels: 16});
+    drawPeriodTable('tbodyD', days);
+
+    var isDefaultD = periodRangeD.to === (allDys.length ? allDys[allDys.length-1] : '') && periodRangeD.from === (allDys.length ? allDys[Math.max(0, allDys.length-30)] : '');
+    var fcD = document.getElementById('fcountD');
+    fcD.textContent = isDefaultD ? 0 : 1; fcD.classList.toggle('show', !isDefaultD);
+    document.getElementById('filterSummaryD').textContent = days.length ?
+      ('Menampilkan '+days.length+' hari · '+fmtDate(periodRangeD.from)+' s.d. '+fmtDate(periodRangeD.to)) : '—';
+    setTagText(['tagTrendD','tagTableD'], days.length ? (fmtDate(periodRangeD.from)+' – '+fmtDate(periodRangeD.to)) : '');
+  }
+
+  function exportWeeklyExcel(){
+    var rs = getWeeklyFilteredRows();
+    var k = computeKpi(rs);
+    var keys = weekKeysInRange(periodRangeW.from, periodRangeW.to);
+    var weeks = periodSeriesFilled(rs, keys, function(r){ return weekKeyOf(r.dt); }, weekLabelOf);
+    var sheets = [];
+    sheets.push({name:'Ringkasan', rows:[
+      ['Dashboard Sell In SPK - Rekap Mingguan'],
+      ['Periode', (weeks.length ? (weekLabelOf(periodRangeW.from)+' s.d. '+weekLabelOf(periodRangeW.to)) : '-')],
+      ['Diekspor pada', new Date().toLocaleString('id-ID')],
+      [],
+      ['Total Sell In (Rp)', k.total_sellin],
+      ['Total Qty Terkirim (Zak)', k.total_qty_bag],
+      ['Total Qty Terkirim (Pcs)', k.total_qty_pcs],
+      ['Jumlah PO (Order Number)', k.total_po],
+      ['Jumlah Distributor', k.total_customers]
+    ]});
+    var rows = [['Minggu','Nilai Sell In (Rp)','Qty ZAK','Qty Elite Crème','Jumlah PO','Jumlah Distributor']];
+    weeks.forEach(function(w){ rows.push([w.label, w.value, w.qty_bag, w.qty_pcs, w.po, w.dist]); });
+    sheets.push({name:'Rekap Mingguan', rows: rows});
+
+    var detailRows = [['Tgl SJ','Distributor','Branch','PIC','Nama Item','Kategori','Sub Kategori','Status','Qty','Uom','Qty Setara','Nilai Sell In (Rp)','Order Number']];
+    allRows.slice().sort(function(a,b){ return a.dt < b.dt ? -1 : (a.dt > b.dt ? 1 : 0); }).forEach(function(r){
+      detailRows.push([fmtDate(r.dt), distName(r), r.b, r.pic, r.nama, r.cat, r.subcat, r.status, r.sq, r.Uom, r.qs, r.v, r.on]);
+    });
+    sheets.push({name:'Database Detail (Semua)', rows: detailRows});
+
+    buildXlsxAndDownload('Rekap-Mingguan-SellIn-SPK.xlsx', sheets);
+  }
+  document.getElementById('btnExportExcelW').addEventListener('click', exportWeeklyExcel);
+
+  function exportDailyExcel(){
+    var rs = getDailyFilteredRows();
+    var k = computeKpi(rs);
+    var keys = dayKeysInRange(periodRangeD.from, periodRangeD.to);
+    var days = periodSeriesFilled(rs, keys, function(r){ return r.dt; }, dayLabelOf);
+    var sheets = [];
+    sheets.push({name:'Ringkasan', rows:[
+      ['Dashboard Sell In SPK - Rekap Harian'],
+      ['Periode', (days.length ? (fmtDate(periodRangeD.from)+' s.d. '+fmtDate(periodRangeD.to)) : '-')],
+      ['Diekspor pada', new Date().toLocaleString('id-ID')],
+      [],
+      ['Total Sell In (Rp)', k.total_sellin],
+      ['Total Qty Terkirim (Zak)', k.total_qty_bag],
+      ['Total Qty Terkirim (Pcs)', k.total_qty_pcs],
+      ['Jumlah PO (Order Number)', k.total_po],
+      ['Jumlah Distributor', k.total_customers]
+    ]});
+    var rows = [['Tanggal','Nilai Sell In (Rp)','Qty ZAK','Qty Elite Crème','Jumlah PO','Jumlah Distributor']];
+    days.forEach(function(d){ rows.push([d.label, d.value, d.qty_bag, d.qty_pcs, d.po, d.dist]); });
+    sheets.push({name:'Rekap Harian', rows: rows});
+
+    var detailRows = [['Tgl SJ','Distributor','Branch','PIC','Nama Item','Kategori','Sub Kategori','Status','Qty','Uom','Qty Setara','Nilai Sell In (Rp)','Order Number']];
+    allRows.slice().sort(function(a,b){ return a.dt < b.dt ? -1 : (a.dt > b.dt ? 1 : 0); }).forEach(function(r){
+      detailRows.push([fmtDate(r.dt), distName(r), r.b, r.pic, r.nama, r.cat, r.subcat, r.status, r.sq, r.Uom, r.qs, r.v, r.on]);
+    });
+    sheets.push({name:'Database Detail (Semua)', rows: detailRows});
+
+    buildXlsxAndDownload('Rekap-Harian-SellIn-SPK.xlsx', sheets);
+  }
+  document.getElementById('btnExportExcelD').addEventListener('click', exportDailyExcel);
 
   // ---------- Export halaman Summary (PDF & Excel/CSV) ----------
   function stripHtml(s){ return String(s).replace(/<[^>]+>/g, ''); }
@@ -2074,12 +2591,17 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       btn.classList.add('active');
       var pageId = btn.getAttribute('data-page');
       document.getElementById(pageId).classList.add('active');
-      if(pageId === 'pageSummary') renderSummary(); else render();
+      if(pageId === 'pageSummary') renderSummary();
+      else if(pageId === 'pageWeekly') renderWeekly();
+      else if(pageId === 'pageDaily') renderDaily();
+      else render();
     });
   });
 
   renderSummary();
   render();
+  renderWeekly();
+  renderDaily();
 })();
 </script>
 
