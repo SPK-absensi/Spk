@@ -307,6 +307,7 @@
     <button type="button" class="tab-btn" data-page="pageMonthly">Monthly</button>
     <button type="button" class="tab-btn" data-page="pageWeekly">Weekly</button>
     <button type="button" class="tab-btn" data-page="pageDaily">Daily</button>
+    <button type="button" class="tab-btn" data-page="pageDetail">Detail Transaksi</button>
     <button type="button" class="tab-btn" data-page="pageTarget">Target</button>
     <button type="button" class="tab-btn" data-page="pageMaster">Master Data</button>
   </div>
@@ -651,35 +652,6 @@
     </div>
   </div>
 
-  <div class="card">
-    <h2>Detail Transaksi<span class="chart-tag" id="tagDetail"></span></h2>
-    <p class="card-sub">Mengikuti filter di atas &middot; klik header kolom untuk mengurutkan</p>
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th data-k="dt">Tgl SJ</th>
-            <th data-k="c">Distributor</th>
-            <th data-k="b">Branch</th>
-            <th data-k="pic">PIC</th>
-            <th data-k="nama">Item</th>
-            <th class="num" data-k="sq">Qty</th>
-            <th class="num" data-k="qs">Qty Setara</th>
-            <th class="num" data-k="v">Nilai Sell In (Rp)</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-    <div class="table-foot">
-      <span id="rowInfo">&mdash;</span>
-      <div class="pager">
-        <button id="prevPage">&larr; Sebelumnya</button>
-        <span id="pageInfo">1 / 1</span>
-        <button id="nextPage">Berikutnya &rarr;</button>
-      </div>
-    </div>
-  </div>
   </div><!-- /pageMonthly -->
 
   <div class="page" id="pageWeekly">
@@ -863,6 +835,38 @@
     </div>
   </div>
   </div><!-- /pageDaily -->
+
+  <div class="page" id="pageDetail">
+  <div class="card">
+    <h2>Detail Transaksi<span class="chart-tag" id="tagDetail"></span></h2>
+    <p class="card-sub">Mengikuti filter pada tab Monthly &middot; klik header kolom untuk mengurutkan</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th data-k="dt">Tgl SJ</th>
+            <th data-k="c">Distributor</th>
+            <th data-k="b">Branch</th>
+            <th data-k="pic">PIC</th>
+            <th data-k="nama">Item</th>
+            <th class="num" data-k="sq">Qty</th>
+            <th class="num" data-k="qs">Qty Setara</th>
+            <th class="num" data-k="v">Nilai Sell In (Rp)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="table-foot">
+      <span id="rowInfo">&mdash;</span>
+      <div class="pager">
+        <button id="prevPage">&larr; Sebelumnya</button>
+        <span id="pageInfo">1 / 1</span>
+        <button id="nextPage">Berikutnya &rarr;</button>
+      </div>
+    </div>
+  </div>
+  </div><!-- /pageDetail -->
 
   <div class="page" id="pageTarget">
   <div class="card" style="margin-bottom:20px;">
