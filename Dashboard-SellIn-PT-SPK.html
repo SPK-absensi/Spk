@@ -1480,57 +1480,6 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       }
     })();
   }
-  function exportSummaryExcel(){
-    var rs = getSummaryFilteredRows();
-    var rangeKeys = monthKeysInRangeS();
-    var months = aggMonthlyFilled(rs, rangeKeys);
-    var monthsZak = aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys);
-    var monthsElite = aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys);
-    var lines = [];
-    lines.push(['Dashboard Sell In SPK - Ringkasan Summary']);
-    lines.push(['Filter aktif', summaryTagText()]);
-    lines.push(['Diekspor pada', new Date().toLocaleString('id-ID')]);
-    lines.push([]);
-    lines.push(['NILAI SELL IN PER BULAN']);
-    lines.push(['Bulan','Total Sell In (Rp)','SPK_Zak (Rp)','Elite Crème (Rp)','Qty SPK_Zak (Zak)','Qty Elite Crème (pcs~1kg)']);
-    months.forEach(function(m,i){
-      lines.push([
-        m.MonthName+' '+m.Month.slice(0,4), m.value,
-        monthsZak[i] ? monthsZak[i].value : 0,
-        monthsElite[i] ? monthsElite[i].value : 0,
-        monthsZak[i] ? monthsZak[i].qty_setara : 0,
-        monthsElite[i] ? monthsElite[i].qty_setara : 0
-      ]);
-    });
-    lines.push([]);
-
-    function contribSection(title, data){
-      lines.push([title]);
-      lines.push(['Nama','Nilai (Rp)','Kontribusi (%)','Jumlah PO']);
-      var total = data.reduce(function(a,d){return a+d.value;},0) || 1;
-      data.forEach(function(d){
-        lines.push([d.key, d.value, (d.value/total*100).toFixed(1), d.po]);
-      });
-      lines.push([]);
-    }
-    contribSection('KONTRIBUSI KATEGORI PRODUK', aggByKey(rs, function(r){return r.cat;}));
-    contribSection('KONTRIBUSI SUB KATEGORI - ELITE CREME', aggSubcat(rs.filter(function(r){return r.cat==='Elite Crème';})));
-    contribSection('KONTRIBUSI ITEM - ELITE CREME', aggItem(rs.filter(function(r){return r.cat==='Elite Crème';})));
-    contribSection('KONTRIBUSI ITEM - SPK_ZAK', aggItem(rs.filter(function(r){return r.cat==='SPK_Zak';})));
-
-    lines.push(['ANALISA']);
-    buildAnalysisPoints(rs).forEach(function(p, i){ lines.push([(i+1)+'. '+stripHtml(p)]); });
-    lines.push([]);
-    lines.push(['LANGKAH PERBAIKAN (diisi PIC)']);
-    var pb = document.getElementById('perbaikanText');
-    (pb && pb.value.trim() ? pb.value.split('\n') : ['(belum diisi)']).forEach(function(l){ lines.push([l]); });
-
-    var csv = lines.map(function(row){ return row.map(csvEscape).join(','); }).join('\r\n');
-    downloadBlob('Ringkasan-Summary-SellIn-SPK.csv', '﻿'+csv, 'text/csv;charset=utf-8;');
-  }
-  document.getElementById('btnExportExcel').addEventListener('click', exportSummaryExcel);
-  document.getElementById('btnExportPdf').addEventListener('click', function(){ window.print(); });
-
   function buildXlsxAndDownload(filename, sheets){
     if(typeof XLSX === 'undefined'){
       alert('Modul Excel belum termuat, silakan coba lagi sesaat lagi.');
@@ -1544,6 +1493,68 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     var wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
     downloadBlob(filename, wbout, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   }
+
+  function exportSummaryExcel(){
+    var rs = getSummaryFilteredRows();
+    var rangeKeys = monthKeysInRangeS();
+    var months = aggMonthlyFilled(rs, rangeKeys);
+    var monthsZak = aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys);
+    var monthsElite = aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys);
+    var sheets = [];
+
+    var ringkasan = [
+      ['Dashboard Sell In SPK - Ringkasan Summary'],
+      ['Filter aktif', summaryTagText()],
+      ['Diekspor pada', new Date().toLocaleString('id-ID')]
+    ];
+    sheets.push({name:'Ringkasan', rows: ringkasan});
+
+    var monthRows = [['Bulan','Total Sell In (Rp)','SPK_Zak (Rp)','Elite Crème (Rp)','Qty SPK_Zak (Zak)','Qty Elite Crème (pcs~1kg)']];
+    months.forEach(function(m,i){
+      monthRows.push([
+        m.MonthName+' '+m.Month.slice(0,4), m.value,
+        monthsZak[i] ? monthsZak[i].value : 0,
+        monthsElite[i] ? monthsElite[i].value : 0,
+        monthsZak[i] ? monthsZak[i].qty_setara : 0,
+        monthsElite[i] ? monthsElite[i].qty_setara : 0
+      ]);
+    });
+    sheets.push({name:'Nilai Sell In per Bulan', rows: monthRows});
+
+    function contribSheet(name, data){
+      var rows = [['Nama','Nilai (Rp)','Kontribusi (%)','Jumlah PO']];
+      var total = data.reduce(function(a,d){return a+d.value;},0) || 1;
+      data.forEach(function(d){
+        rows.push([d.key, d.value, +( (d.value/total*100).toFixed(1) ), d.po]);
+      });
+      sheets.push({name:name, rows:rows});
+    }
+    contribSheet('Kontribusi Kategori', aggByKey(rs, function(r){return r.cat;}));
+    contribSheet('Kontribusi Sub Kategori EC', aggSubcat(rs.filter(function(r){return r.cat==='Elite Crème';})));
+    contribSheet('Kontribusi Item Elite Creme', aggItem(rs.filter(function(r){return r.cat==='Elite Crème';})));
+    contribSheet('Kontribusi Item SPK_Zak', aggItem(rs.filter(function(r){return r.cat==='SPK_Zak';})));
+    contribSheet('Ranking Distributor Zak', aggByKey(rs.filter(function(r){return r.cat==='SPK_Zak';}), distName));
+    contribSheet('Ranking Distributor Elite', aggByKey(rs.filter(function(r){return r.cat==='Elite Crème';}), distName));
+    contribSheet('Ranking PIC', aggByKey(rs, function(r){return r.pic;}));
+
+    var analisaRows = [['Analisa']];
+    buildAnalysisPoints(rs).forEach(function(p, i){ analisaRows.push([(i+1)+'. '+stripHtml(p)]); });
+    analisaRows.push([]);
+    analisaRows.push(['Langkah Perbaikan (diisi PIC)']);
+    var pb = document.getElementById('perbaikanText');
+    (pb && pb.value.trim() ? pb.value.split('\n') : ['(belum diisi)']).forEach(function(l){ analisaRows.push([l]); });
+    sheets.push({name:'Analisa', rows: analisaRows});
+
+    var detailRowsS = [['Tgl SJ','Distributor','Branch','PIC','Nama Item','Kategori','Sub Kategori','Status','Qty','Uom','Qty Setara','Nilai Sell In (Rp)','Order Number']];
+    allRows.slice().sort(function(a,b){ return a.dt < b.dt ? -1 : (a.dt > b.dt ? 1 : 0); }).forEach(function(r){
+      detailRowsS.push([fmtDate(r.dt), distName(r), r.b, r.pic, r.nama, r.cat, r.subcat, r.status, r.sq, r.Uom, r.qs, r.v, r.on]);
+    });
+    sheets.push({name:'Database Detail (Semua)', rows: detailRowsS});
+
+    buildXlsxAndDownload('Ringkasan-Summary-SellIn-SPK.xlsx', sheets);
+  }
+  document.getElementById('btnExportExcel').addEventListener('click', exportSummaryExcel);
+  document.getElementById('btnExportPdf').addEventListener('click', function(){ window.print(); });
 
   function exportMonthlyExcel(){
     var rs = getFilteredRows();
