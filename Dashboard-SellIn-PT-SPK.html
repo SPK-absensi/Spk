@@ -276,8 +276,8 @@
 
   <div class="sync-bar" id="syncBar">
     <span class="dot-live" id="syncDot"></span>
-    <span id="syncStatus">Sumber data: file Excel awal (statis).</span>
-    <button type="button" class="sync-btn" id="btnSyncSheet">&#8635; Sinkron dari Google Sheets</button>
+    <span id="syncStatus">Memeriksa data terbaru dari Google Sheets...</span>
+    <button type="button" class="sync-btn" id="btnSyncSheet">&#8635; Sinkron Sekarang</button>
     <button type="button" class="sync-reset-link" id="btnSyncReset" hidden>Pakai data bawaan (reset)</button>
   </div>
 
@@ -990,18 +990,71 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       if(!rows.length) throw new Error('Tidak ada baris data yang bisa dibaca dari sheet.');
       var dmin = null, dmax = null;
       rows.forEach(function(r){ if(dmin === null || r.dt < dmin) dmin = r.dt; if(dmax === null || r.dt > dmax) dmax = r.dt; });
-      localStorage.setItem(LIVE_CACHE_KEY, JSON.stringify({detail: rows, date_min: dmin, date_max: dmax, syncedAt: new Date().toISOString()}));
+      try{
+        localStorage.setItem(LIVE_CACHE_KEY, JSON.stringify({detail: rows, date_min: dmin, date_max: dmax, syncedAt: new Date().toISOString()}));
+        localStorage.setItem(LIVE_SIG_KEY, computeSheetSig(rows, dmax));
+      }catch(e){}
       sheetSetStatus('Berhasil, memuat ulang dashboard...', 'is-live');
       location.reload();
     }).catch(function(err){
-      if(btn){ btn.disabled = false; btn.textContent = '↻ Sinkron dari Google Sheets'; }
+      if(btn){ btn.disabled = false; btn.textContent = '↻ Sinkron Sekarang'; }
       sheetSetStatus('Sinkron gagal: ' + (err && err.message ? err.message : 'kesalahan tidak diketahui') + '. Jika ini tampilan Artifact, buka versi yang di-host (GitHub Pages) — Artifact memblokir akses ke luar.', 'is-error');
     });
   }
+
+  // ---------- Sinkron OTOMATIS setiap dashboard dibuka ----------
+  // Tidak perlu klik tombol: begitu halaman dibuka, dashboard otomatis mengecek
+  // Google Sheets. Kalau ada data baru (dibandingkan lewat "tanda tangan" ringkas
+  // jumlah baris + tanggal terakhir + total nilai), data disimpan lalu halaman
+  // dimuat ulang SEKALI supaya tampil dengan data terbaru. Kalau tidak ada
+  // perubahan, tidak ada reload sama sekali (tidak mengganggu).
+  var LIVE_SIG_KEY = 'sellin_live_sig_v1';
+  var RELOAD_GUARD_KEY = 'sellin_sync_reload_guard';
+  function computeSheetSig(rows, dmax){
+    var total = 0;
+    for(var i=0;i<rows.length;i++){ total += rows[i].v; }
+    return rows.length + '|' + dmax + '|' + Math.round(total);
+  }
+  function autoSheetSync(){
+    var guard = 0;
+    try{ guard = +(sessionStorage.getItem(RELOAD_GUARD_KEY) || 0); }catch(e){}
+    if(guard >= 3){
+      sheetSetStatus('Sinkron otomatis dijeda sementara (terlalu sering memuat ulang). Gunakan tombol "Sinkron Sekarang" untuk mencoba lagi.', 'is-error');
+      return;
+    }
+    sheetSetStatus('Memeriksa pembaruan dari Google Sheets...');
+    fetch(SHEET_CSV_URL, {cache:'no-store'}).then(function(res){
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text();
+    }).then(function(text){
+      var rows = sheetBuildRows(text);
+      if(!rows.length) throw new Error('Tidak ada baris data yang bisa dibaca dari sheet.');
+      var dmin = null, dmax = null;
+      rows.forEach(function(r){ if(dmin === null || r.dt < dmin) dmin = r.dt; if(dmax === null || r.dt > dmax) dmax = r.dt; });
+      var sig = computeSheetSig(rows, dmax);
+      var prevSig = null;
+      try{ prevSig = localStorage.getItem(LIVE_SIG_KEY); }catch(e){}
+      var when = new Date().toLocaleString('id-ID');
+      if(sig === prevSig){
+        sheetSetStatus('Sinkron otomatis aktif · data sudah terkini (Google Sheets) · dicek ' + when + '.', 'is-live');
+        return;
+      }
+      try{
+        localStorage.setItem(LIVE_CACHE_KEY, JSON.stringify({detail: rows, date_min: dmin, date_max: dmax, syncedAt: new Date().toISOString()}));
+        localStorage.setItem(LIVE_SIG_KEY, sig);
+        sessionStorage.setItem(RELOAD_GUARD_KEY, String(guard+1));
+      }catch(e){}
+      sheetSetStatus('Data baru ditemukan, memuat ulang dashboard...', 'is-live');
+      location.reload();
+    }).catch(function(err){
+      sheetSetStatus('Sinkron otomatis gagal (' + (err && err.message ? err.message : 'jaringan/CORS') + ') · menampilkan data tersimpan terakhir. Jika ini tampilan Artifact, buka versi yang di-host (GitHub Pages).', 'is-error');
+    });
+  }
+
   (function initSyncBar(){
     var btn = document.getElementById('btnSyncSheet');
     var resetBtn = document.getElementById('btnSyncReset');
-    if(btn) btn.addEventListener('click', function(){ sheetSync(); });
+    if(btn){ btn.textContent = '↻ Sinkron Sekarang'; btn.addEventListener('click', function(){ sheetSync(); }); }
     var cachedRaw = null;
     try{ cachedRaw = localStorage.getItem(LIVE_CACHE_KEY); }catch(e){}
     if(cachedRaw){
@@ -1012,12 +1065,16 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         if(resetBtn){
           resetBtn.hidden = false;
           resetBtn.addEventListener('click', function(){
-            try{ localStorage.removeItem(LIVE_CACHE_KEY); }catch(e){}
+            try{ localStorage.removeItem(LIVE_CACHE_KEY); localStorage.removeItem(LIVE_SIG_KEY); }catch(e){}
             location.reload();
           });
         }
       }catch(e){}
+    } else {
+      sheetSetStatus('Memeriksa data terbaru dari Google Sheets...');
     }
+    // Selalu cek pembaruan otomatis setiap dashboard dibuka (silent kalau tidak ada perubahan).
+    autoSheetSync();
   })();
 
   var css = getComputedStyle(document.documentElement);
