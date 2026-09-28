@@ -47,9 +47,11 @@
   .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 64px;}
 
   .topbar{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:24px;}
-  .eyebrow{font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--s1);}
-  h1{font-size:26px; font-weight:700; margin:4px 0 4px; letter-spacing:-0.01em;}
-  .sub{color:var(--text-2); font-size:14px; margin:0;}
+  .topbar-brand{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .brand-logo{width:60px; height:60px; border-radius:12px; object-fit:contain; background:#fff; border:1px solid var(--border); padding:4px; flex:none;}
+  .eyebrow{font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--s1);}
+  h1{font-size:29px; font-weight:800; margin:4px 0 5px; letter-spacing:-0.01em; color:var(--text-1);}
+  .sub{color:var(--text-1); font-size:14.5px; margin:0; font-weight:500;}
   .period-chip{display:inline-flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:7px 14px; font-size:13px; color:var(--text-2); white-space:nowrap;}
   .period-chip strong{color:var(--text-1); font-weight:600;}
 
@@ -282,10 +284,13 @@
 <div class="wrap">
 
   <div class="topbar">
-    <div>
-      <div class="eyebrow">Sell In Distributor &middot; PT SPK</div>
-      <h1>Dashboard Sell In &mdash; Surat Jalan vs Invoice</h1>
-      <p class="sub">Rekonsiliasi pengiriman (Surat Jalan) terhadap penagihan (Invoice) untuk distributor SPK, tahun berjalan 2026.</p>
+    <div class="topbar-brand">
+      <img class="brand-logo" src="data:image/jpeg;base64,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" alt="Logo PT Santos Premium Krimer (SPK)">
+      <div>
+        <div class="eyebrow">Sell In Distributor &middot; PT Santos Premium Krimer</div>
+        <h1>Dashboard Sell In &mdash; Surat Jalan vs Invoice</h1>
+        <p class="sub">Rekonsiliasi pengiriman (Surat Jalan) terhadap penagihan (Invoice) untuk distributor SPK, tahun berjalan 2026.</p>
+      </div>
     </div>
     <div class="period-chip">Periode &nbsp;<strong id="periodLabel">&mdash;</strong></div>
   </div>
@@ -298,12 +303,12 @@
   </div>
 
   <div class="tabs">
-    <button type="button" class="tab-btn active" data-page="pageSummary">Summary <span class="tab-n">&middot; ringkasan tahunan</span></button>
-    <button type="button" class="tab-btn" data-page="pageMonthly">Monthly <span class="tab-n">&middot; data bisa difilter</span></button>
-    <button type="button" class="tab-btn" data-page="pageWeekly">Weekly <span class="tab-n">&middot; rekap mingguan</span></button>
-    <button type="button" class="tab-btn" data-page="pageDaily">Daily <span class="tab-n">&middot; rekap harian</span></button>
-    <button type="button" class="tab-btn" data-page="pageTarget">Target <span class="tab-n">&middot; target vs realisasi</span></button>
-    <button type="button" class="tab-btn" data-page="pageMaster">Master Data <span class="tab-n">&middot; distributor &amp; PIC</span></button>
+    <button type="button" class="tab-btn active" data-page="pageSummary">Summary</button>
+    <button type="button" class="tab-btn" data-page="pageMonthly">Monthly</button>
+    <button type="button" class="tab-btn" data-page="pageWeekly">Weekly</button>
+    <button type="button" class="tab-btn" data-page="pageDaily">Daily</button>
+    <button type="button" class="tab-btn" data-page="pageTarget">Target</button>
+    <button type="button" class="tab-btn" data-page="pageMaster">Master Data</button>
   </div>
 
   <div class="page active" id="pageSummary">
@@ -2238,6 +2243,14 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     allRows.forEach(function(r){ s[r.ad] = true; });
     return Object.keys(s).sort();
   }
+  // Gabungan daftar distributor dari data transaksi + Master Data (agar distributor baru
+  // yang ditambahkan di tab Master Data langsung muncul juga di tab Target).
+  function targetDistributorList(){
+    var s = {};
+    allRows.forEach(function(r){ if(r.ad) s[r.ad] = true; });
+    (masterData || []).forEach(function(row){ var ad = (row.ad||'').trim(); if(ad) s[ad] = true; });
+    return Object.keys(s).sort();
+  }
   function realizedPcs(ad, item, year){
     var sum = 0;
     allRows.forEach(function(r){
@@ -2248,7 +2261,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
 
   function drawTargetTable(){
     var wrap = document.getElementById('targetTableWrap');
-    var dists = allDistributorsAd();
+    var dists = targetDistributorList();
     var year = targetYear;
     if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
     var html = '<table><thead><tr><th>Distributor</th>';
@@ -2290,7 +2303,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
 
   function drawTargetSummary(){
     var wrap = document.getElementById('targetSummaryWrap');
-    var dists = allDistributorsAd();
+    var dists = targetDistributorList();
     var year = targetYear;
     if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
     var grandTarget = 0, grandReal = 0;
@@ -2410,6 +2423,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         var field = inp.getAttribute('data-field');
         if(masterData[idx]) masterData[idx][field] = inp.value.trim();
         saveMasterData();
+        drawTargetTable();
+        drawTargetSummary();
       });
     });
     wrap.querySelectorAll('.master-del-btn').forEach(function(btn){
@@ -2418,6 +2433,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         masterData.splice(idx, 1);
         saveMasterData();
         drawMasterTable();
+        drawTargetTable();
+        drawTargetSummary();
       });
     });
   }
@@ -2427,6 +2444,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     masterData.push({ ad: '', pic: '' });
     saveMasterData();
     drawMasterTable();
+    drawTargetTable();
+    drawTargetSummary();
     var inputs = document.querySelectorAll('#masterTableWrap .master-input[data-field="ad"]');
     if(inputs.length) inputs[inputs.length-1].focus();
   });
@@ -2446,6 +2465,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
           masterData = parsed;
           saveMasterData();
           drawMasterTable();
+          drawTargetTable();
+          drawTargetSummary();
           alert('Data master berhasil diimpor.');
         } else {
           alert('Gagal membaca file: format JSON tidak sesuai (harus berupa daftar/array).');
