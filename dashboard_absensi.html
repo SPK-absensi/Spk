@@ -485,7 +485,7 @@
 
   <section class="panel">
     <h2>Rekap absensi per tanggal, per nama karyawan</h2>
-    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk. Keterangan "Tidak Sesuai" muncul jika Jam Kerja di bawah 8 jam.</div>
+    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System — 1 baris per karyawan per hari: Jam Masuk = absen masuk pertama, Jam Keluar = absen keluar terakhir. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk. Keterangan "Tidak Sesuai" muncul jika Jam Kerja di bawah 8 jam.</div>
     <div class="period-info"></div>
     <div class="table-scroll">
       <table id="tblRekapTanggal">
@@ -832,6 +832,24 @@ function applyFilters(){
   return RAW_DATA.filter(r => matchesFilters(r, f, null));
 }
 
+// ---------- 1 absen masuk & 1 absen keluar per karyawan per hari ----------
+// Jika karyawan absen lebih dari sekali di hari yang sama, rekap hanya memakai:
+//  - Absen MASUK  = absen masuk PERTAMA (jam paling awal)
+//  - Absen KELUAR = absen keluar TERAKHIR (jam paling akhir)
+// Jam sudah dinormalisasi ke HH:MM 2 digit, jadi perbandingan teks aman.
+// Catatan: KPI Kunjungan TSR / SPG tetap memakai data mentah (1 absen = 1 kunjungan).
+function dedupHarian(data){
+  const map = {};
+  data.forEach(r => {
+    const key = r.nama + '||' + r.tgl + '||' + r.t;
+    const cur = map[key];
+    if(!cur) { map[key] = r; return; }
+    if(r.t === 'masuk' && r.jam < cur.jam) map[key] = r;
+    if(r.t === 'keluar' && r.jam > cur.jam) map[key] = r;
+  });
+  return Object.values(map);
+}
+
 // ---------- Cascading filter options ----------
 function rebuildSelect(id, values, allLabel){
   const sel = document.getElementById(id);
@@ -860,13 +878,15 @@ function refreshDependentOptions(){
 }
 
 // ---------- KPI ----------
-function renderKPI(data){
+function renderKPI(data, rawData){
   const masuk = data.filter(r => r.t === 'masuk');
   const keluar = data.filter(r => r.t === 'keluar');
   const hkSet = new Set(masuk.map(r => r.tgl));
 
-  const kunjunganTSR = masuk.filter(r => r.divisi === 'TSR - SPK');
-  const kunjunganSPG = masuk.filter(r => r.divisi === 'SPG Elite Creme');
+  // Kunjungan tetap dari data mentah: setiap absen masuk = 1 kunjungan outlet
+  const masukRaw = (rawData || data).filter(r => r.t === 'masuk');
+  const kunjunganTSR = masukRaw.filter(r => r.divisi === 'TSR - SPK');
+  const kunjunganSPG = masukRaw.filter(r => r.divisi === 'SPG Elite Creme');
   const outletTSR = uniqueSorted(kunjunganTSR.map(r => r.outlet));
   const outletSPG = uniqueSorted(kunjunganSPG.map(r => r.outlet));
 
@@ -1199,8 +1219,9 @@ function updatePeriodInfo(){
 
 // ---------- Main render ----------
 function renderAll(){
-  const data = applyFilters();
-  renderKPI(data);
+  const rawData = applyFilters();
+  const data = dedupHarian(rawData);
+  renderKPI(data, rawData);
   renderTidakLengkapRanking(data);
   renderAbsensiKaryawanTable(data);
   renderTidakLengkapTable(data);
@@ -1255,7 +1276,7 @@ document.getElementById('yesterdayBtn').addEventListener('click', () => {
 
 // ---------- Export ke Excel ----------
 function exportToExcel(){
-  const data = applyFilters();
+  const data = dedupHarian(applyFilters());
 
   // 1. Top 5 karyawan absensi tidak lengkap
   const scoped = data.filter(r => r.divisi === 'Barista' || r.divisi === 'Part Timer');
