@@ -429,19 +429,6 @@
       </div>
     </div>
 
-    <div class="row2b">
-      <div class="card">
-        <h2>Tren KG Elite Cr&egrave;me &mdash; per Bulan<span class="chart-tag" id="tagKgElite"></span></h2>
-        <p class="card-sub">Shipped Quantity (KG) kategori Elite Cr&egrave;me, per bulan</p>
-        <div class="chart-wrap" id="kgTrendElite"></div>
-      </div>
-      <div class="card">
-        <h2>Tren KG SPK_Zak &mdash; per Bulan<span class="chart-tag" id="tagKgZak"></span></h2>
-        <p class="card-sub">Quantity Invoiced (KG) kategori SPK_Zak, per bulan</p>
-        <div class="chart-wrap" id="kgTrendZak"></div>
-      </div>
-    </div>
-
     <div class="card">
       <h2>Kontribusi Sell In<span class="chart-tag" id="tagContrib"></span></h2>
       <p class="card-sub">Kategori &rarr; Sub Kategori &rarr; Item &middot; mengikuti filter di atas</p>
@@ -3293,8 +3280,6 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     drawBars('distBarsEliteS', aggByKey(rs.filter(function(r){return r.cat === 'Elite Crème';}), distName), 'key', 'value', cv('--s1'));
     drawQtyTrend('qtyTrendPcs', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), cv('--s1'), 'pcs~1kg');
     drawQtyTrend('qtyTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), cv('--s7'), 'zak');
-    drawQtyTrend('kgTrendElite', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), cv('--s1'), 'kg', 'qty_shipped');
-    drawQtyTrend('kgTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), cv('--s7'), 'kg', 'qty_invoiced');
     drawDonut('contribDonutElite', aggItem(rs.filter(function(r){return r.cat==='Elite Crème';})), null, true);
     drawDonut('contribDonutZak', aggItem(rs.filter(function(r){return r.cat==='SPK_Zak';})), null, true);
     drawDonut('contribDonutEliteSubcat', aggSubcat(rs.filter(function(r){return r.cat==='Elite Crème';})), null, true);
@@ -3322,7 +3307,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     var fcS = document.getElementById('fcountS');
     fcS.textContent = activeCountS; fcS.classList.toggle('show', activeCountS > 0);
 
-    setTagText(['tagTrend','tagBarZak','tagBarElite','tagDistBarsZakS','tagDistBarsEliteS','tagQtyElite','tagQtyZak','tagKgElite','tagKgZak','tagContrib','tagAnalysis'], summaryTagText());
+    setTagText(['tagTrend','tagBarZak','tagBarElite','tagDistBarsZakS','tagDistBarsEliteS','tagQtyElite','tagQtyZak','tagContrib','tagAnalysis'], summaryTagText());
   }
 
   // ---------- Tabs ----------
