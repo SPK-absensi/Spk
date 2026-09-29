@@ -66,6 +66,7 @@
 
   .kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;}
   .kpi-grid-3{grid-template-columns:repeat(3,1fr);}
+  .kpi-grid-kg{grid-template-columns:repeat(3,1fr); margin-top:-8px;}
   .kpi{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px;}
   .kpi .label{font-size:12px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em;}
   .kpi .value{font-size:22px; font-weight:700; margin-top:6px; font-variant-numeric:tabular-nums; letter-spacing:-0.01em;}
@@ -387,6 +388,24 @@
         <div class="label">Jumlah PO (Order Number)</div>
         <div class="value" id="kpiPoS">&mdash;</div>
         <div class="foot" id="kpiPoSFoot">&mdash;</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid kpi-grid-kg">
+      <div class="kpi accent">
+        <div class="label">Total KG</div>
+        <div class="value" id="kpiKgTotalS">&mdash;</div>
+        <div class="foot" id="kpiKgTotalSFoot">&mdash;</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Total KG SPK_Zak</div>
+        <div class="value" id="kpiKgZakS">&mdash;</div>
+        <div class="foot" id="kpiKgZakSFoot">&mdash;</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Total KG Elite Cr&egrave;me</div>
+        <div class="value" id="kpiKgEliteS">&mdash;</div>
+        <div class="foot" id="kpiKgEliteSFoot">&mdash;</div>
       </div>
     </div>
 
@@ -3605,9 +3624,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     drawBars('distBarsEliteS', aggByKey(rs.filter(function(r){return r.cat === 'Elite Crème';}), distName), 'key', 'value', cv('--s1'));
     drawQtyTrend('qtyTrendPcs', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), cv('--s1'), 'pcs~1kg');
     drawQtyTrend('qtyTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), cv('--s7'), 'zak');
-    drawQtyTrend('kgTrendElite', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), cv('--s1'), 'kg', 'qty_invoiced');
-    drawQtyTrend('kgTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), cv('--s7'), 'kg', 'qty_invoiced');
-    drawQtyTrend('kgTrend', aggMonthlyFilled(rs, rangeKeys), cv('--s3'), 'kg', 'qty_invoiced');
+    drawMonthlyBar('kgTrendElite', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), { metric:'qty_invoiced', color:cv('--s1'), fmt:fmtNum, fmtFull:function(v){return fmtNum(v)+' kg';}, tipLabel:'Qty' });
+    drawMonthlyBar('kgTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), { metric:'qty_invoiced', color:cv('--s7'), fmt:fmtNum, fmtFull:function(v){return fmtNum(v)+' kg';}, tipLabel:'Qty' });
+    drawMonthlyBar('kgTrend', aggMonthlyFilled(rs, rangeKeys), { metric:'qty_invoiced', color:cv('--s3'), fmt:fmtNum, fmtFull:function(v){return fmtNum(v)+' kg';}, tipLabel:'Qty' });
     drawDonut('contribDonutElite', aggItem(rs.filter(function(r){return r.cat==='Elite Crème';})), null, true);
     drawDonut('contribDonutZak', aggItem(rs.filter(function(r){return r.cat==='SPK_Zak';})), null, true);
     drawDonut('contribDonutEliteSubcat', aggSubcat(rs.filter(function(r){return r.cat==='Elite Crème';})), null, true);
@@ -3622,6 +3641,15 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     document.getElementById('kpiQtyPcsSFoot').textContent = 'Kategori Elite Crème';
     document.getElementById('kpiPoS').textContent = fmtNum(kS.total_po);
     document.getElementById('kpiPoSFoot').textContent = 'Order Number unik · ' + kS.total_lines + ' baris transaksi';
+
+    var kgZakS = rs.filter(function(r){return r.cat==='SPK_Zak';}).reduce(function(a,r){return a+(r.qi||0);},0);
+    var kgEliteS = rs.filter(function(r){return r.cat==='Elite Crème';}).reduce(function(a,r){return a+(r.qi||0);},0);
+    document.getElementById('kpiKgTotalS').textContent = fmtNum(kgZakS+kgEliteS) + ' kg';
+    document.getElementById('kpiKgTotalSFoot').textContent = 'Quantity Invoiced seluruh kategori';
+    document.getElementById('kpiKgZakS').textContent = fmtNum(kgZakS) + ' kg';
+    document.getElementById('kpiKgZakSFoot').textContent = 'Kategori SPK_Zak';
+    document.getElementById('kpiKgEliteS').textContent = fmtNum(kgEliteS) + ' kg';
+    document.getElementById('kpiKgEliteSFoot').textContent = 'Kategori Elite Crème';
 
     var total = allRows.length;
     var summaryEl = document.getElementById('filterSummaryS');
