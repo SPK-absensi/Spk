@@ -198,6 +198,10 @@
   tfoot td{padding:8px 10px; color:var(--text-1); white-space:nowrap;}
   tbody tr:hover td{background:var(--s1-soft); color:var(--text-1);}
   .table-scroll{overflow-x:auto; max-height:520px; overflow-y:auto; border:1px solid var(--border); border-radius:10px;}
+  #pageInvoice table{table-layout:auto; font-size:12px;}
+  #pageInvoice thead th{white-space:normal; line-height:1.25; padding:8px 8px;}
+  #pageInvoice tbody td, #pageInvoice tfoot td{white-space:normal; padding:6px 8px;}
+  #pageInvoice thead th:first-child, #pageInvoice tbody td:first-child, #pageInvoice tfoot td:first-child{white-space:nowrap;}
   .diff-neg{color:var(--warn);}
   .diff-pos{color:var(--good);}
 
@@ -1040,13 +1044,12 @@
           <tr>
             <th data-k="dist">Distributor</th>
             <th data-k="pic">PIC</th>
-            <th class="num" data-k="po_count">Jumlah PO</th>
-            <th class="num" data-k="inv_count">Jumlah Invoice</th>
-            <th class="num" data-k="qty_pcs">Qty Pcs (Elite Cr&egrave;me)</th>
-            <th class="num" data-k="qty_bag">Qty Zak (SPK_Zak)</th>
-            <th class="num" data-k="qty_invoiced">Qty Invoiced (KG)</th>
-            <th class="num" data-k="v_total">Nilai Sell In (Rp, Exc. PPN)</th>
-            <th class="num" data-k="iv_total">Nilai Invoice (Rp, Inc. PPN)</th>
+            <th class="num" data-k="po_count">PO</th>
+            <th class="num" data-k="inv_count">Invoice</th>
+            <th class="num" data-k="qty_pcs">Qty Pcs</th>
+            <th class="num" data-k="qty_bag">Qty Zak</th>
+            <th class="num" data-k="qty_invoiced">Qty Inv (Kg)</th>
+            <th class="num" data-k="v_total">Nilai Sell In</th>
           </tr>
         </thead>
         <tbody id="tbodyInvoice"></tbody>
@@ -1878,7 +1881,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
 
   // ---------- Filter tersendiri untuk tab Invoice (tidak terhubung ke tab lain) ----------
   var periodRangeI = { from:'', to:'' };
-  var sortKeyI = 'iv_total', sortDirI = -1;
+  var sortKeyI = 'v_total', sortDirI = -1;
   var pageI = 0, pageSizeI = 25;
 
   // Filter yang saling terhubung (cross-filter) sesuai relasi pada tabel referensi
@@ -3234,7 +3237,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     rows.forEach(function(r){
       var key = r.ad;
       if(!map[key]){
-        map[key] = { dist: distName(r), pic: r.pic, po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0, iv_total:0, _po:{}, _inv:{}, _pic:{} };
+        map[key] = { dist: distName(r), pic: r.pic, po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0, _po:{}, _inv:{}, _pic:{} };
         order.push(key);
       }
       var g = map[key];
@@ -3245,7 +3248,6 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       g.qty_bag += (r.qb||0);
       g.qty_invoiced += (r.qi||0);
       g.v_total += (r.v||0);
-      g.iv_total += (r.iv||0);
     });
     return order.map(function(key){
       var g = map[key];
@@ -3284,7 +3286,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     var slice = out.slice(pageI*pageSizeI, pageI*pageSizeI+pageSizeI);
     var tbody = document.getElementById('tbodyInvoice');
     if(!out.length){
-      tbody.innerHTML = '<tr><td colspan="9" class="card-sub">Tidak ada distributor yang cocok dengan filter ini.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="card-sub">Tidak ada distributor yang cocok dengan filter ini.</td></tr>';
     } else {
       tbody.innerHTML = slice.map(function(g){
         return '<tr>' +
@@ -3296,7 +3298,6 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
           '<td class="num">'+fmtNum(g.qty_bag)+'</td>' +
           '<td class="num">'+fmtNum(g.qty_invoiced)+'</td>' +
           '<td class="num">'+fmtNum(g.v_total)+'</td>' +
-          '<td class="num">'+fmtNum(g.iv_total)+'</td>' +
         '</tr>';
       }).join('');
     }
@@ -3306,9 +3307,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     } else {
       var tot = out.reduce(function(a,g){
         a.po_count += g.po_count; a.inv_count += g.inv_count; a.qty_pcs += g.qty_pcs; a.qty_bag += g.qty_bag; a.qty_invoiced += g.qty_invoiced;
-        a.v_total += g.v_total; a.iv_total += g.iv_total;
+        a.v_total += g.v_total;
         return a;
-      }, { po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0, iv_total:0 });
+      }, { po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0 });
       tfoot.innerHTML = '<tr class="total-row" style="font-weight:700; border-top:2px solid var(--border);">' +
         '<td>TOTAL (' + out.length + ' distributor)</td>' +
         '<td></td>' +
@@ -3318,7 +3319,6 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         '<td class="num">'+fmtNum(tot.qty_bag)+'</td>' +
         '<td class="num">'+fmtNum(tot.qty_invoiced)+'</td>' +
         '<td class="num">'+fmtNum(tot.v_total)+'</td>' +
-        '<td class="num">'+fmtNum(tot.iv_total)+'</td>' +
       '</tr>';
     }
     document.getElementById('rowInfoInvoice').textContent = out.length + ' distributor (menampilkan ' + (out.length? (pageI*pageSizeI+1):0) + '–' + Math.min(out.length,(pageI+1)*pageSizeI) + ')';
