@@ -310,9 +310,8 @@
 
   <div class="tabs">
     <button type="button" class="tab-btn active" data-page="pageSummary">Summary</button>
-    <button type="button" class="tab-btn" data-page="pageMonthly">Monthly</button>
-    <button type="button" class="tab-btn" data-page="pageWeekly">Weekly</button>
-    <button type="button" class="tab-btn" data-page="pageDaily">Daily</button>
+    <button type="button" class="tab-btn" data-page="pageDistGraph">By Distributor</button>
+    <button type="button" class="tab-btn" data-page="pagePicGraph">By PIC</button>
     <button type="button" class="tab-btn" data-page="pageDetail">Detail Transaksi</button>
     <button type="button" class="tab-btn" data-page="pageInvoice">Invoice</button>
     <button type="button" class="tab-btn" data-page="pageTarget">Target</button>
@@ -365,6 +364,7 @@
           </div>
         </div>
       </div>
+      <p class="card-sub filter-active-line" id="filterActiveS" style="margin:12px 0 0; font-weight:600; color:var(--text-1);">Periode: &mdash; &middot; Status: &mdash;</p>
       <p class="card-sub" id="filterSummaryS" style="margin:12px 0 0;">&mdash;</p>
     </div>
 
@@ -880,6 +880,272 @@
   </div>
   </div><!-- /pageDaily -->
 
+  <div class="page" id="pageDistGraph">
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#9881;&#65039;</span>
+      <span class="ttl">Filter Data</span>
+      <span class="fcount" id="fcountG">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportPdfG" class="export-btn">&#128196; Export PDF</button>
+        <button type="button" id="resetFiltersG" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="period-range">
+        <span class="prlbl">Periode</span>
+        <select id="periodFromG"></select>
+        <span class="prsep">&ndash;</span>
+        <select id="periodToG"></select>
+        <span class="pr-presets">
+          <button type="button" class="pr-preset-btn" id="presetThisMonthG">Bulan Ini</button>
+          <button type="button" class="pr-preset-btn" id="presetLastMonthG">Bulan Lalu</button>
+          <button type="button" class="pr-preset-btn" id="presetThisYearG">Tahun Ini</button>
+        </span>
+      </div>
+      <span class="filter-sep"></span>
+      <span class="filter-group-label">Distribusi</span>
+      <div class="filter-dd" id="ddDistributorG">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Nama Distributor</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddStatusG">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddPicG">
+        <button type="button" class="filter-dd-btn"><span class="lbl">PIC</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <span class="filter-sep"></span>
+      <span class="filter-group-label">Produk</span>
+      <div class="filter-dd" id="ddCategoryG">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Kategori Produk</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+    </div>
+    <p class="card-sub filter-active-line" id="filterActiveG" style="margin:12px 0 0; font-weight:600; color:var(--text-1);">Periode: &mdash; &middot; Status: &mdash;</p>
+      <p class="card-sub" id="filterSummaryG" style="margin:12px 0 0;">&mdash;</p>
+  </div>
+
+  <div class="kpi-grid kpi-grid-3">
+    <div class="kpi accent">
+      <div class="label">Total Net Sales</div>
+      <div class="value" id="kpiGNet">&mdash;</div>
+      <div class="foot" id="kpiGNetFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total KG</div>
+      <div class="value" id="kpiGKg">&mdash;</div>
+      <div class="foot" id="kpiGKgFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Qty Zak</div>
+      <div class="value" id="kpiGZak">&mdash;</div>
+      <div class="foot" id="kpiGZakFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Qty Elite Cr&egrave;me</div>
+      <div class="value" id="kpiGElite">&mdash;</div>
+      <div class="foot" id="kpiGEliteFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Jumlah PO</div>
+      <div class="value" id="kpiGPo">&mdash;</div>
+      <div class="foot" id="kpiGPoFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Jumlah Invoice</div>
+      <div class="value" id="kpiGInv">&mdash;</div>
+      <div class="foot" id="kpiGInvFoot">&mdash;</div>
+    </div>
+  </div>
+
+  <div class="row2b">
+    <div class="card">
+      <h2>Net Sales per Distributor<span class="chart-tag" id="tagGNet"></span></h2>
+      <p class="card-sub">Nilai Sell In (Exc. PPN) per distributor &middot; filter tersendiri, tidak terhubung dengan tab lain</p>
+      <div id="distGraphNet"></div>
+    </div>
+    <div class="card">
+      <h2>Total KG per Distributor<span class="chart-tag" id="tagGKg"></span></h2>
+      <p class="card-sub">Quantity Invoiced (KG) seluruh kategori per distributor</p>
+      <div id="distGraphKg"></div>
+    </div>
+  </div>
+
+  <div class="row2b">
+    <div class="card">
+      <h2>Qty Zak per Distributor<span class="chart-tag" id="tagGZak"></span></h2>
+      <p class="card-sub">Total Qty Terkirim (Zak) kategori SPK_Zak per distributor</p>
+      <div id="distGraphZak"></div>
+    </div>
+    <div class="card">
+      <h2>Qty Elite Cr&egrave;me per Distributor<span class="chart-tag" id="tagGElite"></span></h2>
+      <p class="card-sub">Total Qty Terkirim (Pcs) kategori Elite Cr&egrave;me per distributor</p>
+      <div id="distGraphElite"></div>
+    </div>
+  </div>
+
+  <div class="row2b">
+    <div class="card">
+      <h2>Jumlah PO per Distributor<span class="chart-tag" id="tagGPo"></span></h2>
+      <p class="card-sub">Jumlah Order Number unik per distributor</p>
+      <div id="distGraphPo"></div>
+    </div>
+    <div class="card">
+      <h2>Jumlah Invoice per Distributor<span class="chart-tag" id="tagGInv"></span></h2>
+      <p class="card-sub">Jumlah Invoice Number unik per distributor</p>
+      <div id="distGraphInv"></div>
+    </div>
+  </div>
+  </div><!-- /pageDistGraph -->
+
+  <div class="page" id="pagePicGraph">
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#9881;&#65039;</span>
+      <span class="ttl">Filter Data</span>
+      <span class="fcount" id="fcountP">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportPdfP" class="export-btn">&#128196; Export PDF</button>
+        <button type="button" id="resetFiltersP" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="period-range">
+        <span class="prlbl">Periode</span>
+        <select id="periodFromP"></select>
+        <span class="prsep">&ndash;</span>
+        <select id="periodToP"></select>
+        <span class="pr-presets">
+          <button type="button" class="pr-preset-btn" id="presetThisMonthP">Bulan Ini</button>
+          <button type="button" class="pr-preset-btn" id="presetLastMonthP">Bulan Lalu</button>
+          <button type="button" class="pr-preset-btn" id="presetThisYearP">Tahun Ini</button>
+        </span>
+      </div>
+      <span class="filter-sep"></span>
+      <span class="filter-group-label">Distribusi</span>
+      <div class="filter-dd" id="ddDistributorP">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Nama Distributor</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddStatusP">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddPicP">
+        <button type="button" class="filter-dd-btn"><span class="lbl">PIC</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <span class="filter-sep"></span>
+      <span class="filter-group-label">Produk</span>
+      <div class="filter-dd" id="ddCategoryP">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Kategori Produk</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+    </div>
+    <p class="card-sub filter-active-line" id="filterActiveP" style="margin:12px 0 0; font-weight:600; color:var(--text-1);">Periode: &mdash; &middot; Status: &mdash;</p>
+      <p class="card-sub" id="filterSummaryP" style="margin:12px 0 0;">&mdash;</p>
+  </div>
+
+  <div class="kpi-grid kpi-grid-3">
+    <div class="kpi accent">
+      <div class="label">Total Net Sales</div>
+      <div class="value" id="kpiPNet">&mdash;</div>
+      <div class="foot" id="kpiPNetFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total KG</div>
+      <div class="value" id="kpiPKg">&mdash;</div>
+      <div class="foot" id="kpiPKgFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Qty Zak</div>
+      <div class="value" id="kpiPZak">&mdash;</div>
+      <div class="foot" id="kpiPZakFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Qty Elite Cr&egrave;me</div>
+      <div class="value" id="kpiPElite">&mdash;</div>
+      <div class="foot" id="kpiPEliteFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Jumlah PO</div>
+      <div class="value" id="kpiPPo">&mdash;</div>
+      <div class="foot" id="kpiPPoFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Jumlah Invoice</div>
+      <div class="value" id="kpiPInv">&mdash;</div>
+      <div class="foot" id="kpiPInvFoot">&mdash;</div>
+    </div>
+  </div>
+
+  <div class="row2b">
+    <div class="card">
+      <h2>Net Sales per PIC<span class="chart-tag" id="tagPNet"></span></h2>
+      <p class="card-sub">Nilai Sell In (Exc. PPN) per PIC &middot; filter tersendiri, tidak terhubung dengan tab lain</p>
+      <div id="picGraphNet"></div>
+    </div>
+    <div class="card">
+      <h2>Total KG per PIC<span class="chart-tag" id="tagPKg"></span></h2>
+      <p class="card-sub">Quantity Invoiced (KG) seluruh kategori per PIC</p>
+      <div id="picGraphKg"></div>
+    </div>
+  </div>
+
+  <div class="row2b">
+    <div class="card">
+      <h2>Qty Zak per PIC<span class="chart-tag" id="tagPZak"></span></h2>
+      <p class="card-sub">Total Qty Terkirim (Zak) kategori SPK_Zak per PIC</p>
+      <div id="picGraphZak"></div>
+    </div>
+    <div class="card">
+      <h2>Qty Elite Cr&egrave;me per PIC<span class="chart-tag" id="tagPElite"></span></h2>
+      <p class="card-sub">Total Qty Terkirim (Pcs) kategori Elite Cr&egrave;me per PIC</p>
+      <div id="picGraphElite"></div>
+    </div>
+  </div>
+
+  <div class="row2b">
+    <div class="card">
+      <h2>Jumlah PO per PIC<span class="chart-tag" id="tagPPo"></span></h2>
+      <p class="card-sub">Jumlah Order Number unik per PIC</p>
+      <div id="picGraphPo"></div>
+    </div>
+    <div class="card">
+      <h2>Jumlah Invoice per PIC<span class="chart-tag" id="tagPInv"></span></h2>
+      <p class="card-sub">Jumlah Invoice Number unik per PIC</p>
+      <div id="picGraphInv"></div>
+    </div>
+  </div>
+  </div><!-- /pagePicGraph -->
+
   <div class="page" id="pageDetail">
   <div class="card filter-card" style="margin-bottom:20px;">
     <div class="filter-head">
@@ -955,7 +1221,8 @@
         </div>
       </div>
     </div>
-    <p class="card-sub" id="filterSummaryT" style="margin:12px 0 0;">&mdash;</p>
+    <p class="card-sub filter-active-line" id="filterActiveT" style="margin:12px 0 0; font-weight:600; color:var(--text-1);">Periode: &mdash; &middot; Status: &mdash;</p>
+      <p class="card-sub" id="filterSummaryT" style="margin:12px 0 0;">&mdash;</p>
   </div>
 
   <div class="card">
@@ -1051,7 +1318,8 @@
         </div>
       </div>
     </div>
-    <p class="card-sub" id="filterSummaryI" style="margin:12px 0 0;">&mdash;</p>
+    <p class="card-sub filter-active-line" id="filterActiveI" style="margin:12px 0 0; font-weight:600; color:var(--text-1);">Periode: &mdash; &middot; Status: &mdash;</p>
+      <p class="card-sub" id="filterSummaryI" style="margin:12px 0 0;">&mdash;</p>
   </div>
 
   <div class="card">
@@ -1899,7 +2167,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
                   ddDistributorD: new Set(), ddStatusD: new Set(), ddPicD: new Set(),
                   ddDistributorT: new Set(), ddStatusT: new Set(), ddPicT: new Set(),
                   ddCategoryT: new Set(), ddSubcatT: new Set(), ddItemT: new Set(),
-                  ddDistributorI: new Set(), ddStatusI: new Set(), ddPicI: new Set(), ddCategoryI: new Set() };
+                  ddDistributorI: new Set(), ddStatusI: new Set(), ddPicI: new Set(), ddCategoryI: new Set(),
+                  ddDistributorG: new Set(), ddStatusG: new Set(), ddPicG: new Set(), ddCategoryG: new Set(),
+                  ddDistributorP: new Set(), ddStatusP: new Set(), ddPicP: new Set(), ddCategoryP: new Set() };
   var periodRangeS = { from:'', to:'' };
   var sortKey = 'dt', sortDir = -1;
   var page = 0, pageSize = 25;
@@ -1916,6 +2186,12 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   var sortKeyI = 'v_total', sortDirI = -1;
   var pageI = 0, pageSizeI = 25;
 
+  // ---------- Filter tersendiri untuk tab By Distributor (tidak terhubung ke tab lain) ----------
+  var periodRangeG = { from:'', to:'' };
+
+  // ---------- Filter tersendiri untuk tab By PIC (tidak terhubung ke tab lain) ----------
+  var periodRangeP = { from:'', to:'' };
+
   // Filter yang saling terhubung (cross-filter) sesuai relasi pada tabel referensi
   // Branch -> Status / Group Area / Area Distributor / PIC, dan Item -> Kategori / Sub Kategori.
   // Memilih satu nilai akan menyaring opsi yang tersedia pada filter lain dalam grup yang sama.
@@ -1927,7 +2203,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddDistributorD:'ad', ddStatusD:'status', ddPicD:'pic',
     ddDistributorT:'ad', ddStatusT:'status', ddPicT:'pic',
     ddCategoryT:'cat', ddSubcatT:'subcat', ddItemT:'nama',
-    ddDistributorI:'ad', ddStatusI:'status', ddPicI:'pic', ddCategoryI:'cat'
+    ddDistributorI:'ad', ddStatusI:'status', ddPicI:'pic', ddCategoryI:'cat',
+    ddDistributorG:'ad', ddStatusG:'status', ddPicG:'pic', ddCategoryG:'cat',
+    ddDistributorP:'ad', ddStatusP:'status', ddPicP:'pic', ddCategoryP:'cat'
   };
   var ddGroups = {
     ddDistributor:['ddDistributor','ddStatus','ddPic'],
@@ -1954,7 +2232,15 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddDistributorI:['ddDistributorI','ddStatusI','ddPicI'],
     ddStatusI:['ddDistributorI','ddStatusI','ddPicI'],
     ddPicI:['ddDistributorI','ddStatusI','ddPicI'],
-    ddCategoryI:['ddCategoryI']
+    ddCategoryI:['ddCategoryI'],
+    ddDistributorG:['ddDistributorG','ddStatusG','ddPicG'],
+    ddStatusG:['ddDistributorG','ddStatusG','ddPicG'],
+    ddPicG:['ddDistributorG','ddStatusG','ddPicG'],
+    ddCategoryG:['ddCategoryG'],
+    ddDistributorP:['ddDistributorP','ddStatusP','ddPicP'],
+    ddStatusP:['ddDistributorP','ddStatusP','ddPicP'],
+    ddPicP:['ddDistributorP','ddStatusP','ddPicP'],
+    ddCategoryP:['ddCategoryP']
   };
   function inPeriodRange(r){
     if(periodRangeS.from && r.ym < periodRangeS.from) return false;
@@ -2400,11 +2686,111 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   });
   document.getElementById('searchBoxI').addEventListener('input', function(){ pageI = 0; renderInvoice(); });
   document.getElementById('btnExportPdfI').addEventListener('click', function(){ window.print(); });
+  document.getElementById('btnExportPdfG').addEventListener('click', function(){ window.print(); });
+  document.getElementById('btnExportPdfP').addEventListener('click', function(){ window.print(); });
 
   buildChecklist('ddDistributorI', 'ad', function(){ pageI = 0; renderInvoice(); });
   buildChecklist('ddStatusI', 'status', function(){ pageI = 0; renderInvoice(); });
   buildChecklist('ddPicI', 'pic', function(){ pageI = 0; renderInvoice(); });
   buildChecklist('ddCategoryI', 'cat', function(){ pageI = 0; renderInvoice(); });
+
+  // ---------- Filter periode: tab By Distributor (independen, tidak terhubung tab lain) ----------
+  var periodFromG = document.getElementById('periodFromG');
+  var periodToG = document.getElementById('periodToG');
+  allYms.forEach(function(ym){
+    var o1 = document.createElement('option'); o1.value = ym; o1.textContent = ymLabel(ym); periodFromG.appendChild(o1);
+    var o2 = document.createElement('option'); o2.value = ym; o2.textContent = ymLabel(ym); periodToG.appendChild(o2);
+  });
+  if(allYms.length){
+    periodFromG.value = allYms[0]; periodRangeG.from = allYms[0];
+    periodToG.value = allYms[allYms.length-1]; periodRangeG.to = allYms[allYms.length-1];
+  }
+  periodFromG.addEventListener('change', function(){
+    periodRangeG.from = periodFromG.value;
+    if(periodRangeG.to && periodRangeG.from > periodRangeG.to){ periodToG.value = periodFromG.value; periodRangeG.to = periodFromG.value; }
+    renderDistGraph();
+  });
+  periodToG.addEventListener('change', function(){
+    periodRangeG.to = periodToG.value;
+    if(periodRangeG.from && periodRangeG.to < periodRangeG.from){ periodFromG.value = periodToG.value; periodRangeG.from = periodToG.value; }
+    renderDistGraph();
+  });
+  document.getElementById('presetThisMonthG').addEventListener('click', function(){
+    applyPeriodPreset(periodFromG, periodToG, periodRangeG, 'this', function(){ renderDistGraph(); });
+  });
+  document.getElementById('presetLastMonthG').addEventListener('click', function(){
+    applyPeriodPreset(periodFromG, periodToG, periodRangeG, 'last', function(){ renderDistGraph(); });
+  });
+  document.getElementById('presetThisYearG').addEventListener('click', function(){
+    applyPeriodPreset(periodFromG, periodToG, periodRangeG, 'year', function(){ renderDistGraph(); });
+  });
+  document.getElementById('resetFiltersG').addEventListener('click', function(){
+    if(allYms.length){
+      periodFromG.value = allYms[0]; periodRangeG.from = allYms[0];
+      periodToG.value = allYms[allYms.length-1]; periodRangeG.to = allYms[allYms.length-1];
+    }
+    var idsG = ['ddDistributorG','ddStatusG','ddPicG','ddCategoryG'];
+    idsG.forEach(function(id){ ddState[id].clear(); });
+    idsG.forEach(function(id){
+      var root = document.getElementById(id);
+      if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    });
+    renderDistGraph();
+  });
+
+  buildChecklist('ddDistributorG', 'ad', function(){ renderDistGraph(); });
+  buildChecklist('ddStatusG', 'status', function(){ renderDistGraph(); });
+  buildChecklist('ddPicG', 'pic', function(){ renderDistGraph(); });
+  buildChecklist('ddCategoryG', 'cat', function(){ renderDistGraph(); });
+
+  // ---------- Filter periode: tab By PIC (independen, tidak terhubung tab lain) ----------
+  var periodFromP = document.getElementById('periodFromP');
+  var periodToP = document.getElementById('periodToP');
+  allYms.forEach(function(ym){
+    var o1 = document.createElement('option'); o1.value = ym; o1.textContent = ymLabel(ym); periodFromP.appendChild(o1);
+    var o2 = document.createElement('option'); o2.value = ym; o2.textContent = ymLabel(ym); periodToP.appendChild(o2);
+  });
+  if(allYms.length){
+    periodFromP.value = allYms[0]; periodRangeP.from = allYms[0];
+    periodToP.value = allYms[allYms.length-1]; periodRangeP.to = allYms[allYms.length-1];
+  }
+  periodFromP.addEventListener('change', function(){
+    periodRangeP.from = periodFromP.value;
+    if(periodRangeP.to && periodRangeP.from > periodRangeP.to){ periodToP.value = periodFromP.value; periodRangeP.to = periodFromP.value; }
+    renderPicGraph();
+  });
+  periodToP.addEventListener('change', function(){
+    periodRangeP.to = periodToP.value;
+    if(periodRangeP.from && periodRangeP.to < periodRangeP.from){ periodFromP.value = periodToP.value; periodRangeP.from = periodToP.value; }
+    renderPicGraph();
+  });
+  document.getElementById('presetThisMonthP').addEventListener('click', function(){
+    applyPeriodPreset(periodFromP, periodToP, periodRangeP, 'this', function(){ renderPicGraph(); });
+  });
+  document.getElementById('presetLastMonthP').addEventListener('click', function(){
+    applyPeriodPreset(periodFromP, periodToP, periodRangeP, 'last', function(){ renderPicGraph(); });
+  });
+  document.getElementById('presetThisYearP').addEventListener('click', function(){
+    applyPeriodPreset(periodFromP, periodToP, periodRangeP, 'year', function(){ renderPicGraph(); });
+  });
+  document.getElementById('resetFiltersP').addEventListener('click', function(){
+    if(allYms.length){
+      periodFromP.value = allYms[0]; periodRangeP.from = allYms[0];
+      periodToP.value = allYms[allYms.length-1]; periodRangeP.to = allYms[allYms.length-1];
+    }
+    var idsP = ['ddDistributorP','ddStatusP','ddPicP','ddCategoryP'];
+    idsP.forEach(function(id){ ddState[id].clear(); });
+    idsP.forEach(function(id){
+      var root = document.getElementById(id);
+      if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    });
+    renderPicGraph();
+  });
+
+  buildChecklist('ddDistributorP', 'ad', function(){ renderPicGraph(); });
+  buildChecklist('ddStatusP', 'status', function(){ renderPicGraph(); });
+  buildChecklist('ddPicP', 'pic', function(){ renderPicGraph(); });
+  buildChecklist('ddCategoryP', 'cat', function(){ renderPicGraph(); });
 
   buildChecklist('ddDistributorW', 'ad', function(){ renderWeekly(); });
   buildChecklist('ddStatusW', 'status', function(){ renderWeekly(); });
@@ -3082,6 +3468,20 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     return 'Periode: ' + ymLabel(range.from) + ' – ' + ymLabel(range.to);
   }
   function periodRangeLabel(){ return periodRangeLabelFor(periodRangeS); }
+  function periodFullLabel(range){
+    if(!allYms.length || !range || !range.from || !range.to) return '—';
+    if(range.from === range.to) return ymLabel(range.from);
+    return ymLabel(range.from) + ' – ' + ymLabel(range.to);
+  }
+  function statusFullLabel(statusSet){
+    if(!statusSet || !statusSet.size) return 'Semua';
+    return Array.from(statusSet).join(', ');
+  }
+  function updateFilterActiveLine(elId, range, statusSet){
+    var el = document.getElementById(elId);
+    if(!el) return;
+    el.innerHTML = 'Periode: <b>' + periodFullLabel(range) + '</b> &middot; Status: <b>' + statusFullLabel(statusSet) + '</b>';
+  }
   function summaryTagText(){
     var parts = [
       periodRangeLabel(),
@@ -3228,6 +3628,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     } else {
       summary.innerHTML = 'Menampilkan <b>'+k.total_po+'</b> dari '+totalPoAll+' PO, periode '+(k.date_min||'–')+'–'+(k.date_max||'–')+'.';
     }
+    updateFilterActiveLine('filterActiveT', periodRangeT, ddState.ddStatusT);
     var activeCount = ['ddDistributorT','ddStatusT','ddPicT','ddCategoryT','ddSubcatT','ddItemT'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
     if(periodRangeLabelFor(periodRangeT)) activeCount += 1;
     if(document.getElementById('searchBoxT').value.trim()) activeCount += 1;
@@ -3289,8 +3690,16 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       Object.keys(g._pic).forEach(function(p){ if(g._pic[p] > bestN){ bestN = g._pic[p]; bestPic = p; } });
       g.pic = bestPic;
       delete g._po; delete g._inv; delete g._pic;
+      g.key = key;
       return g;
     });
+  }
+  function getDistinctDistributors(rows){
+    var map = {}, order = [];
+    rows.forEach(function(r){
+      if(!map[r.ad]){ map[r.ad] = { key: r.ad, dist: distName(r), pic: r.pic }; order.push(r.ad); }
+    });
+    return order.map(function(k){ return map[k]; });
   }
   function invoiceTagText(){
     var parts = [];
@@ -3368,6 +3777,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     } else {
       summary.innerHTML = 'Menampilkan <b>'+k.total_po+'</b> PO dari <b>'+recap.length+'</b> distributor, periode '+(k.date_min||'–')+'–'+(k.date_max||'–')+'.';
     }
+    updateFilterActiveLine('filterActiveI', periodRangeI, ddState.ddStatusI);
     var activeCount = ['ddDistributorI','ddStatusI','ddPicI','ddCategoryI'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
     if(periodRangeLabelFor(periodRangeI)) activeCount += 1;
     if(document.getElementById('searchBoxI').value.trim()) activeCount += 1;
@@ -3385,6 +3795,230 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       renderInvoiceTable(aggregateInvoiceByDistributor(getInvoiceFilteredRows()));
     });
   });
+
+  // ---------- Tab By Distributor: grafik batang per metrik, per distributor ----------
+  function getDistGraphFilteredRows(){
+    var distSet = ddState.ddDistributorG, statusSet = ddState.ddStatusG, picSet = ddState.ddPicG, catSet = ddState.ddCategoryG;
+    return allRows.filter(function(r){
+      if(periodRangeG.from && r.ym < periodRangeG.from) return false;
+      if(periodRangeG.to && r.ym > periodRangeG.to) return false;
+      if(distSet.size && !distSet.has(r.ad)) return false;
+      if(statusSet.size && !statusSet.has(r.status)) return false;
+      if(picSet.size && !picSet.has(r.pic)) return false;
+      if(catSet.size && !catSet.has(r.cat)) return false;
+      return true;
+    });
+  }
+  function distGraphTagText(){
+    var parts = [];
+    var pLabel = periodRangeLabelFor(periodRangeG);
+    if(pLabel) parts.push(pLabel);
+    [
+      filterSetLabel(ddState.ddDistributorG, 'Distributor'),
+      filterSetLabel(ddState.ddStatusG, 'Status'),
+      filterSetLabel(ddState.ddPicG, 'PIC'),
+      filterSetLabel(ddState.ddCategoryG, 'Kategori')
+    ].forEach(function(x){ if(x) parts.push(x); });
+    return parts.length ? parts.join(' · ') : 'Semua Data';
+  }
+  function renderDistGraph(){
+    var filteredRows = getDistGraphFilteredRows();
+    // Daftar distributor mengikuti filter Distributor/Status/PIC/Kategori (tanpa periode),
+    // supaya periode yang dipersempit tidak menyembunyikan distributor — nilainya tetap 0
+    // kalau distributor tsb memang tidak ada transaksi pada periode yang dipilih.
+    var distSetG = ddState.ddDistributorG, statusSetG = ddState.ddStatusG, picSetG = ddState.ddPicG, catSetG = ddState.ddCategoryG;
+    var masterRows = allRows.filter(function(r){
+      if(distSetG.size && !distSetG.has(r.ad)) return false;
+      if(statusSetG.size && !statusSetG.has(r.status)) return false;
+      if(picSetG.size && !picSetG.has(r.pic)) return false;
+      if(catSetG.size && !catSetG.has(r.cat)) return false;
+      return true;
+    });
+    var distributors = getDistinctDistributors(masterRows);
+    var valueRecap = aggregateInvoiceByDistributor(filteredRows);
+    var valueMap = {};
+    valueRecap.forEach(function(g){ valueMap[g.key] = g; });
+    var recap = distributors.map(function(d){
+      return valueMap[d.key] || { dist: d.dist, pic: d.pic, po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0, key: d.key };
+    });
+    var activeDistCount = recap.filter(function(g){ return g.po_count > 0 || g.qty_pcs > 0 || g.qty_bag > 0; }).length;
+    var sortDesc = function(key){ return recap.slice().sort(function(a,b){ return b[key]-a[key]; }); };
+
+    // ---------- Total per metrik (dipakai untuk % kontribusi & kartu summary) ----------
+    var gTotals = recap.reduce(function(a,g){
+      a.v_total += g.v_total; a.qty_invoiced += g.qty_invoiced; a.qty_bag += g.qty_bag;
+      a.qty_pcs += g.qty_pcs; a.po_count += g.po_count; a.inv_count += g.inv_count;
+      return a;
+    }, { v_total:0, qty_invoiced:0, qty_bag:0, qty_pcs:0, po_count:0, inv_count:0 });
+    function pctOf(v, total){ return total ? (v/total*100).toFixed(1).replace('.', ',') + '%' : '0%'; }
+    function pctSub(key, total){ return function(r){ return pctOf(r[key], total); }; }
+
+    drawBars('distGraphNet', sortDesc('v_total'), 'dist', 'v_total', cv('--s1'), { fmt:function(v){ return fmtRp(v, true); }, subFn: pctSub('v_total', gTotals.v_total) });
+    drawBars('distGraphKg', sortDesc('qty_invoiced'), 'dist', 'qty_invoiced', cv('--s3'), { fmt:function(v){ return fmtNum(v)+' kg'; }, subFn: pctSub('qty_invoiced', gTotals.qty_invoiced) });
+    drawBars('distGraphZak', sortDesc('qty_bag'), 'dist', 'qty_bag', cv('--s7'), { fmt:function(v){ return fmtNum(v)+' zak'; }, subFn: pctSub('qty_bag', gTotals.qty_bag) });
+    drawBars('distGraphElite', sortDesc('qty_pcs'), 'dist', 'qty_pcs', cv('--s1'), { fmt:function(v){ return fmtNum(v)+' pcs'; }, subFn: pctSub('qty_pcs', gTotals.qty_pcs) });
+    drawBars('distGraphPo', sortDesc('po_count'), 'dist', 'po_count', cv('--s5'), { fmt:function(v){ return fmtNum(v); }, subFn: pctSub('po_count', gTotals.po_count) });
+    drawBars('distGraphInv', sortDesc('inv_count'), 'dist', 'inv_count', cv('--s6'), { fmt:function(v){ return fmtNum(v); }, subFn: pctSub('inv_count', gTotals.inv_count) });
+
+    // ---------- Kartu summary per metrik ----------
+    function topOf(key){
+      if(!recap.length) return null;
+      return recap.reduce(function(best,g){ return (!best || g[key] > best[key]) ? g : best; }, null);
+    }
+    function setKpiCard(valId, footId, totalText, key, unitFn){
+      document.getElementById(valId).textContent = totalText;
+      var top = topOf(key);
+      document.getElementById(footId).textContent = top ? ('Tertinggi: ' + top.dist + ' (' + unitFn(top[key]) + ')') : 'Tidak ada data';
+    }
+    setKpiCard('kpiGNet', 'kpiGNetFoot', fmtRp(gTotals.v_total, true), 'v_total', function(v){ return fmtRp(v, true); });
+    setKpiCard('kpiGKg', 'kpiGKgFoot', fmtNum(gTotals.qty_invoiced) + ' kg', 'qty_invoiced', function(v){ return fmtNum(v) + ' kg'; });
+    setKpiCard('kpiGZak', 'kpiGZakFoot', fmtNum(gTotals.qty_bag) + ' zak', 'qty_bag', function(v){ return fmtNum(v) + ' zak'; });
+    setKpiCard('kpiGElite', 'kpiGEliteFoot', fmtNum(gTotals.qty_pcs) + ' pcs', 'qty_pcs', function(v){ return fmtNum(v) + ' pcs'; });
+    setKpiCard('kpiGPo', 'kpiGPoFoot', fmtNum(gTotals.po_count), 'po_count', function(v){ return fmtNum(v); });
+    setKpiCard('kpiGInv', 'kpiGInvFoot', fmtNum(gTotals.inv_count), 'inv_count', function(v){ return fmtNum(v); });
+
+    var summary = document.getElementById('filterSummaryG');
+    var k = computeKpi(filteredRows);
+    if(filteredRows.length === allRows.length){
+      summary.textContent = 'Menampilkan seluruh ' + totalPoAll + ' PO dari ' + activeDistCount + ' distributor aktif (grafik menampilkan semua ' + recap.length + ' distributor) · ' + DATA.kpi.date_min + '–' + DATA.kpi.date_max + '.';
+    } else {
+      summary.innerHTML = 'Menampilkan <b>'+k.total_po+'</b> PO dari <b>'+activeDistCount+'</b> distributor aktif (grafik menampilkan semua <b>'+recap.length+'</b> distributor), periode '+(k.date_min||'–')+'–'+(k.date_max||'–')+'.';
+    }
+    updateFilterActiveLine('filterActiveG', periodRangeG, ddState.ddStatusG);
+    var activeCount = ['ddDistributorG','ddStatusG','ddPicG','ddCategoryG'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
+    if(periodRangeLabelFor(periodRangeG)) activeCount += 1;
+    var fc = document.getElementById('fcountG');
+    fc.textContent = activeCount; fc.classList.toggle('show', activeCount > 0);
+    setTagText(['tagGNet','tagGKg','tagGZak','tagGElite','tagGPo','tagGInv'], distGraphTagText());
+  }
+
+  // ---------- Tab By PIC: grafik batang per metrik, per PIC (pola sama dengan By Distributor) ----------
+  function getPicGraphFilteredRows(){
+    var distSet = ddState.ddDistributorP, statusSet = ddState.ddStatusP, picSet = ddState.ddPicP, catSet = ddState.ddCategoryP;
+    return allRows.filter(function(r){
+      if(periodRangeP.from && r.ym < periodRangeP.from) return false;
+      if(periodRangeP.to && r.ym > periodRangeP.to) return false;
+      if(distSet.size && !distSet.has(r.ad)) return false;
+      if(statusSet.size && !statusSet.has(r.status)) return false;
+      if(picSet.size && !picSet.has(r.pic)) return false;
+      if(catSet.size && !catSet.has(r.cat)) return false;
+      return true;
+    });
+  }
+  function picGraphTagText(){
+    var parts = [];
+    var pLabel = periodRangeLabelFor(periodRangeP);
+    if(pLabel) parts.push(pLabel);
+    [
+      filterSetLabel(ddState.ddDistributorP, 'Distributor'),
+      filterSetLabel(ddState.ddStatusP, 'Status'),
+      filterSetLabel(ddState.ddPicP, 'PIC'),
+      filterSetLabel(ddState.ddCategoryP, 'Kategori')
+    ].forEach(function(x){ if(x) parts.push(x); });
+    return parts.length ? parts.join(' · ') : 'Semua Data';
+  }
+  function aggregateByPic(rows){
+    var map = {}, order = [];
+    rows.forEach(function(r){
+      var key = r.pic;
+      if(!map[key]){
+        map[key] = { pic: key, po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0, _po:{}, _inv:{} };
+        order.push(key);
+      }
+      var g = map[key];
+      g._po[r.on] = true;
+      g._inv[r.inn] = true;
+      g.qty_pcs += (r.qp||0);
+      g.qty_bag += (r.qb||0);
+      g.qty_invoiced += (r.qi||0);
+      g.v_total += (r.v||0);
+    });
+    return order.map(function(key){
+      var g = map[key];
+      g.po_count = Object.keys(g._po).length;
+      g.inv_count = Object.keys(g._inv).length;
+      delete g._po; delete g._inv;
+      g.key = key;
+      return g;
+    });
+  }
+  function getDistinctPics(rows){
+    var map = {}, order = [];
+    rows.forEach(function(r){
+      if(!map[r.pic]){ map[r.pic] = { key: r.pic, pic: r.pic }; order.push(r.pic); }
+    });
+    return order.map(function(k){ return map[k]; });
+  }
+  function renderPicGraph(){
+    var filteredRows = getPicGraphFilteredRows();
+    // Daftar PIC mengikuti filter Distributor/Status/PIC/Kategori (tanpa periode),
+    // supaya periode yang dipersempit tidak menyembunyikan PIC — nilainya tetap 0
+    // kalau PIC tsb memang tidak ada transaksi pada periode yang dipilih.
+    var distSetP = ddState.ddDistributorP, statusSetP = ddState.ddStatusP, picSetP = ddState.ddPicP, catSetP = ddState.ddCategoryP;
+    var masterRows = allRows.filter(function(r){
+      if(distSetP.size && !distSetP.has(r.ad)) return false;
+      if(statusSetP.size && !statusSetP.has(r.status)) return false;
+      if(picSetP.size && !picSetP.has(r.pic)) return false;
+      if(catSetP.size && !catSetP.has(r.cat)) return false;
+      return true;
+    });
+    var pics = getDistinctPics(masterRows);
+    var valueRecap = aggregateByPic(filteredRows);
+    var valueMap = {};
+    valueRecap.forEach(function(g){ valueMap[g.key] = g; });
+    var recap = pics.map(function(d){
+      return valueMap[d.key] || { pic: d.pic, po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0, key: d.key };
+    });
+    var activePicCount = recap.filter(function(g){ return g.po_count > 0 || g.qty_pcs > 0 || g.qty_bag > 0; }).length;
+    var sortDesc = function(key){ return recap.slice().sort(function(a,b){ return b[key]-a[key]; }); };
+
+    // ---------- Total per metrik (dipakai untuk % kontribusi & kartu summary) ----------
+    var pTotals = recap.reduce(function(a,g){
+      a.v_total += g.v_total; a.qty_invoiced += g.qty_invoiced; a.qty_bag += g.qty_bag;
+      a.qty_pcs += g.qty_pcs; a.po_count += g.po_count; a.inv_count += g.inv_count;
+      return a;
+    }, { v_total:0, qty_invoiced:0, qty_bag:0, qty_pcs:0, po_count:0, inv_count:0 });
+    function pctOfP(v, total){ return total ? (v/total*100).toFixed(1).replace('.', ',') + '%' : '0%'; }
+    function pctSubP(key, total){ return function(r){ return pctOfP(r[key], total); }; }
+
+    drawBars('picGraphNet', sortDesc('v_total'), 'pic', 'v_total', cv('--s1'), { fmt:function(v){ return fmtRp(v, true); }, subFn: pctSubP('v_total', pTotals.v_total) });
+    drawBars('picGraphKg', sortDesc('qty_invoiced'), 'pic', 'qty_invoiced', cv('--s3'), { fmt:function(v){ return fmtNum(v)+' kg'; }, subFn: pctSubP('qty_invoiced', pTotals.qty_invoiced) });
+    drawBars('picGraphZak', sortDesc('qty_bag'), 'pic', 'qty_bag', cv('--s7'), { fmt:function(v){ return fmtNum(v)+' zak'; }, subFn: pctSubP('qty_bag', pTotals.qty_bag) });
+    drawBars('picGraphElite', sortDesc('qty_pcs'), 'pic', 'qty_pcs', cv('--s1'), { fmt:function(v){ return fmtNum(v)+' pcs'; }, subFn: pctSubP('qty_pcs', pTotals.qty_pcs) });
+    drawBars('picGraphPo', sortDesc('po_count'), 'pic', 'po_count', cv('--s5'), { fmt:function(v){ return fmtNum(v); }, subFn: pctSubP('po_count', pTotals.po_count) });
+    drawBars('picGraphInv', sortDesc('inv_count'), 'pic', 'inv_count', cv('--s6'), { fmt:function(v){ return fmtNum(v); }, subFn: pctSubP('inv_count', pTotals.inv_count) });
+
+    // ---------- Kartu summary per metrik ----------
+    function topOfP(key){
+      if(!recap.length) return null;
+      return recap.reduce(function(best,g){ return (!best || g[key] > best[key]) ? g : best; }, null);
+    }
+    function setKpiCardP(valId, footId, totalText, key, unitFn){
+      document.getElementById(valId).textContent = totalText;
+      var top = topOfP(key);
+      document.getElementById(footId).textContent = top ? ('Tertinggi: ' + top.pic + ' (' + unitFn(top[key]) + ')') : 'Tidak ada data';
+    }
+    setKpiCardP('kpiPNet', 'kpiPNetFoot', fmtRp(pTotals.v_total, true), 'v_total', function(v){ return fmtRp(v, true); });
+    setKpiCardP('kpiPKg', 'kpiPKgFoot', fmtNum(pTotals.qty_invoiced) + ' kg', 'qty_invoiced', function(v){ return fmtNum(v) + ' kg'; });
+    setKpiCardP('kpiPZak', 'kpiPZakFoot', fmtNum(pTotals.qty_bag) + ' zak', 'qty_bag', function(v){ return fmtNum(v) + ' zak'; });
+    setKpiCardP('kpiPElite', 'kpiPEliteFoot', fmtNum(pTotals.qty_pcs) + ' pcs', 'qty_pcs', function(v){ return fmtNum(v) + ' pcs'; });
+    setKpiCardP('kpiPPo', 'kpiPPoFoot', fmtNum(pTotals.po_count), 'po_count', function(v){ return fmtNum(v); });
+    setKpiCardP('kpiPInv', 'kpiPInvFoot', fmtNum(pTotals.inv_count), 'inv_count', function(v){ return fmtNum(v); });
+
+    var summary = document.getElementById('filterSummaryP');
+    var k = computeKpi(filteredRows);
+    if(filteredRows.length === allRows.length){
+      summary.textContent = 'Menampilkan seluruh ' + totalPoAll + ' PO dari ' + activePicCount + ' PIC aktif (grafik menampilkan semua ' + recap.length + ' PIC) · ' + DATA.kpi.date_min + '–' + DATA.kpi.date_max + '.';
+    } else {
+      summary.innerHTML = 'Menampilkan <b>'+k.total_po+'</b> PO dari <b>'+activePicCount+'</b> PIC aktif (grafik menampilkan semua <b>'+recap.length+'</b> PIC), periode '+(k.date_min||'–')+'–'+(k.date_max||'–')+'.';
+    }
+    updateFilterActiveLine('filterActiveP', periodRangeP, ddState.ddStatusP);
+    var activeCountP = ['ddDistributorP','ddStatusP','ddPicP','ddCategoryP'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
+    if(periodRangeLabelFor(periodRangeP)) activeCountP += 1;
+    var fcP = document.getElementById('fcountP');
+    fcP.textContent = activeCountP; fcP.classList.toggle('show', activeCountP > 0);
+    setTagText(['tagPNet','tagPKg','tagPZak','tagPElite','tagPPo','tagPInv'], picGraphTagText());
+  }
 
   // ---------- Summary page (always unfiltered) ----------
   function drawMonthlyBar(containerId, months, opts){
@@ -3671,6 +4305,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     } else {
       summaryEl.innerHTML = 'Menampilkan <b>'+kS.total_po+'</b> dari '+totalPoAll+' PO.';
     }
+    updateFilterActiveLine('filterActiveS', periodRangeS, ddState.ddStatusS);
 
     var activeCountS = ['ddDistributorS','ddStatusS','ddPicS'].reduce(function(a,id){ return a + ddState[id].size; }, 0) + (periodRangeLabel() ? 1 : 0);
     var fcS = document.getElementById('fcountS');
@@ -3693,6 +4328,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       else if(pageId === 'pageDaily') renderDaily();
       else if(pageId === 'pageDetail') renderDetail();
       else if(pageId === 'pageInvoice') renderInvoice();
+      else if(pageId === 'pageDistGraph') renderDistGraph();
+      else if(pageId === 'pagePicGraph') renderPicGraph();
       else if(pageId === 'pageTarget'){ drawTargetTable(); drawTargetSummary(); }
       else if(pageId === 'pageMaster'){ drawMasterTable(); }
       else render();
@@ -3705,6 +4342,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   renderDaily();
   renderDetail();
   renderInvoice();
+  renderDistGraph();
+  renderPicGraph();
   drawTargetTable();
   drawTargetSummary();
   drawMasterTable();
