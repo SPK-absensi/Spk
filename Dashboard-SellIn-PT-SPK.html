@@ -1168,7 +1168,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
 <script>
 (function(){
   var DATA = JSON.parse(document.getElementById('sellin-data').textContent);
-  var LIVE_CACHE_KEY = 'sellin_live_data_v1';
+  var LIVE_CACHE_KEY = 'sellin_live_data_v2';
   (function applyLiveCache(){
     try{
       var raw = localStorage.getItem(LIVE_CACHE_KEY);
@@ -1232,6 +1232,17 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     'INTI SURYA MEDAN, PT.|INTI SURYA MEDAN, PT.': {status:'External Dist', ga:'MEDAN', ad:'INTI SURYA MEDAN', pic:'JOV LOGA SEMBIRING'}
   };
   var SHEET_MONTHS = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
+  // Pengali KG per nama item: 1 zak = 25 kg; item kemasan 500 gr = 2 pcs per kg (0,5 kg/pcs); item kemasan 1 kg = 1 kg/pcs.
+  var SHEET_KG_MULT = {
+    'EC 30 E': 25,
+    'SCP 32 F': 25,
+    'Finished Good Elite Creme Chocolate': 1,
+    'Finished Good Elite Creme Cold Soluble Instant Creamer 500 gram': 0.5,
+    'Finished Good Elite Creme Light Flavor 500 gram': 0.5,
+    'Finished Good Elite Creme Matcha': 1,
+    'Finished Good Elite Creme Regular 500 gram': 0.5,
+    'Finished Good Elite Creme Taro': 1
+  };
 
   function sheetParseCsv(text){
     var rows = []; var row = []; var field = ''; var inQuotes = false;
@@ -1303,11 +1314,13 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       var distInfo = SHEET_DIST_MAP[cust+'|'+branch] || sheetDistFallback(cust, branch);
       var qp = sheetParseNum(cols[39]);
       var qb = sheetParseNum(cols[40]);
+      var kgMult = SHEET_KG_MULT[itemDesc];
+      var qi = kgMult === undefined ? 0 : (itemInfo.cat === 'SPK_Zak' ? qb : qp) * kgMult;
       out.push({
         dt: dt, c: cust, b: branch,
         nama: itemInfo.nama, cat: itemInfo.cat, subcat: itemInfo.subcat,
         sq: sheetParseNum(cols[9]), Uom: (cols[10]||'').trim(),
-        qp: qp, qb: qb, qs: qp + qb,
+        qp: qp, qb: qb, qs: qp + qb, qi: qi,
         status: distInfo.status, ga: distInfo.ga, ad: distInfo.ad, pic: distInfo.pic,
         v: sheetParseNum(cols[32]), iv: sheetParseNum(cols[33]), d: sheetParseNum(cols[35]),
         on: sheetParseNum(cols[4]), inn: sheetParseNum(cols[23]), it: itemDesc
@@ -1352,7 +1365,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   // jumlah baris + tanggal terakhir + total nilai), data disimpan lalu halaman
   // dimuat ulang SEKALI supaya tampil dengan data terbaru. Kalau tidak ada
   // perubahan, tidak ada reload sama sekali (tidak mengganggu).
-  var LIVE_SIG_KEY = 'sellin_live_sig_v1';
+  var LIVE_SIG_KEY = 'sellin_live_sig_v2';
   var RELOAD_GUARD_KEY = 'sellin_sync_reload_guard';
   function computeSheetSig(rows, dmax){
     var total = 0;
