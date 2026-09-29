@@ -319,7 +319,8 @@
     <button type="button" class="tab-btn" data-page="pageExplain">Penjelasan</button>
     <button type="button" class="tab-btn" data-page="pageDetail">Detail Transaksi</button>
     <button type="button" class="tab-btn" data-page="pageInvoice">Invoice</button>
-    <button type="button" class="tab-btn" data-page="pageTarget">Target</button>
+    <button type="button" class="tab-btn" data-page="pageTarget">Target Elite Cr&egrave;me</button>
+    <button type="button" class="tab-btn" data-page="pageTargetZak">Target ZAK</button>
     <button type="button" class="tab-btn" data-page="pageMaster">Master Data</button>
   </div>
 
@@ -1619,28 +1620,129 @@
         <label class="export-btn" style="cursor:pointer; margin:0;">&#128194; Import Target<input type="file" id="importTargetFile" accept="application/json" style="display:none;"></label>
       </div>
     </div>
-    <p class="card-sub" style="margin-top:10px;">Target dalam satuan Pcs, diinput per distributor untuk masing-masing produk Elite Cr&egrave;me, per tahun (2026 &amp; 2027 saja). Data tersimpan otomatis di browser ini &mdash; karena dashboard adalah halaman statis, gunakan Export/Import (file .json) untuk memindahkan data target ke perangkat atau orang lain.</p>
     <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:10px;">
       <span class="year-toggle" id="targetYearToggle">
-        <button type="button" data-year="2026" class="active">2026</button>
-        <button type="button" data-year="2027">2027</button>
+        <button type="button" data-view="actual2026" class="active">Actual 2026</button>
+        <button type="button" data-view="2026">Target 2026</button>
+        <button type="button" data-view="2027">Target 2027</button>
       </span>
       <span class="target-status" id="targetStatus">&mdash;</span>
     </div>
   </div>
 
-  <div class="card">
-    <h2>Input Target (Pcs)</h2>
-    <p class="card-sub">Isi target per produk untuk setiap distributor &middot; otomatis tersimpan saat kolom diubah.</p>
-    <div class="table-scroll" id="targetTableWrap" style="max-height:520px;"></div>
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#9881;&#65039;</span>
+      <span class="ttl">Filter Target</span>
+      <span class="fcount" id="fcountTgt">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="resetFiltersTgt" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="filter-dd" id="ddStatusTgt">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+    </div>
+    <p class="card-sub" style="margin:12px 0 0;">Memfilter transaksi yang dihitung ke Actual &amp; Target berdasarkan Status &middot; kosong = semua status.</p>
+  </div>
+
+  <div class="card" id="targetAdjustCard" style="display:none;">
+    <h2>Adjust Target <span id="adjustTargetYearLabel"></span></h2>
+    <p class="card-sub">Jika diisi, seluruh Target <span id="adjustTargetYearLabel2"></span> per distributor &amp; produk akan dihitung otomatis dengan rumus: Actual 2026 + (Actual 2026 &times; persentase ini). Setelah diterapkan, setiap sel pada tabel di bawah tetap bisa diedit manual satu per satu.</p>
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
+      <label style="display:flex; align-items:center; gap:8px; font-weight:600;">Adjust Target =
+        <input type="number" id="adjustTargetPct" step="0.1" placeholder="0" style="width:100px; padding:6px 8px; border:1px solid var(--border); border-radius:8px;">
+        %
+      </label>
+      <button type="button" id="btnApplyAdjustTarget" class="export-btn">Terapkan</button>
+      <span class="target-status" id="adjustTargetStatus"></span>
+    </div>
   </div>
 
   <div class="card">
+    <h2 id="targetTableTitle">Actual Sell In Elite Cr&egrave;me 2026 (Pcs)</h2>
+    <p class="card-sub" id="targetTableSub">Realisasi Sell In Elite Cr&egrave;me per distributor &amp; produk, tahun 2026 (data aktual, tidak bisa diedit).</p>
+    <div class="table-scroll" id="targetTableWrap" style="max-height:520px;"></div>
+  </div>
+
+  <div class="card" id="targetSummaryCard" style="display:none;">
     <h2>Pencapaian Target vs Realisasi</h2>
     <p class="card-sub">Total realisasi Sell In Elite Cr&egrave;me (Pcs, seluruh produk) dibandingkan total target, untuk tahun yang dipilih.</p>
     <div class="table-scroll" id="targetSummaryWrap" style="max-height:420px;"></div>
   </div>
   </div><!-- /pageTarget -->
+
+  <div class="page" id="pageTargetZak">
+  <div class="card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#127919;</span>
+      <span class="ttl">Target Sell In ZAK per Distributor</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportTargetZak" class="export-btn">&#128190; Export Target</button>
+        <label class="export-btn" style="cursor:pointer; margin:0;">&#128194; Import Target<input type="file" id="importTargetZakFile" accept="application/json" style="display:none;"></label>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:10px;">
+      <span class="year-toggle" id="targetZakYearToggle">
+        <button type="button" data-view="actual2026" class="active">Actual 2026</button>
+        <button type="button" data-view="2026">Target 2026</button>
+        <button type="button" data-view="2027">Target 2027</button>
+      </span>
+      <span class="target-status" id="targetZakStatus">&mdash;</span>
+    </div>
+  </div>
+
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#9881;&#65039;</span>
+      <span class="ttl">Filter Target</span>
+      <span class="fcount" id="fcountTgtZak">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="resetFiltersTgtZak" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="filter-dd" id="ddStatusTgtZak">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+    </div>
+    <p class="card-sub" style="margin:12px 0 0;">Memfilter transaksi yang dihitung ke Actual &amp; Target berdasarkan Status &middot; kosong = semua status.</p>
+  </div>
+
+  <div class="card" id="targetZakAdjustCard" style="display:none;">
+    <h2>Adjust Target <span id="adjustTargetZakYearLabel"></span></h2>
+    <p class="card-sub">Jika diisi, seluruh Target <span id="adjustTargetZakYearLabel2"></span> per distributor &amp; produk akan dihitung otomatis dengan rumus: Actual 2026 + (Actual 2026 &times; persentase ini). Setelah diterapkan, setiap sel pada tabel di bawah tetap bisa diedit manual satu per satu.</p>
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
+      <label style="display:flex; align-items:center; gap:8px; font-weight:600;">Adjust Target =
+        <input type="number" id="adjustTargetZakPct" step="0.1" placeholder="0" style="width:100px; padding:6px 8px; border:1px solid var(--border); border-radius:8px;">
+        %
+      </label>
+      <button type="button" id="btnApplyAdjustTargetZak" class="export-btn">Terapkan</button>
+      <span class="target-status" id="adjustTargetZakStatus"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="targetZakTableTitle">Actual Sell In ZAK 2026 (Zak)</h2>
+    <p class="card-sub" id="targetZakTableSub">Realisasi Sell In ZAK per distributor &amp; produk, tahun 2026 (data aktual, tidak bisa diedit).</p>
+    <div class="table-scroll" id="targetZakTableWrap" style="max-height:520px;"></div>
+  </div>
+
+  <div class="card" id="targetZakSummaryCard" style="display:none;">
+    <h2>Pencapaian Target vs Realisasi</h2>
+    <p class="card-sub">Total realisasi Sell In ZAK (seluruh produk) dibandingkan total target, untuk tahun yang dipilih.</p>
+    <div class="table-scroll" id="targetZakSummaryWrap" style="max-height:420px;"></div>
+  </div>
+  </div><!-- /pageTargetZak -->
 
   <div class="page" id="pageMaster">
   <div class="card" style="margin-bottom:20px;">
@@ -2426,7 +2528,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
                   ddDistributorG: new Set(), ddStatusG: new Set(), ddPicG: new Set(), ddCategoryG: new Set(),
                   ddDistributorP: new Set(), ddStatusP: new Set(), ddPicP: new Set(), ddCategoryP: new Set(),
                   ddDistributorC: new Set(), ddStatusC: new Set(), ddPicC: new Set(),
-                  ddDistributorE: new Set(), ddStatusE: new Set(), ddPicE: new Set() };
+                  ddDistributorE: new Set(), ddStatusE: new Set(), ddPicE: new Set(),
+                  ddStatusTgt: new Set(), ddStatusTgtZak: new Set() };
   var periodRangeS = { from:'', to:'' };
   var sortKey = 'dt', sortDir = -1;
   var page = 0, pageSize = 25;
@@ -2464,7 +2567,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddDistributorG:'ad', ddStatusG:'status', ddPicG:'pic', ddCategoryG:'cat',
     ddDistributorP:'ad', ddStatusP:'status', ddPicP:'pic', ddCategoryP:'cat',
     ddDistributorC:'ad', ddStatusC:'status', ddPicC:'pic',
-    ddDistributorE:'ad', ddStatusE:'status', ddPicE:'pic'
+    ddDistributorE:'ad', ddStatusE:'status', ddPicE:'pic',
+    ddStatusTgt:'status',
+    ddStatusTgtZak:'status'
   };
   var ddGroups = {
     ddDistributor:['ddDistributor','ddStatus','ddPic'],
@@ -2505,7 +2610,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddPicC:['ddDistributorC','ddStatusC','ddPicC'],
     ddDistributorE:['ddDistributorE','ddStatusE','ddPicE'],
     ddStatusE:['ddDistributorE','ddStatusE','ddPicE'],
-    ddPicE:['ddDistributorE','ddStatusE','ddPicE']
+    ddPicE:['ddDistributorE','ddStatusE','ddPicE'],
+    ddStatusTgt:['ddStatusTgt'],
+    ddStatusTgtZak:['ddStatusTgtZak']
   };
   function inPeriodRange(r){
     if(periodRangeS.from && r.ym < periodRangeS.from) return false;
@@ -3258,6 +3365,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   var TARGET_KEY = 'sellin_target_v1';
   var targetData = {};
   var targetYear = '2026';
+  var targetView = 'actual2026'; // 'actual2026' | '2026' | '2027'
 
   function loadTargetData(){
     try{
@@ -3265,6 +3373,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       if(raw) targetData = JSON.parse(raw) || {};
     }catch(e){ targetData = {}; }
     TARGET_YEARS.forEach(function(y){ if(!targetData[y]) targetData[y] = {}; });
+    if(!targetData.adjustPct) targetData.adjustPct = {};
   }
   function saveTargetData(){
     try{
@@ -3277,7 +3386,15 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     }
   }
   function getTargetVal(year, ad, item){
-    return (targetData[year] && targetData[year][ad] && targetData[year][ad][item]) || 0;
+    if(targetData[year] && targetData[year][ad] && targetData[year][ad][item] !== undefined){
+      return targetData[year][ad][item];
+    }
+    // Belum pernah diisi manual: isi awal Target 2026 mengikuti Actual 2026 per
+    // distributor & produk (angka ini tetap bisa diedit — begitu diubah, nilai manual
+    // tersebut yang dipakai dan tersimpan). Target 2027 dimulai dari 0 sampai diisi
+    // manual atau lewat Adjust Target.
+    if(year === '2026') return actualBaseVal(ad, item);
+    return 0;
   }
   function setTargetVal(year, ad, item, val){
     if(!targetData[year]) targetData[year] = {};
@@ -3289,20 +3406,51 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     allRows.forEach(function(r){ s[r.ad] = true; });
     return Object.keys(s).sort();
   }
-  // Gabungan daftar distributor dari data transaksi + Master Data (agar distributor baru
-  // yang ditambahkan di tab Master Data langsung muncul juga di tab Target).
+  // Filter Status pada tab Target: hanya baris transaksi dengan status terpilih yang
+  // dihitung ke Actual/Target (kosong = semua status).
+  function targetStatusAllowed(r){
+    var set = ddState.ddStatusTgt;
+    return !set || !set.size || set.has(r.status);
+  }
+  // Gabungan daftar distributor dari data transaksi (sesuai filter Status) + Master Data
+  // (agar distributor baru yang ditambahkan di tab Master Data langsung muncul juga di
+  // tab Target, terlepas dari filter Status).
   function targetDistributorList(){
     var s = {};
-    allRows.forEach(function(r){ if(r.ad) s[r.ad] = true; });
-    (masterData || []).forEach(function(row){ var ad = (row.ad||'').trim(); if(ad) s[ad] = true; });
+    allRows.forEach(function(r){ if(r.ad && targetStatusAllowed(r)) s[r.ad] = true; });
+    // Distributor dari Master Data (tanpa transaksi/status) hanya ikut ditampilkan
+    // selama filter Status belum dipakai &mdash; begitu filter Status diisi, daftar yang
+    // tampil murni mengikuti data yang lolos filter.
+    if(!ddState.ddStatusTgt.size){
+      (masterData || []).forEach(function(row){ var ad = (row.ad||'').trim(); if(ad) s[ad] = true; });
+    }
     return Object.keys(s).sort();
   }
   function realizedPcs(ad, item, year){
     var sum = 0;
     allRows.forEach(function(r){
-      if(r.ad === ad && r.nama === item && r.cat === 'Elite Crème' && r.dt.slice(0,4) === year) sum += r.qp;
+      if(r.ad === ad && r.nama === item && r.cat === 'Elite Crème' && r.dt.slice(0,4) === year && targetStatusAllowed(r)) sum += r.qp;
     });
     return sum;
+  }
+  // Angka Actual 2026 menjadi basis perhitungan untuk Target 2026 maupun Target 2027.
+  function actualBaseVal(ad, item){
+    return realizedPcs(ad, item, '2026');
+  }
+  // Menerapkan Adjust Target = xxx% ke SELURUH distributor & produk pada sheet Target
+  // (2026 atau 2027): Target = Actual 2026 + (Actual 2026 x xxx%). Hasilnya disimpan
+  // sebagai nilai per sel (tetap bisa diedit manual lagi sesudahnya).
+  function applyAdjustTarget(year, pct){
+    targetDistributorList().forEach(function(ad){
+      ELITE_ITEMS.forEach(function(item){
+        var base = actualBaseVal(ad, item);
+        var val = Math.max(0, Math.round(base * (1 + pct/100)));
+        setTargetVal(year, ad, item, val);
+      });
+    });
+    if(!targetData.adjustPct) targetData.adjustPct = {};
+    targetData.adjustPct[year] = pct;
+    saveTargetData();
   }
 
   function drawTargetTable(){
@@ -3310,21 +3458,45 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     var dists = targetDistributorList();
     var year = targetYear;
     if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
+    var colTotals = ELITE_ITEMS.map(function(){ return 0; });
+    var grandTotal = 0;
     var html = '<table><thead><tr><th>Distributor</th>';
     ELITE_ITEMS.forEach(function(item){ html += '<th class="num">'+item+'</th>'; });
     html += '<th class="num">Total Target</th></tr></thead><tbody>';
     dists.forEach(function(ad){
       var rowTotal = 0;
       html += '<tr><td>'+ad+'</td>';
-      ELITE_ITEMS.forEach(function(item){
+      ELITE_ITEMS.forEach(function(item, idx){
         var v = getTargetVal(year, ad, item);
         rowTotal += v;
+        colTotals[idx] += v;
         html += '<td class="num"><input type="number" min="0" step="1" class="target-input" data-ad="'+ad.replace(/"/g,'&quot;')+'" data-item="'+item.replace(/"/g,'&quot;')+'" value="'+(v||'')+'" placeholder="0"></td>';
       });
+      grandTotal += rowTotal;
       html += '<td class="num" data-total><b>'+fmtNum(rowTotal)+'</b></td></tr>';
     });
-    html += '</tbody></table>';
+    html += '</tbody><tfoot><tr style="font-weight:700; border-top:2px solid var(--border);"><td>Total</td>';
+    colTotals.forEach(function(t, idx){ html += '<td class="num" data-coltotal="'+idx+'">'+fmtNum(t)+'</td>'; });
+    html += '<td class="num" data-grandtotal>'+fmtNum(grandTotal)+'</td></tr></tfoot></table>';
     wrap.innerHTML = html;
+
+    function recalcFooter(){
+      var newColTotals = ELITE_ITEMS.map(function(){ return 0; });
+      var newGrand = 0;
+      dists.forEach(function(ad){
+        ELITE_ITEMS.forEach(function(item, idx){
+          var v = getTargetVal(year, ad, item);
+          newColTotals[idx] += v;
+          newGrand += v;
+        });
+      });
+      newColTotals.forEach(function(t, idx){
+        var cell = wrap.querySelector('[data-coltotal="'+idx+'"]');
+        if(cell) cell.textContent = fmtNum(t);
+      });
+      var grandCell = wrap.querySelector('[data-grandtotal]');
+      if(grandCell) grandCell.textContent = fmtNum(newGrand);
+    }
 
     wrap.querySelectorAll('.target-input').forEach(function(inp){
       inp.addEventListener('change', function(){
@@ -3342,6 +3514,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
           var totalCell = tr.querySelector('[data-total]');
           if(totalCell) totalCell.innerHTML = '<b>'+fmtNum(total)+'</b>';
         }
+        recalcFooter();
         drawTargetSummary();
       });
     });
@@ -3371,15 +3544,114 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     wrap.innerHTML = html;
   }
 
+  // Tabel Actual 2026: murni tampilan realisasi (tidak bisa diedit).
+  function drawActualTable(){
+    var wrap = document.getElementById('targetTableWrap');
+    var dists = targetDistributorList();
+    if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
+    var grandTotals = ELITE_ITEMS.map(function(){ return 0; });
+    var grandAll = 0;
+    var html = '<table><thead><tr><th>Distributor</th>';
+    ELITE_ITEMS.forEach(function(item){ html += '<th class="num">'+item+'</th>'; });
+    html += '<th class="num">Total Actual</th></tr></thead><tbody>';
+    dists.forEach(function(ad){
+      var rowTotal = 0;
+      html += '<tr><td>'+ad+'</td>';
+      ELITE_ITEMS.forEach(function(item, idx){
+        var v = actualBaseVal(ad, item);
+        rowTotal += v;
+        grandTotals[idx] += v;
+        html += '<td class="num">'+fmtNum(v)+'</td>';
+      });
+      grandAll += rowTotal;
+      html += '<td class="num"><b>'+fmtNum(rowTotal)+'</b></td></tr>';
+    });
+    html += '</tbody><tfoot><tr style="font-weight:700; border-top:2px solid var(--border);"><td>Total</td>';
+    grandTotals.forEach(function(t){ html += '<td class="num">'+fmtNum(t)+'</td>'; });
+    html += '<td class="num">'+fmtNum(grandAll)+'</td></tr></tfoot></table>';
+    wrap.innerHTML = html;
+  }
+
+  // Dispatcher: merender tampilan Target sesuai toggle aktif (Actual 2026 / Target 2026 / Target 2027).
+  function renderTargetView(){
+    var view = targetView;
+    var titleEl = document.getElementById('targetTableTitle');
+    var subEl = document.getElementById('targetTableSub');
+    var adjustCard = document.getElementById('targetAdjustCard');
+    var summaryCard = document.getElementById('targetSummaryCard');
+
+    var fcTgt = document.getElementById('fcountTgt');
+    if(fcTgt){
+      var activeCountTgt = ddState.ddStatusTgt.size;
+      fcTgt.textContent = activeCountTgt; fcTgt.classList.toggle('show', activeCountTgt > 0);
+    }
+
+    if(view === 'actual2026'){
+      if(titleEl) titleEl.textContent = 'Actual Sell In Elite Crème 2026 (Pcs)';
+      if(subEl) subEl.textContent = 'Realisasi Sell In Elite Crème per distributor & produk, tahun 2026 (data aktual, tidak bisa diedit).';
+      if(adjustCard) adjustCard.style.display = 'none';
+      if(summaryCard) summaryCard.style.display = 'none';
+      drawActualTable();
+    } else {
+      targetYear = view;
+      if(titleEl) titleEl.textContent = 'Input Target ' + view + ' (Pcs)';
+      if(subEl) subEl.innerHTML = 'Isi target per produk untuk setiap distributor &middot; otomatis tersimpan saat kolom diubah.' + (view === '2026' ? ' Sel yang belum pernah diisi manual otomatis mengikuti Actual 2026.' : '');
+      if(adjustCard){
+        adjustCard.style.display = '';
+        var lbl1 = document.getElementById('adjustTargetYearLabel');
+        var lbl2 = document.getElementById('adjustTargetYearLabel2');
+        if(lbl1) lbl1.textContent = view;
+        if(lbl2) lbl2.textContent = view;
+        var pctInput = document.getElementById('adjustTargetPct');
+        if(pctInput){
+          var savedPct = targetData.adjustPct && targetData.adjustPct[view];
+          pctInput.value = (savedPct === undefined || savedPct === null) ? '' : savedPct;
+        }
+        var adjStatus = document.getElementById('adjustTargetStatus');
+        if(adjStatus) adjStatus.textContent = '';
+      }
+      if(summaryCard) summaryCard.style.display = '';
+      drawTargetTable();
+      drawTargetSummary();
+    }
+  }
+
   document.querySelectorAll('#targetYearToggle button').forEach(function(btn){
     btn.addEventListener('click', function(){
       document.querySelectorAll('#targetYearToggle button').forEach(function(b){ b.classList.remove('active'); });
       btn.classList.add('active');
-      targetYear = btn.getAttribute('data-year');
-      drawTargetTable();
-      drawTargetSummary();
+      targetView = btn.getAttribute('data-view');
+      renderTargetView();
     });
   });
+  var btnApplyAdjustTarget = document.getElementById('btnApplyAdjustTarget');
+  if(btnApplyAdjustTarget) btnApplyAdjustTarget.addEventListener('click', function(){
+    var year = targetView;
+    if(year !== '2026' && year !== '2027') return;
+    var pctInput = document.getElementById('adjustTargetPct');
+    var raw = pctInput ? pctInput.value : '';
+    if(raw === '' || raw === null){
+      alert('Isi angka persentase Adjust Target terlebih dahulu.');
+      return;
+    }
+    var pct = parseFloat(raw);
+    if(isNaN(pct)){ alert('Persentase Adjust Target tidak valid.'); return; }
+    applyAdjustTarget(year, pct);
+    drawTargetTable();
+    drawTargetSummary();
+    var st = document.getElementById('adjustTargetStatus');
+    if(st) st.textContent = 'Diterapkan ke seluruh Target ' + year + ' · ' + new Date().toLocaleTimeString('id-ID');
+  });
+
+  // ---------- Filter Status pada tab Target ----------
+  var resetFiltersTgt = document.getElementById('resetFiltersTgt');
+  if(resetFiltersTgt) resetFiltersTgt.addEventListener('click', function(){
+    ddState.ddStatusTgt.clear();
+    var root = document.getElementById('ddStatusTgt');
+    if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    renderTargetView();
+  });
+  buildChecklist('ddStatusTgt', 'status', function(){ renderTargetView(); });
   document.getElementById('btnExportTarget').addEventListener('click', function(){
     var payload = JSON.stringify(targetData, null, 2);
     downloadBlob('Target-SellIn-EliteCreme-SPK.json', payload, 'application/json');
@@ -3394,9 +3666,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         if(parsed && typeof parsed === 'object'){
           targetData = parsed;
           TARGET_YEARS.forEach(function(y){ if(!targetData[y]) targetData[y] = {}; });
+          if(!targetData.adjustPct) targetData.adjustPct = {};
           saveTargetData();
-          drawTargetTable();
-          drawTargetSummary();
+          renderTargetView();
           alert('Data target berhasil diimpor.');
         } else {
           alert('Gagal membaca file: format JSON tidak sesuai.');
@@ -3409,6 +3681,325 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     e.target.value = '';
   });
   loadTargetData();
+
+  // ---------- Tab Target ZAK: Target Zak per distributor & produk SPK_Zak (2026 & 2027) ----------
+  var ZAK_ITEMS = ['EC30E','SCP32F'];
+  var TARGET_ZAK_KEY = 'sellin_target_zak_v1';
+  var targetZakData = {};
+  var targetZakYear = '2026';
+  var targetZakView = 'actual2026'; // 'actual2026' | '2026' | '2027'
+
+  function loadTargetZakData(){
+    try{
+      var raw = localStorage.getItem(TARGET_ZAK_KEY);
+      if(raw) targetZakData = JSON.parse(raw) || {};
+    }catch(e){ targetZakData = {}; }
+    TARGET_YEARS.forEach(function(y){ if(!targetZakData[y]) targetZakData[y] = {}; });
+    if(!targetZakData.adjustPct) targetZakData.adjustPct = {};
+  }
+  function saveTargetZakData(){
+    try{
+      localStorage.setItem(TARGET_ZAK_KEY, JSON.stringify(targetZakData));
+      var st = document.getElementById('targetZakStatus');
+      if(st){ st.textContent = 'Tersimpan di browser ini · ' + new Date().toLocaleTimeString('id-ID'); st.classList.add('saved'); }
+    }catch(e){
+      var st2 = document.getElementById('targetZakStatus');
+      if(st2){ st2.textContent = 'Gagal menyimpan (penyimpanan browser penuh/tidak tersedia).'; st2.classList.remove('saved'); }
+    }
+  }
+  function getTargetZakVal(year, ad, item){
+    if(targetZakData[year] && targetZakData[year][ad] && targetZakData[year][ad][item] !== undefined){
+      return targetZakData[year][ad][item];
+    }
+    // Belum pernah diisi manual: isi awal Target 2026 mengikuti Actual 2026 per
+    // distributor & produk (angka ini tetap bisa diedit — begitu diubah, nilai manual
+    // tersebut yang dipakai dan tersimpan). Target 2027 dimulai dari 0 sampai diisi
+    // manual atau lewat Adjust Target.
+    if(year === '2026') return actualZakBaseVal(ad, item);
+    return 0;
+  }
+  function setTargetZakVal(year, ad, item, val){
+    if(!targetZakData[year]) targetZakData[year] = {};
+    if(!targetZakData[year][ad]) targetZakData[year][ad] = {};
+    targetZakData[year][ad][item] = val;
+  }
+  function allDistributorsAdZak(){
+    var s = {};
+    allRows.forEach(function(r){ s[r.ad] = true; });
+    return Object.keys(s).sort();
+  }
+  // Filter Status pada tab Target: hanya baris transaksi dengan status terpilih yang
+  // dihitung ke Actual/Target (kosong = semua status).
+  function targetZakStatusAllowed(r){
+    var set = ddState.ddStatusTgtZak;
+    return !set || !set.size || set.has(r.status);
+  }
+  // Gabungan daftar distributor dari data transaksi (sesuai filter Status) + Master Data
+  // (agar distributor baru yang ditambahkan di tab Master Data langsung muncul juga di
+  // tab Target, terlepas dari filter Status).
+  // Hanya distributor yang benar-benar pernah transaksi produk ZAK (SPK_Zak, sesuai
+  // filter Status) yang ditampilkan &mdash; distributor yang tidak menjual ZAK (mis. hanya
+  // menjual Elite Cr&egrave;me) tidak perlu muncul di sheet ini.
+  function targetZakDistributorList(){
+    var s = {};
+    allRows.forEach(function(r){ if(r.ad && r.cat === 'SPK_Zak' && targetZakStatusAllowed(r)) s[r.ad] = true; });
+    return Object.keys(s).sort();
+  }
+  function realizedZak(ad, item, year){
+    var sum = 0;
+    allRows.forEach(function(r){
+      if(r.ad === ad && r.nama === item && r.cat === 'SPK_Zak' && r.dt.slice(0,4) === year && targetZakStatusAllowed(r)) sum += r.qb;
+    });
+    return sum;
+  }
+  // Angka Actual 2026 menjadi basis perhitungan untuk Target 2026 maupun Target 2027.
+  function actualZakBaseVal(ad, item){
+    return realizedZak(ad, item, '2026');
+  }
+  // Menerapkan Adjust Target = xxx% ke SELURUH distributor & produk pada sheet Target
+  // (2026 atau 2027): Target = Actual 2026 + (Actual 2026 x xxx%). Hasilnya disimpan
+  // sebagai nilai per sel (tetap bisa diedit manual lagi sesudahnya).
+  function applyAdjustTargetZak(year, pct){
+    targetZakDistributorList().forEach(function(ad){
+      ZAK_ITEMS.forEach(function(item){
+        var base = actualZakBaseVal(ad, item);
+        var val = Math.max(0, Math.round(base * (1 + pct/100)));
+        setTargetZakVal(year, ad, item, val);
+      });
+    });
+    if(!targetZakData.adjustPct) targetZakData.adjustPct = {};
+    targetZakData.adjustPct[year] = pct;
+    saveTargetZakData();
+  }
+
+  function drawTargetZakTable(){
+    var wrap = document.getElementById('targetZakTableWrap');
+    var dists = targetZakDistributorList();
+    var year = targetZakYear;
+    if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
+    var colTotals = ZAK_ITEMS.map(function(){ return 0; });
+    var grandTotal = 0;
+    var html = '<table><thead><tr><th>Distributor</th>';
+    ZAK_ITEMS.forEach(function(item){ html += '<th class="num">'+item+'</th>'; });
+    html += '<th class="num">Total Target</th></tr></thead><tbody>';
+    dists.forEach(function(ad){
+      var rowTotal = 0;
+      html += '<tr><td>'+ad+'</td>';
+      ZAK_ITEMS.forEach(function(item, idx){
+        var v = getTargetZakVal(year, ad, item);
+        rowTotal += v;
+        colTotals[idx] += v;
+        html += '<td class="num"><input type="number" min="0" step="1" class="target-input" data-ad="'+ad.replace(/"/g,'&quot;')+'" data-item="'+item.replace(/"/g,'&quot;')+'" value="'+(v||'')+'" placeholder="0"></td>';
+      });
+      grandTotal += rowTotal;
+      html += '<td class="num" data-total><b>'+fmtNum(rowTotal)+'</b></td></tr>';
+    });
+    html += '</tbody><tfoot><tr style="font-weight:700; border-top:2px solid var(--border);"><td>Total</td>';
+    colTotals.forEach(function(t, idx){ html += '<td class="num" data-coltotal="'+idx+'">'+fmtNum(t)+'</td>'; });
+    html += '<td class="num" data-grandtotal>'+fmtNum(grandTotal)+'</td></tr></tfoot></table>';
+    wrap.innerHTML = html;
+
+    function recalcFooter(){
+      var newColTotals = ZAK_ITEMS.map(function(){ return 0; });
+      var newGrand = 0;
+      dists.forEach(function(ad){
+        ZAK_ITEMS.forEach(function(item, idx){
+          var v = getTargetZakVal(year, ad, item);
+          newColTotals[idx] += v;
+          newGrand += v;
+        });
+      });
+      newColTotals.forEach(function(t, idx){
+        var cell = wrap.querySelector('[data-coltotal="'+idx+'"]');
+        if(cell) cell.textContent = fmtNum(t);
+      });
+      var grandCell = wrap.querySelector('[data-grandtotal]');
+      if(grandCell) grandCell.textContent = fmtNum(newGrand);
+    }
+
+    wrap.querySelectorAll('.target-input').forEach(function(inp){
+      inp.addEventListener('change', function(){
+        var ad = inp.getAttribute('data-ad');
+        var item = inp.getAttribute('data-item');
+        var val = Math.max(0, Math.round(+inp.value || 0));
+        inp.value = val || '';
+        setTargetZakVal(targetZakYear, ad, item, val);
+        saveTargetZakData();
+        var rowIdx = dists.indexOf(ad);
+        var tr = wrap.querySelectorAll('tbody tr')[rowIdx];
+        if(tr){
+          var total = 0;
+          ZAK_ITEMS.forEach(function(it){ total += getTargetZakVal(targetZakYear, ad, it); });
+          var totalCell = tr.querySelector('[data-total]');
+          if(totalCell) totalCell.innerHTML = '<b>'+fmtNum(total)+'</b>';
+        }
+        recalcFooter();
+        drawTargetZakSummary();
+      });
+    });
+  }
+
+  function drawTargetZakSummary(){
+    var wrap = document.getElementById('targetZakSummaryWrap');
+    var dists = targetZakDistributorList();
+    var year = targetZakYear;
+    if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
+    var grandTarget = 0, grandReal = 0;
+    var html = '<table><thead><tr><th>Distributor</th><th class="num">Total Target (Zak)</th><th class="num">Realisasi (Zak)</th><th class="num">Pencapaian</th></tr></thead><tbody>';
+    dists.forEach(function(ad){
+      var target = 0, real = 0;
+      ZAK_ITEMS.forEach(function(item){
+        target += getTargetZakVal(year, ad, item);
+        real += realizedZak(ad, item, year);
+      });
+      grandTarget += target; grandReal += real;
+      var pct = target ? (real/target*100) : null;
+      var pctText = pct === null ? '—' : pct.toFixed(1)+'%';
+      var pctClass = pct === null ? '' : (pct >= 100 ? 'ach-good' : (pct < 70 ? 'ach-warn' : ''));
+      html += '<tr><td>'+ad+'</td><td class="num">'+fmtNum(target)+'</td><td class="num">'+fmtNum(real)+'</td><td class="num '+pctClass+'">'+pctText+'</td></tr>';
+    });
+    var grandPct = grandTarget ? (grandReal/grandTarget*100) : null;
+    html += '</tbody><tfoot><tr style="font-weight:700; border-top:2px solid var(--border);"><td>Total</td><td class="num">'+fmtNum(grandTarget)+'</td><td class="num">'+fmtNum(grandReal)+'</td><td class="num">'+(grandPct===null?'—':grandPct.toFixed(1)+'%')+'</td></tr></tfoot></table>';
+    wrap.innerHTML = html;
+  }
+
+  // Tabel Actual 2026: murni tampilan realisasi (tidak bisa diedit).
+  function drawActualZakTable(){
+    var wrap = document.getElementById('targetZakTableWrap');
+    var dists = targetZakDistributorList();
+    if(!dists.length){ wrap.innerHTML = '<p class="card-sub" style="margin:0;">Tidak ada data distributor.</p>'; return; }
+    var grandTotals = ZAK_ITEMS.map(function(){ return 0; });
+    var grandAll = 0;
+    var html = '<table><thead><tr><th>Distributor</th>';
+    ZAK_ITEMS.forEach(function(item){ html += '<th class="num">'+item+'</th>'; });
+    html += '<th class="num">Total Actual</th></tr></thead><tbody>';
+    dists.forEach(function(ad){
+      var rowTotal = 0;
+      html += '<tr><td>'+ad+'</td>';
+      ZAK_ITEMS.forEach(function(item, idx){
+        var v = actualZakBaseVal(ad, item);
+        rowTotal += v;
+        grandTotals[idx] += v;
+        html += '<td class="num">'+fmtNum(v)+'</td>';
+      });
+      grandAll += rowTotal;
+      html += '<td class="num"><b>'+fmtNum(rowTotal)+'</b></td></tr>';
+    });
+    html += '</tbody><tfoot><tr style="font-weight:700; border-top:2px solid var(--border);"><td>Total</td>';
+    grandTotals.forEach(function(t){ html += '<td class="num">'+fmtNum(t)+'</td>'; });
+    html += '<td class="num">'+fmtNum(grandAll)+'</td></tr></tfoot></table>';
+    wrap.innerHTML = html;
+  }
+
+  // Dispatcher: merender tampilan Target sesuai toggle aktif (Actual 2026 / Target 2026 / Target 2027).
+  function renderTargetZakView(){
+    var view = targetZakView;
+    var titleEl = document.getElementById('targetZakTableTitle');
+    var subEl = document.getElementById('targetZakTableSub');
+    var adjustCard = document.getElementById('targetZakAdjustCard');
+    var summaryCard = document.getElementById('targetZakSummaryCard');
+
+    var fcTgt = document.getElementById('fcountTgtZak');
+    if(fcTgt){
+      var activeCountTgt = ddState.ddStatusTgtZak.size;
+      fcTgt.textContent = activeCountTgt; fcTgt.classList.toggle('show', activeCountTgt > 0);
+    }
+
+    if(view === 'actual2026'){
+      if(titleEl) titleEl.textContent = 'Actual Sell In ZAK 2026 (Zak)';
+      if(subEl) subEl.textContent = 'Realisasi Sell In ZAK per distributor & produk, tahun 2026 (data aktual, tidak bisa diedit).';
+      if(adjustCard) adjustCard.style.display = 'none';
+      if(summaryCard) summaryCard.style.display = 'none';
+      drawActualZakTable();
+    } else {
+      targetZakYear = view;
+      if(titleEl) titleEl.textContent = 'Input Target ' + view + ' (Zak)';
+      if(subEl) subEl.innerHTML = 'Isi target per produk untuk setiap distributor &middot; otomatis tersimpan saat kolom diubah.' + (view === '2026' ? ' Sel yang belum pernah diisi manual otomatis mengikuti Actual 2026.' : '');
+      if(adjustCard){
+        adjustCard.style.display = '';
+        var lbl1 = document.getElementById('adjustTargetZakYearLabel');
+        var lbl2 = document.getElementById('adjustTargetZakYearLabel2');
+        if(lbl1) lbl1.textContent = view;
+        if(lbl2) lbl2.textContent = view;
+        var pctInput = document.getElementById('adjustTargetZakPct');
+        if(pctInput){
+          var savedPct = targetZakData.adjustPct && targetZakData.adjustPct[view];
+          pctInput.value = (savedPct === undefined || savedPct === null) ? '' : savedPct;
+        }
+        var adjStatus = document.getElementById('adjustTargetZakStatus');
+        if(adjStatus) adjStatus.textContent = '';
+      }
+      if(summaryCard) summaryCard.style.display = '';
+      drawTargetZakTable();
+      drawTargetZakSummary();
+    }
+  }
+
+  document.querySelectorAll('#targetZakYearToggle button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#targetZakYearToggle button').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      targetZakView = btn.getAttribute('data-view');
+      renderTargetZakView();
+    });
+  });
+  var btnApplyAdjustTargetZak = document.getElementById('btnApplyAdjustTargetZak');
+  if(btnApplyAdjustTargetZak) btnApplyAdjustTargetZak.addEventListener('click', function(){
+    var year = targetZakView;
+    if(year !== '2026' && year !== '2027') return;
+    var pctInput = document.getElementById('adjustTargetZakPct');
+    var raw = pctInput ? pctInput.value : '';
+    if(raw === '' || raw === null){
+      alert('Isi angka persentase Adjust Target terlebih dahulu.');
+      return;
+    }
+    var pct = parseFloat(raw);
+    if(isNaN(pct)){ alert('Persentase Adjust Target tidak valid.'); return; }
+    applyAdjustTargetZak(year, pct);
+    drawTargetZakTable();
+    drawTargetZakSummary();
+    var st = document.getElementById('adjustTargetZakStatus');
+    if(st) st.textContent = 'Diterapkan ke seluruh Target ' + year + ' · ' + new Date().toLocaleTimeString('id-ID');
+  });
+
+  // ---------- Filter Status pada tab Target ----------
+  var resetFiltersTgtZak = document.getElementById('resetFiltersTgtZak');
+  if(resetFiltersTgtZak) resetFiltersTgtZak.addEventListener('click', function(){
+    ddState.ddStatusTgtZak.clear();
+    var root = document.getElementById('ddStatusTgtZak');
+    if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    renderTargetZakView();
+  });
+  buildChecklist('ddStatusTgtZak', 'status', function(){ renderTargetZakView(); });
+  document.getElementById('btnExportTargetZak').addEventListener('click', function(){
+    var payload = JSON.stringify(targetZakData, null, 2);
+    downloadBlob('Target-SellIn-ZAK-SPK.json', payload, 'application/json');
+  });
+  document.getElementById('importTargetZakFile').addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var parsed = JSON.parse(reader.result);
+        if(parsed && typeof parsed === 'object'){
+          targetZakData = parsed;
+          TARGET_YEARS.forEach(function(y){ if(!targetZakData[y]) targetZakData[y] = {}; });
+          if(!targetZakData.adjustPct) targetZakData.adjustPct = {};
+          saveTargetZakData();
+          renderTargetZakView();
+          alert('Data target ZAK berhasil diimpor.');
+        } else {
+          alert('Gagal membaca file: format JSON tidak sesuai.');
+        }
+      }catch(err){
+        alert('Gagal membaca file: format JSON tidak valid.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  loadTargetZakData();
 
   // ---------- Tab Master Data: Distributor & Nama PIC ----------
   var MASTER_KEY = 'sellin_master_dist_v1';
@@ -3469,8 +4060,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         var field = inp.getAttribute('data-field');
         if(masterData[idx]) masterData[idx][field] = inp.value.trim();
         saveMasterData();
-        drawTargetTable();
-        drawTargetSummary();
+        renderTargetView();
+        renderTargetZakView();
       });
     });
     wrap.querySelectorAll('.master-del-btn').forEach(function(btn){
@@ -3479,8 +4070,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
         masterData.splice(idx, 1);
         saveMasterData();
         drawMasterTable();
-        drawTargetTable();
-        drawTargetSummary();
+        renderTargetView();
+        renderTargetZakView();
       });
     });
   }
@@ -3490,8 +4081,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     masterData.push({ ad: '', pic: '' });
     saveMasterData();
     drawMasterTable();
-    drawTargetTable();
-    drawTargetSummary();
+    renderTargetView();
+    renderTargetZakView();
     var inputs = document.querySelectorAll('#masterTableWrap .master-input[data-field="ad"]');
     if(inputs.length) inputs[inputs.length-1].focus();
   });
@@ -3511,8 +4102,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
           masterData = parsed;
           saveMasterData();
           drawMasterTable();
-          drawTargetTable();
-          drawTargetSummary();
+          renderTargetView();
+          renderTargetZakView();
           alert('Data master berhasil diimpor.');
         } else {
           alert('Gagal membaca file: format JSON tidak sesuai (harus berupa daftar/array).');
@@ -4978,7 +5569,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       else if(pageId === 'pagePicGraph') renderPicGraph();
       else if(pageId === 'pageCompare') renderCompare();
       else if(pageId === 'pageExplain') renderExplain();
-      else if(pageId === 'pageTarget'){ drawTargetTable(); drawTargetSummary(); }
+      else if(pageId === 'pageTarget'){ renderTargetView(); }
+      else if(pageId === 'pageTargetZak'){ renderTargetZakView(); }
       else if(pageId === 'pageMaster'){ drawMasterTable(); }
       else render();
     });
@@ -4994,8 +5586,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   renderPicGraph();
   renderCompare();
   renderExplain();
-  drawTargetTable();
-  drawTargetSummary();
+  renderTargetView();
+  renderTargetZakView();
   drawMasterTable();
 })();
 </script>
