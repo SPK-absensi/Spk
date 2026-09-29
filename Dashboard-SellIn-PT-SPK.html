@@ -193,8 +193,9 @@
   table{width:100%; border-collapse:collapse; font-size:12.5px;}
   thead th{position:sticky; top:0; background:var(--surface); text-align:left; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em; font-size:10.5px; padding:9px 10px; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; white-space:nowrap;}
   thead th:hover{color:var(--text-1);}
-  thead th.num, tbody td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  thead th.num, tbody td.num, tfoot td.num{text-align:right; font-variant-numeric:tabular-nums;}
   tbody td{padding:8px 10px; border-bottom:1px solid var(--border); color:var(--text-2); white-space:nowrap;}
+  tfoot td{padding:8px 10px; color:var(--text-1); white-space:nowrap;}
   tbody tr:hover td{background:var(--s1-soft); color:var(--text-1);}
   .table-scroll{overflow-x:auto; max-height:520px; overflow-y:auto; border:1px solid var(--border); border-radius:10px;}
   .diff-neg{color:var(--warn);}
@@ -308,6 +309,7 @@
     <button type="button" class="tab-btn" data-page="pageWeekly">Weekly</button>
     <button type="button" class="tab-btn" data-page="pageDaily">Daily</button>
     <button type="button" class="tab-btn" data-page="pageDetail">Detail Transaksi</button>
+    <button type="button" class="tab-btn" data-page="pageInvoice">Invoice</button>
     <button type="button" class="tab-btn" data-page="pageTarget">Target</button>
     <button type="button" class="tab-btn" data-page="pageMaster">Master Data</button>
   </div>
@@ -390,6 +392,12 @@
       <div class="chart-wrap" id="trendChartSummary"></div>
     </div>
 
+    <div class="card">
+      <h2>Tren KG &mdash; per Bulan<span class="chart-tag" id="tagKgTrend"></span></h2>
+      <p class="card-sub">Quantity Invoiced (KG) seluruh kategori (Elite Cr&egrave;me + SPK_Zak), per bulan</p>
+      <div class="chart-wrap" id="kgTrend"></div>
+    </div>
+
     <div class="row2b">
       <div class="card">
         <h2>Nilai Sell In (SPK_Zak)<span class="chart-tag" id="tagBarZak"></span></h2>
@@ -426,6 +434,19 @@
         <h2>Tren Qty SPK_Zak &mdash; per Bulan<span class="chart-tag" id="tagQtyZak"></span></h2>
         <p class="card-sub">Qty dalam satuan Zak (25 KG)</p>
         <div class="chart-wrap" id="qtyTrendZak"></div>
+      </div>
+    </div>
+
+    <div class="row2b">
+      <div class="card">
+        <h2>Tren KG Elite Cr&egrave;me &mdash; per Bulan<span class="chart-tag" id="tagKgElite"></span></h2>
+        <p class="card-sub">Quantity Invoiced (KG) kategori Elite Cr&egrave;me, per bulan</p>
+        <div class="chart-wrap" id="kgTrendElite"></div>
+      </div>
+      <div class="card">
+        <h2>Tren KG SPK_Zak &mdash; per Bulan<span class="chart-tag" id="tagKgZak"></span></h2>
+        <p class="card-sub">Quantity Invoiced (KG) kategori SPK_Zak, per bulan</p>
+        <div class="chart-wrap" id="kgTrendZak"></div>
       </div>
     </div>
 
@@ -944,6 +965,104 @@
     </div>
   </div>
   </div><!-- /pageDetail -->
+
+  <div class="page" id="pageInvoice">
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#9881;&#65039;</span>
+      <span class="ttl">Filter Data</span>
+      <span class="fcount" id="fcountI">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportPdfI" class="export-btn">&#128196; Export PDF</button>
+        <button type="button" id="resetFiltersI" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filter-search-row">
+      <div class="search-box">
+        <span class="search-ico">&#128269;</span>
+        <input type="text" id="searchBoxI" placeholder="Cari nama distributor / PIC...">
+      </div>
+    </div>
+    <div class="filters">
+      <div class="period-range">
+        <span class="prlbl">Periode</span>
+        <select id="periodFromI"></select>
+        <span class="prsep">&ndash;</span>
+        <select id="periodToI"></select>
+        <span class="pr-presets">
+          <button type="button" class="pr-preset-btn" id="presetThisMonthI">Bulan Ini</button>
+          <button type="button" class="pr-preset-btn" id="presetLastMonthI">Bulan Lalu</button>
+          <button type="button" class="pr-preset-btn" id="presetThisYearI">Tahun Ini</button>
+        </span>
+      </div>
+      <span class="filter-sep"></span>
+      <span class="filter-group-label">Distribusi</span>
+      <div class="filter-dd" id="ddDistributorI">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Nama Distributor</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddStatusI">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddPicI">
+        <button type="button" class="filter-dd-btn"><span class="lbl">PIC</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <span class="filter-sep"></span>
+      <span class="filter-group-label">Produk</span>
+      <div class="filter-dd" id="ddCategoryI">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Kategori Produk</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+    </div>
+    <p class="card-sub" id="filterSummaryI" style="margin:12px 0 0;">&mdash;</p>
+  </div>
+
+  <div class="card">
+    <h2>Rekap Invoice per Distributor<span class="chart-tag" id="tagInvoice"></span></h2>
+    <p class="card-sub">Filter tersendiri, tidak terhubung dengan tab lain &middot; klik header kolom untuk mengurutkan</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th data-k="dist">Distributor</th>
+            <th data-k="pic">PIC</th>
+            <th class="num" data-k="po_count">Jumlah PO</th>
+            <th class="num" data-k="inv_count">Jumlah Invoice</th>
+            <th class="num" data-k="qty_pcs">Qty Pcs (Elite Cr&egrave;me)</th>
+            <th class="num" data-k="qty_bag">Qty Zak (SPK_Zak)</th>
+            <th class="num" data-k="qty_invoiced">Qty Invoiced (KG)</th>
+            <th class="num" data-k="v_total">Nilai Sell In (Rp, Exc. PPN)</th>
+            <th class="num" data-k="iv_total">Nilai Invoice (Rp, Inc. PPN)</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyInvoice"></tbody>
+        <tfoot id="tfootInvoice"></tfoot>
+      </table>
+    </div>
+    <div class="table-foot">
+      <span id="rowInfoInvoice">&mdash;</span>
+      <div class="pager">
+        <button id="prevPageInvoice">&larr; Sebelumnya</button>
+        <span id="pageInfoInvoice">1 / 1</span>
+        <button id="nextPageInvoice">Berikutnya &rarr;</button>
+      </div>
+    </div>
+  </div>
+  </div><!-- /pageInvoice -->
 
   <div class="page" id="pageTarget">
   <div class="card" style="margin-bottom:20px;">
@@ -1744,7 +1863,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
                   ddDistributorW: new Set(), ddStatusW: new Set(), ddPicW: new Set(),
                   ddDistributorD: new Set(), ddStatusD: new Set(), ddPicD: new Set(),
                   ddDistributorT: new Set(), ddStatusT: new Set(), ddPicT: new Set(),
-                  ddCategoryT: new Set(), ddSubcatT: new Set(), ddItemT: new Set() };
+                  ddCategoryT: new Set(), ddSubcatT: new Set(), ddItemT: new Set(),
+                  ddDistributorI: new Set(), ddStatusI: new Set(), ddPicI: new Set(), ddCategoryI: new Set() };
   var periodRangeS = { from:'', to:'' };
   var sortKey = 'dt', sortDir = -1;
   var page = 0, pageSize = 25;
@@ -1756,6 +1876,11 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   var sortKeyT = 'dt', sortDirT = -1;
   var pageT = 0, pageSizeT = 25;
 
+  // ---------- Filter tersendiri untuk tab Invoice (tidak terhubung ke tab lain) ----------
+  var periodRangeI = { from:'', to:'' };
+  var sortKeyI = 'iv_total', sortDirI = -1;
+  var pageI = 0, pageSizeI = 25;
+
   // Filter yang saling terhubung (cross-filter) sesuai relasi pada tabel referensi
   // Branch -> Status / Group Area / Area Distributor / PIC, dan Item -> Kategori / Sub Kategori.
   // Memilih satu nilai akan menyaring opsi yang tersedia pada filter lain dalam grup yang sama.
@@ -1766,7 +1891,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddDistributorW:'ad', ddStatusW:'status', ddPicW:'pic',
     ddDistributorD:'ad', ddStatusD:'status', ddPicD:'pic',
     ddDistributorT:'ad', ddStatusT:'status', ddPicT:'pic',
-    ddCategoryT:'cat', ddSubcatT:'subcat', ddItemT:'nama'
+    ddCategoryT:'cat', ddSubcatT:'subcat', ddItemT:'nama',
+    ddDistributorI:'ad', ddStatusI:'status', ddPicI:'pic', ddCategoryI:'cat'
   };
   var ddGroups = {
     ddDistributor:['ddDistributor','ddStatus','ddPic'],
@@ -1789,7 +1915,11 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddPicT:['ddDistributorT','ddStatusT','ddPicT'],
     ddCategoryT:['ddCategoryT','ddSubcatT','ddItemT'],
     ddSubcatT:['ddCategoryT','ddSubcatT','ddItemT'],
-    ddItemT:['ddCategoryT','ddSubcatT','ddItemT']
+    ddItemT:['ddCategoryT','ddSubcatT','ddItemT'],
+    ddDistributorI:['ddDistributorI','ddStatusI','ddPicI'],
+    ddStatusI:['ddDistributorI','ddStatusI','ddPicI'],
+    ddPicI:['ddDistributorI','ddStatusI','ddPicI'],
+    ddCategoryI:['ddCategoryI']
   };
   function inPeriodRange(r){
     if(periodRangeS.from && r.ym < periodRangeS.from) return false;
@@ -2188,6 +2318,58 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     pageT = 0; renderDetail();
   });
   document.getElementById('searchBoxT').addEventListener('input', function(){ pageT = 0; renderDetail(); });
+
+  // ---------- Filter periode: tab Invoice (independen, tidak terhubung tab lain) ----------
+  var periodFromI = document.getElementById('periodFromI');
+  var periodToI = document.getElementById('periodToI');
+  allYms.forEach(function(ym){
+    var o1 = document.createElement('option'); o1.value = ym; o1.textContent = ymLabel(ym); periodFromI.appendChild(o1);
+    var o2 = document.createElement('option'); o2.value = ym; o2.textContent = ymLabel(ym); periodToI.appendChild(o2);
+  });
+  if(allYms.length){
+    periodFromI.value = allYms[0]; periodRangeI.from = allYms[0];
+    periodToI.value = allYms[allYms.length-1]; periodRangeI.to = allYms[allYms.length-1];
+  }
+  periodFromI.addEventListener('change', function(){
+    periodRangeI.from = periodFromI.value;
+    if(periodRangeI.to && periodRangeI.from > periodRangeI.to){ periodToI.value = periodFromI.value; periodRangeI.to = periodFromI.value; }
+    pageI = 0; renderInvoice();
+  });
+  periodToI.addEventListener('change', function(){
+    periodRangeI.to = periodToI.value;
+    if(periodRangeI.from && periodRangeI.to < periodRangeI.from){ periodFromI.value = periodToI.value; periodRangeI.from = periodToI.value; }
+    pageI = 0; renderInvoice();
+  });
+  document.getElementById('presetThisMonthI').addEventListener('click', function(){
+    applyPeriodPreset(periodFromI, periodToI, periodRangeI, 'this', function(){ pageI = 0; renderInvoice(); });
+  });
+  document.getElementById('presetLastMonthI').addEventListener('click', function(){
+    applyPeriodPreset(periodFromI, periodToI, periodRangeI, 'last', function(){ pageI = 0; renderInvoice(); });
+  });
+  document.getElementById('presetThisYearI').addEventListener('click', function(){
+    applyPeriodPreset(periodFromI, periodToI, periodRangeI, 'year', function(){ pageI = 0; renderInvoice(); });
+  });
+  document.getElementById('resetFiltersI').addEventListener('click', function(){
+    document.getElementById('searchBoxI').value = '';
+    if(allYms.length){
+      periodFromI.value = allYms[0]; periodRangeI.from = allYms[0];
+      periodToI.value = allYms[allYms.length-1]; periodRangeI.to = allYms[allYms.length-1];
+    }
+    var idsI = ['ddDistributorI','ddStatusI','ddPicI','ddCategoryI'];
+    idsI.forEach(function(id){ ddState[id].clear(); });
+    idsI.forEach(function(id){
+      var root = document.getElementById(id);
+      if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    });
+    pageI = 0; renderInvoice();
+  });
+  document.getElementById('searchBoxI').addEventListener('input', function(){ pageI = 0; renderInvoice(); });
+  document.getElementById('btnExportPdfI').addEventListener('click', function(){ window.print(); });
+
+  buildChecklist('ddDistributorI', 'ad', function(){ pageI = 0; renderInvoice(); });
+  buildChecklist('ddStatusI', 'status', function(){ pageI = 0; renderInvoice(); });
+  buildChecklist('ddPicI', 'pic', function(){ pageI = 0; renderInvoice(); });
+  buildChecklist('ddCategoryI', 'cat', function(){ pageI = 0; renderInvoice(); });
 
   buildChecklist('ddDistributorW', 'ad', function(){ renderWeekly(); });
   buildChecklist('ddStatusW', 'status', function(){ renderWeekly(); });
@@ -3021,11 +3203,154 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   }
   document.getElementById('prevPage').addEventListener('click', function(){ pageT--; renderDetailTable(getDetailFilteredRows()); });
   document.getElementById('nextPage').addEventListener('click', function(){ pageT++; renderDetailTable(getDetailFilteredRows()); });
-  document.querySelectorAll('thead th').forEach(function(th){
+  document.querySelectorAll('#pageDetail thead th').forEach(function(th){
     th.addEventListener('click', function(){
       var k = th.getAttribute('data-k');
       if(sortKeyT === k) sortDirT *= -1; else { sortKeyT = k; sortDirT = 1; }
       renderDetailTable(getDetailFilteredRows());
+    });
+  });
+
+  // ---------- Tab Invoice: rekap per distributor ----------
+  function getInvoiceFilteredRows(){
+    var q = document.getElementById('searchBoxI').value.trim().toLowerCase();
+    var distSet = ddState.ddDistributorI, statusSet = ddState.ddStatusI, picSet = ddState.ddPicI, catSet = ddState.ddCategoryI;
+    return allRows.filter(function(r){
+      if(periodRangeI.from && r.ym < periodRangeI.from) return false;
+      if(periodRangeI.to && r.ym > periodRangeI.to) return false;
+      if(distSet.size && !distSet.has(r.ad)) return false;
+      if(statusSet.size && !statusSet.has(r.status)) return false;
+      if(picSet.size && !picSet.has(r.pic)) return false;
+      if(catSet.size && !catSet.has(r.cat)) return false;
+      if(q){
+        var hay = (distName(r)+' '+r.pic).toLowerCase();
+        if(hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+  }
+  function aggregateInvoiceByDistributor(rows){
+    var map = {}, order = [];
+    rows.forEach(function(r){
+      var key = r.ad;
+      if(!map[key]){
+        map[key] = { dist: distName(r), pic: r.pic, po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0, iv_total:0, _po:{}, _inv:{}, _pic:{} };
+        order.push(key);
+      }
+      var g = map[key];
+      g._po[r.on] = true;
+      g._inv[r.inn] = true;
+      g._pic[r.pic] = (g._pic[r.pic]||0) + 1;
+      g.qty_pcs += (r.qp||0);
+      g.qty_bag += (r.qb||0);
+      g.qty_invoiced += (r.qi||0);
+      g.v_total += (r.v||0);
+      g.iv_total += (r.iv||0);
+    });
+    return order.map(function(key){
+      var g = map[key];
+      g.po_count = Object.keys(g._po).length;
+      g.inv_count = Object.keys(g._inv).length;
+      var bestPic = g.pic, bestN = -1;
+      Object.keys(g._pic).forEach(function(p){ if(g._pic[p] > bestN){ bestN = g._pic[p]; bestPic = p; } });
+      g.pic = bestPic;
+      delete g._po; delete g._inv; delete g._pic;
+      return g;
+    });
+  }
+  function invoiceTagText(){
+    var parts = [];
+    var pLabel = periodRangeLabelFor(periodRangeI);
+    if(pLabel) parts.push(pLabel);
+    [
+      filterSetLabel(ddState.ddDistributorI, 'Distributor'),
+      filterSetLabel(ddState.ddStatusI, 'Status'),
+      filterSetLabel(ddState.ddPicI, 'PIC'),
+      filterSetLabel(ddState.ddCategoryI, 'Kategori')
+    ].forEach(function(x){ if(x) parts.push(x); });
+    var search = document.getElementById('searchBoxI').value.trim();
+    if(search) parts.push('Cari: “' + search + '”');
+    return parts.length ? parts.join(' · ') : 'Semua Data';
+  }
+  function renderInvoiceTable(recap){
+    var out = recap.slice();
+    out.sort(function(a,b){
+      var av = a[sortKeyI], bv = b[sortKeyI];
+      if(typeof av === 'string') return sortDirI * av.localeCompare(bv);
+      return sortDirI * (av - bv);
+    });
+    var totalPages = Math.max(1, Math.ceil(out.length / pageSizeI));
+    pageI = Math.min(pageI, totalPages-1);
+    var slice = out.slice(pageI*pageSizeI, pageI*pageSizeI+pageSizeI);
+    var tbody = document.getElementById('tbodyInvoice');
+    if(!out.length){
+      tbody.innerHTML = '<tr><td colspan="9" class="card-sub">Tidak ada distributor yang cocok dengan filter ini.</td></tr>';
+    } else {
+      tbody.innerHTML = slice.map(function(g){
+        return '<tr>' +
+          '<td>'+g.dist+'</td>' +
+          '<td>'+g.pic+'</td>' +
+          '<td class="num">'+fmtNum(g.po_count)+'</td>' +
+          '<td class="num">'+fmtNum(g.inv_count)+'</td>' +
+          '<td class="num">'+fmtNum(g.qty_pcs)+'</td>' +
+          '<td class="num">'+fmtNum(g.qty_bag)+'</td>' +
+          '<td class="num">'+fmtNum(g.qty_invoiced)+'</td>' +
+          '<td class="num">'+fmtNum(g.v_total)+'</td>' +
+          '<td class="num">'+fmtNum(g.iv_total)+'</td>' +
+        '</tr>';
+      }).join('');
+    }
+    var tfoot = document.getElementById('tfootInvoice');
+    if(!out.length){
+      tfoot.innerHTML = '';
+    } else {
+      var tot = out.reduce(function(a,g){
+        a.po_count += g.po_count; a.inv_count += g.inv_count; a.qty_pcs += g.qty_pcs; a.qty_bag += g.qty_bag; a.qty_invoiced += g.qty_invoiced;
+        a.v_total += g.v_total; a.iv_total += g.iv_total;
+        return a;
+      }, { po_count:0, inv_count:0, qty_pcs:0, qty_bag:0, qty_invoiced:0, v_total:0, iv_total:0 });
+      tfoot.innerHTML = '<tr class="total-row" style="font-weight:700; border-top:2px solid var(--border);">' +
+        '<td>TOTAL (' + out.length + ' distributor)</td>' +
+        '<td></td>' +
+        '<td class="num">'+fmtNum(tot.po_count)+'</td>' +
+        '<td class="num">'+fmtNum(tot.inv_count)+'</td>' +
+        '<td class="num">'+fmtNum(tot.qty_pcs)+'</td>' +
+        '<td class="num">'+fmtNum(tot.qty_bag)+'</td>' +
+        '<td class="num">'+fmtNum(tot.qty_invoiced)+'</td>' +
+        '<td class="num">'+fmtNum(tot.v_total)+'</td>' +
+        '<td class="num">'+fmtNum(tot.iv_total)+'</td>' +
+      '</tr>';
+    }
+    document.getElementById('rowInfoInvoice').textContent = out.length + ' distributor (menampilkan ' + (out.length? (pageI*pageSizeI+1):0) + '–' + Math.min(out.length,(pageI+1)*pageSizeI) + ')';
+    document.getElementById('pageInfoInvoice').textContent = (pageI+1) + ' / ' + totalPages;
+    document.getElementById('prevPageInvoice').disabled = pageI === 0;
+    document.getElementById('nextPageInvoice').disabled = pageI >= totalPages-1;
+  }
+  function renderInvoice(){
+    var filteredRows = getInvoiceFilteredRows();
+    var recap = aggregateInvoiceByDistributor(filteredRows);
+    var k = computeKpi(filteredRows);
+    var summary = document.getElementById('filterSummaryI');
+    if(filteredRows.length === allRows.length){
+      summary.textContent = 'Menampilkan seluruh ' + totalPoAll + ' PO dari ' + recap.length + ' distributor (' + DATA.kpi.date_min + '–' + DATA.kpi.date_max + ').';
+    } else {
+      summary.innerHTML = 'Menampilkan <b>'+k.total_po+'</b> PO dari <b>'+recap.length+'</b> distributor, periode '+(k.date_min||'–')+'–'+(k.date_max||'–')+'.';
+    }
+    var activeCount = ['ddDistributorI','ddStatusI','ddPicI','ddCategoryI'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
+    if(periodRangeLabelFor(periodRangeI)) activeCount += 1;
+    if(document.getElementById('searchBoxI').value.trim()) activeCount += 1;
+    var fc = document.getElementById('fcountI');
+    fc.textContent = activeCount; fc.classList.toggle('show', activeCount > 0);
+    renderInvoiceTable(recap);
+    setTagText(['tagInvoice'], invoiceTagText());
+  }
+  document.getElementById('prevPageInvoice').addEventListener('click', function(){ pageI--; renderInvoiceTable(aggregateInvoiceByDistributor(getInvoiceFilteredRows())); });
+  document.getElementById('nextPageInvoice').addEventListener('click', function(){ pageI++; renderInvoiceTable(aggregateInvoiceByDistributor(getInvoiceFilteredRows())); });
+  document.querySelectorAll('#pageInvoice thead th').forEach(function(th){
+    th.addEventListener('click', function(){
+      var k = th.getAttribute('data-k');
+      if(sortKeyI === k) sortDirI *= -1; else { sortKeyI = k; sortDirI = 1; }
+      renderInvoiceTable(aggregateInvoiceByDistributor(getInvoiceFilteredRows()));
     });
   });
 
@@ -3280,6 +3605,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     drawBars('distBarsEliteS', aggByKey(rs.filter(function(r){return r.cat === 'Elite Crème';}), distName), 'key', 'value', cv('--s1'));
     drawQtyTrend('qtyTrendPcs', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), cv('--s1'), 'pcs~1kg');
     drawQtyTrend('qtyTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), cv('--s7'), 'zak');
+    drawQtyTrend('kgTrendElite', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), cv('--s1'), 'kg', 'qty_invoiced');
+    drawQtyTrend('kgTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), cv('--s7'), 'kg', 'qty_invoiced');
+    drawQtyTrend('kgTrend', aggMonthlyFilled(rs, rangeKeys), cv('--s3'), 'kg', 'qty_invoiced');
     drawDonut('contribDonutElite', aggItem(rs.filter(function(r){return r.cat==='Elite Crème';})), null, true);
     drawDonut('contribDonutZak', aggItem(rs.filter(function(r){return r.cat==='SPK_Zak';})), null, true);
     drawDonut('contribDonutEliteSubcat', aggSubcat(rs.filter(function(r){return r.cat==='Elite Crème';})), null, true);
@@ -3307,7 +3635,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     var fcS = document.getElementById('fcountS');
     fcS.textContent = activeCountS; fcS.classList.toggle('show', activeCountS > 0);
 
-    setTagText(['tagTrend','tagBarZak','tagBarElite','tagDistBarsZakS','tagDistBarsEliteS','tagQtyElite','tagQtyZak','tagContrib','tagAnalysis'], summaryTagText());
+    setTagText(['tagTrend','tagBarZak','tagBarElite','tagDistBarsZakS','tagDistBarsEliteS','tagQtyElite','tagQtyZak','tagKgElite','tagKgZak','tagKgTrend','tagContrib','tagAnalysis'], summaryTagText());
   }
 
   // ---------- Tabs ----------
@@ -3323,6 +3651,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       else if(pageId === 'pageWeekly') renderWeekly();
       else if(pageId === 'pageDaily') renderDaily();
       else if(pageId === 'pageDetail') renderDetail();
+      else if(pageId === 'pageInvoice') renderInvoice();
       else if(pageId === 'pageTarget'){ drawTargetTable(); drawTargetSummary(); }
       else if(pageId === 'pageMaster'){ drawMasterTable(); }
       else render();
@@ -3334,6 +3663,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   renderWeekly();
   renderDaily();
   renderDetail();
+  renderInvoice();
   drawTargetTable();
   drawTargetSummary();
   drawMasterTable();
