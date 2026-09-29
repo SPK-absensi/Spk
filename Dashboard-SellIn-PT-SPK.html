@@ -312,6 +312,7 @@
     <button type="button" class="tab-btn active" data-page="pageSummary">Summary</button>
     <button type="button" class="tab-btn" data-page="pageDistGraph">By Distributor</button>
     <button type="button" class="tab-btn" data-page="pagePicGraph">By PIC</button>
+    <button type="button" class="tab-btn" data-page="pageCompare">Perbandingan Bulan</button>
     <button type="button" class="tab-btn" data-page="pageDetail">Detail Transaksi</button>
     <button type="button" class="tab-btn" data-page="pageInvoice">Invoice</button>
     <button type="button" class="tab-btn" data-page="pageTarget">Target</button>
@@ -1145,6 +1146,170 @@
     </div>
   </div>
   </div><!-- /pagePicGraph -->
+
+  <div class="page" id="pageCompare">
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#9881;&#65039;</span>
+      <span class="ttl">Filter Data</span>
+      <span class="fcount" id="fcountC">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportPdfC" class="export-btn">&#128196; Export PDF</button>
+        <button type="button" id="resetFiltersC" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filters">
+      <span class="filter-group-label">Distribusi</span>
+      <div class="filter-dd" id="ddDistributorC">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Nama Distributor</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddStatusC">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddPicC">
+        <button type="button" class="filter-dd-btn"><span class="lbl">PIC</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+    </div>
+    <p class="card-sub filter-active-line" id="filterActiveC" style="margin:12px 0 0; font-weight:600; color:var(--text-1);">Membandingkan: &mdash;</p>
+    <p class="card-sub" id="filterSummaryC" style="margin:12px 0 0;">&mdash;</p>
+  </div>
+
+  <div class="kpi-grid kpi-grid-3">
+    <div class="kpi accent">
+      <div class="label">Net Sales Bulan Ini</div>
+      <div class="value" id="kpiCNetCur">Rp 0</div>
+      <div class="foot" id="kpiCNetFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Qty Zak Bulan Ini</div>
+      <div class="value" id="kpiCZakCur">0 zak</div>
+      <div class="foot" id="kpiCZakFoot">&mdash;</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Qty Elite Cr&egrave;me Bulan Ini</div>
+      <div class="value" id="kpiCEliteCur">0 pcs</div>
+      <div class="foot" id="kpiCEliteFoot">&mdash;</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Rekap by Distributor &mdash; SPK_Zak<span class="chart-tag" id="tagCDistZak"></span></h2>
+    <p class="card-sub">Perbandingan Net Sales &amp; Qty Zak per distributor, bulan ini vs bulan lalu</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Distributor</th>
+            <th>PIC</th>
+            <th class="num">Net Sales Bulan Lalu</th>
+            <th class="num">Net Sales Bulan Ini</th>
+            <th class="num">&Delta; Net Sales</th>
+            <th class="num">Zak Bulan Lalu</th>
+            <th class="num">Zak Bulan Ini</th>
+            <th class="num">&Delta; Zak</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyCDistZak"></tbody>
+        <tfoot id="tfootCDistZak"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Rekap by Distributor &mdash; Elite Cr&egrave;me<span class="chart-tag" id="tagCDistElite"></span></h2>
+    <p class="card-sub">Perbandingan Net Sales &amp; Qty Pcs per distributor, bulan ini vs bulan lalu</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Distributor</th>
+            <th>PIC</th>
+            <th class="num">Net Sales Bulan Lalu</th>
+            <th class="num">Net Sales Bulan Ini</th>
+            <th class="num">&Delta; Net Sales</th>
+            <th class="num">Pcs Bulan Lalu</th>
+            <th class="num">Pcs Bulan Ini</th>
+            <th class="num">&Delta; Pcs</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyCDistElite"></tbody>
+        <tfoot id="tfootCDistElite"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Rekap by PIC &mdash; SPK_Zak<span class="chart-tag" id="tagCPicZak"></span></h2>
+    <p class="card-sub">Perbandingan Net Sales &amp; Qty Zak per PIC, bulan ini vs bulan lalu</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>PIC</th>
+            <th class="num">Net Sales Bulan Lalu</th>
+            <th class="num">Net Sales Bulan Ini</th>
+            <th class="num">&Delta; Net Sales</th>
+            <th class="num">Zak Bulan Lalu</th>
+            <th class="num">Zak Bulan Ini</th>
+            <th class="num">&Delta; Zak</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyCPicZak"></tbody>
+        <tfoot id="tfootCPicZak"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Rekap by PIC &mdash; Elite Cr&egrave;me<span class="chart-tag" id="tagCPicElite"></span></h2>
+    <p class="card-sub">Perbandingan Net Sales &amp; Qty Pcs per PIC, bulan ini vs bulan lalu</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>PIC</th>
+            <th class="num">Net Sales Bulan Lalu</th>
+            <th class="num">Net Sales Bulan Ini</th>
+            <th class="num">&Delta; Net Sales</th>
+            <th class="num">Pcs Bulan Lalu</th>
+            <th class="num">Pcs Bulan Ini</th>
+            <th class="num">&Delta; Pcs</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyCPicElite"></tbody>
+        <tfoot id="tfootCPicElite"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Analisa Otomatis &mdash; Perbandingan Bulan<span class="chart-tag" id="tagCAnalysis"></span></h2>
+    <p class="card-sub">Disusun otomatis oleh sistem berdasarkan data pada filter di atas</p>
+    <div class="row2b">
+      <div class="analysis-col">
+        <p class="card-sub" style="margin:0 0 8px; font-weight:600; color:var(--text-2);">Analisa</p>
+        <ul class="analysis-list" id="analysisPointsC"></ul>
+      </div>
+      <div class="analysis-col">
+        <p class="card-sub" style="margin:0 0 8px; font-weight:600; color:var(--text-2);">Catatan / Tindak Lanjut <span style="font-weight:500;">(diisi PIC)</span></p>
+        <textarea id="perbaikanTextC" class="perbaikan-box" placeholder="Tulis catatan / tindak lanjut per PIC di sini..."></textarea>
+        <p class="card-sub" style="margin:6px 0 0; font-size:11px;" id="perbaikanSavedNoteC">&nbsp;</p>
+      </div>
+    </div>
+  </div>
+  </div><!-- /pageCompare -->
 
   <div class="page" id="pageDetail">
   <div class="card filter-card" style="margin-bottom:20px;">
@@ -2169,7 +2334,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
                   ddCategoryT: new Set(), ddSubcatT: new Set(), ddItemT: new Set(),
                   ddDistributorI: new Set(), ddStatusI: new Set(), ddPicI: new Set(), ddCategoryI: new Set(),
                   ddDistributorG: new Set(), ddStatusG: new Set(), ddPicG: new Set(), ddCategoryG: new Set(),
-                  ddDistributorP: new Set(), ddStatusP: new Set(), ddPicP: new Set(), ddCategoryP: new Set() };
+                  ddDistributorP: new Set(), ddStatusP: new Set(), ddPicP: new Set(), ddCategoryP: new Set(),
+                  ddDistributorC: new Set(), ddStatusC: new Set(), ddPicC: new Set() };
   var periodRangeS = { from:'', to:'' };
   var sortKey = 'dt', sortDir = -1;
   var page = 0, pageSize = 25;
@@ -2205,7 +2371,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddCategoryT:'cat', ddSubcatT:'subcat', ddItemT:'nama',
     ddDistributorI:'ad', ddStatusI:'status', ddPicI:'pic', ddCategoryI:'cat',
     ddDistributorG:'ad', ddStatusG:'status', ddPicG:'pic', ddCategoryG:'cat',
-    ddDistributorP:'ad', ddStatusP:'status', ddPicP:'pic', ddCategoryP:'cat'
+    ddDistributorP:'ad', ddStatusP:'status', ddPicP:'pic', ddCategoryP:'cat',
+    ddDistributorC:'ad', ddStatusC:'status', ddPicC:'pic'
   };
   var ddGroups = {
     ddDistributor:['ddDistributor','ddStatus','ddPic'],
@@ -2240,7 +2407,10 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddDistributorP:['ddDistributorP','ddStatusP','ddPicP'],
     ddStatusP:['ddDistributorP','ddStatusP','ddPicP'],
     ddPicP:['ddDistributorP','ddStatusP','ddPicP'],
-    ddCategoryP:['ddCategoryP']
+    ddCategoryP:['ddCategoryP'],
+    ddDistributorC:['ddDistributorC','ddStatusC','ddPicC'],
+    ddStatusC:['ddDistributorC','ddStatusC','ddPicC'],
+    ddPicC:['ddDistributorC','ddStatusC','ddPicC']
   };
   function inPeriodRange(r){
     if(periodRangeS.from && r.ym < periodRangeS.from) return false;
@@ -2791,6 +2961,21 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   buildChecklist('ddStatusP', 'status', function(){ renderPicGraph(); });
   buildChecklist('ddPicP', 'pic', function(){ renderPicGraph(); });
   buildChecklist('ddCategoryP', 'cat', function(){ renderPicGraph(); });
+
+  // ---------- Filter tab Perbandingan Bulan (independen, tanpa periode: selalu bulan terakhir vs sebelumnya) ----------
+  document.getElementById('btnExportPdfC').addEventListener('click', function(){ window.print(); });
+  document.getElementById('resetFiltersC').addEventListener('click', function(){
+    var idsC = ['ddDistributorC','ddStatusC','ddPicC'];
+    idsC.forEach(function(id){ ddState[id].clear(); });
+    idsC.forEach(function(id){
+      var root = document.getElementById(id);
+      if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    });
+    renderCompare();
+  });
+  buildChecklist('ddDistributorC', 'ad', function(){ renderCompare(); });
+  buildChecklist('ddStatusC', 'status', function(){ renderCompare(); });
+  buildChecklist('ddPicC', 'pic', function(){ renderCompare(); });
 
   buildChecklist('ddDistributorW', 'ad', function(){ renderWeekly(); });
   buildChecklist('ddStatusW', 'status', function(){ renderWeekly(); });
@@ -4020,6 +4205,205 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     setTagText(['tagPNet','tagPKg','tagPZak','tagPElite','tagPPo','tagPInv'], picGraphTagText());
   }
 
+  // ---------- Tab Perbandingan Bulan: rekap by Distributor & PIC, bulan ini vs bulan lalu, terpisah Zak/Elite ----------
+  function getCompareFilteredRows(){
+    var distSet = ddState.ddDistributorC, statusSet = ddState.ddStatusC, picSet = ddState.ddPicC;
+    return allRows.filter(function(r){
+      if(distSet.size && !distSet.has(r.ad)) return false;
+      if(statusSet.size && !statusSet.has(r.status)) return false;
+      if(picSet.size && !picSet.has(r.pic)) return false;
+      return true;
+    });
+  }
+  function lastTwoMonthKeys(){
+    if(allYms.length < 2) return null;
+    return { cur: allYms[allYms.length-1], prev: allYms[allYms.length-2] };
+  }
+  function aggByKeyForMonth(rows, keyFn, ym, cat){
+    var map = {};
+    rows.forEach(function(r){
+      if(r.dt.slice(0,7) !== ym) return;
+      if(cat && r.cat !== cat) return;
+      var k = keyFn(r);
+      if(!map[k]) map[k] = { v:0, qb:0, qp:0 };
+      map[k].v += (r.v||0); map[k].qb += (r.qb||0); map[k].qp += (r.qp||0);
+    });
+    return map;
+  }
+  function aggAllForMonth(rows, ym, cat){
+    var v=0, qb=0, qp=0;
+    rows.forEach(function(r){
+      if(r.dt.slice(0,7) !== ym) return;
+      if(cat && r.cat !== cat) return;
+      v += (r.v||0); qb += (r.qb||0); qp += (r.qp||0);
+    });
+    return {v:v, qb:qb, qp:qp};
+  }
+  function buildMoMRecap(masterList, rows, keyFn, cat, cur, prev, metricField, nameFn, picFn){
+    var curMap = aggByKeyForMonth(rows, keyFn, cur, cat);
+    var prevMap = aggByKeyForMonth(rows, keyFn, prev, cat);
+    return masterList.map(function(m){
+      var c = curMap[m.key] || {v:0,qb:0,qp:0};
+      var p = prevMap[m.key] || {v:0,qb:0,qp:0};
+      return {
+        key: m.key, name: nameFn(m), pic: picFn ? picFn(m) : null,
+        v_prev: p.v, v_cur: c.v,
+        m_prev: p[metricField], m_cur: c[metricField]
+      };
+    }).sort(function(a,b){ return b.v_cur - a.v_cur; });
+  }
+  function combineTotals(recapA, recapB){
+    var map = {};
+    recapA.forEach(function(g){ map[g.key] = { name:g.name, v_cur:g.v_cur, v_prev:g.v_prev }; });
+    recapB.forEach(function(g){
+      if(!map[g.key]) map[g.key] = { name:g.name, v_cur:0, v_prev:0 };
+      map[g.key].v_cur += g.v_cur; map[g.key].v_prev += g.v_prev;
+    });
+    return Object.keys(map).map(function(k){ return map[k]; });
+  }
+  function deltaHtml(cur, prev){
+    var chg = pctChange(cur, prev);
+    var diff = cur - prev;
+    var cls = diff > 0 ? 'diff-pos' : (diff < 0 ? 'diff-neg' : '');
+    var arrow = diff > 0 ? '&#9650; ' : (diff < 0 ? '&#9660; ' : '');
+    var pctTxt = chg === null ? '&mdash;' : (chg>=0?'+':'')+chg.toFixed(1)+'%';
+    return '<span class="'+cls+'">'+arrow+pctTxt+'</span>';
+  }
+  function renderCompareTable(tbodyId, tfootId, recap, metricFmt, showPic){
+    var tbody = document.getElementById(tbodyId);
+    var tfoot = document.getElementById(tfootId);
+    var cols = showPic ? 8 : 7;
+    if(!recap.length){
+      tbody.innerHTML = '<tr><td colspan="'+cols+'" style="text-align:center; color:var(--text-muted);">Tidak ada data</td></tr>';
+      tfoot.innerHTML = '';
+      return;
+    }
+    tbody.innerHTML = recap.map(function(g){
+      return '<tr>' +
+        '<td>'+g.name+'</td>' +
+        (showPic ? '<td>'+g.pic+'</td>' : '') +
+        '<td class="num">'+fmtRp(g.v_prev, true)+'</td>' +
+        '<td class="num">'+fmtRp(g.v_cur, true)+'</td>' +
+        '<td class="num">'+deltaHtml(g.v_cur, g.v_prev)+'</td>' +
+        '<td class="num">'+metricFmt(g.m_prev)+'</td>' +
+        '<td class="num">'+metricFmt(g.m_cur)+'</td>' +
+        '<td class="num">'+deltaHtml(g.m_cur, g.m_prev)+'</td>' +
+      '</tr>';
+    }).join('');
+    var tot = recap.reduce(function(a,g){ a.v_prev+=g.v_prev; a.v_cur+=g.v_cur; a.m_prev+=g.m_prev; a.m_cur+=g.m_cur; return a; }, {v_prev:0,v_cur:0,m_prev:0,m_cur:0});
+    tfoot.innerHTML = '<tr style="font-weight:700;">' +
+      '<td colspan="'+(showPic?2:1)+'">Total</td>' +
+      '<td class="num">'+fmtRp(tot.v_prev, true)+'</td>' +
+      '<td class="num">'+fmtRp(tot.v_cur, true)+'</td>' +
+      '<td class="num">'+deltaHtml(tot.v_cur, tot.v_prev)+'</td>' +
+      '<td class="num">'+metricFmt(tot.m_prev)+'</td>' +
+      '<td class="num">'+metricFmt(tot.m_cur)+'</td>' +
+      '<td class="num">'+deltaHtml(tot.m_cur, tot.m_prev)+'</td>' +
+    '</tr>';
+  }
+  function topMoverPoints(list, entityLabel){
+    if(!list.length) return [];
+    var withChange = list.map(function(g){ return { name:g.name, diff:g.v_cur-g.v_prev, cur:g.v_cur, prev:g.v_prev }; });
+    var gainer = withChange.reduce(function(b,g){ return (!b||g.diff>b.diff)?g:b; }, null);
+    var decliner = withChange.reduce(function(b,g){ return (!b||g.diff<b.diff)?g:b; }, null);
+    var pts = [];
+    if(gainer && gainer.diff > 0){
+      pts.push(entityLabel+' dengan kenaikan Net Sales terbesar: <b>'+gainer.name+'</b>, naik '+fmtRp(gainer.diff,true)+' (dari '+fmtRp(gainer.prev,true)+' menjadi '+fmtRp(gainer.cur,true)+').');
+    }
+    if(decliner && decliner.diff < 0){
+      pts.push(entityLabel+' dengan penurunan Net Sales terbesar: <b>'+decliner.name+'</b>, turun '+fmtRp(Math.abs(decliner.diff),true)+' (dari '+fmtRp(decliner.prev,true)+' menjadi '+fmtRp(decliner.cur,true)+').');
+    }
+    return pts;
+  }
+  function buildCompareAnalysisPoints(curZak, prevZak, curElite, prevElite, distCombined, picCombined, curLabel, prevLabel){
+    var pts = [];
+    var curTotal = curZak.v + curElite.v, prevTotal = prevZak.v + prevElite.v;
+    var chgTotal = pctChange(curTotal, prevTotal);
+    pts.push('Total Net Sales <b>'+curLabel+'</b> sebesar <b>'+fmtRp(curTotal,true)+'</b>, '+trendWord(chgTotal)+(chgTotal!==null?' <b>'+(chgTotal>=0?'+':'')+chgTotal.toFixed(1)+'%</b>':'')+' dibanding <b>'+prevLabel+'</b> ('+fmtRp(prevTotal,true)+').');
+    var chgZak = pctChange(curZak.v, prevZak.v);
+    pts.push('Kategori <b>SPK_Zak</b>: '+fmtRp(curZak.v,true)+' ('+fmtNum(curZak.qb)+' zak) pada '+curLabel+', '+trendWord(chgZak)+(chgZak!==null?' <b>'+(chgZak>=0?'+':'')+chgZak.toFixed(1)+'%</b>':'')+' dari '+prevLabel+' ('+fmtRp(prevZak.v,true)+', '+fmtNum(prevZak.qb)+' zak).');
+    var chgElite = pctChange(curElite.v, prevElite.v);
+    pts.push('Kategori <b>Elite Crème</b>: '+fmtRp(curElite.v,true)+' ('+fmtNum(curElite.qp)+' pcs) pada '+curLabel+', '+trendWord(chgElite)+(chgElite!==null?' <b>'+(chgElite>=0?'+':'')+chgElite.toFixed(1)+'%</b>':'')+' dari '+prevLabel+' ('+fmtRp(prevElite.v,true)+', '+fmtNum(prevElite.qp)+' pcs).');
+    pts = pts.concat(topMoverPoints(distCombined, 'Distributor'));
+    pts = pts.concat(topMoverPoints(picCombined, 'PIC'));
+    return pts;
+  }
+  function renderCompare(){
+    var activeCountC = ['ddDistributorC','ddStatusC','ddPicC'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
+    var fcC = document.getElementById('fcountC');
+    fcC.textContent = activeCountC; fcC.classList.toggle('show', activeCountC > 0);
+
+    var mt = lastTwoMonthKeys();
+    if(!mt){
+      document.getElementById('filterActiveC').textContent = 'Data belum cukup untuk perbandingan (minimal 2 bulan data).';
+      document.getElementById('filterSummaryC').textContent = '—';
+      ['kpiCNetCur','kpiCZakCur','kpiCEliteCur'].forEach(function(id){ document.getElementById(id).textContent = '—'; });
+      ['kpiCNetFoot','kpiCZakFoot','kpiCEliteFoot'].forEach(function(id){ document.getElementById(id).textContent = '—'; });
+      ['tbodyCDistZak','tbodyCDistElite','tbodyCPicZak','tbodyCPicElite'].forEach(function(id){ document.getElementById(id).innerHTML = '<tr><td style="text-align:center; color:var(--text-muted);">Tidak ada data</td></tr>'; });
+      ['tfootCDistZak','tfootCDistElite','tfootCPicZak','tfootCPicElite'].forEach(function(id){ document.getElementById(id).innerHTML = ''; });
+      document.getElementById('analysisPointsC').innerHTML = '<li>Data pada filter saat ini belum mencakup minimal 2 bulan untuk dibandingkan.</li>';
+      return;
+    }
+    var cur = mt.cur, prev = mt.prev;
+    var curLabel = ymLabel(cur), prevLabel = ymLabel(prev);
+    document.getElementById('filterActiveC').innerHTML = 'Membandingkan: <b>'+curLabel+'</b> (Bulan Ini) vs <b>'+prevLabel+'</b> (Bulan Lalu)';
+
+    var filteredRowsC = getCompareFilteredRows();
+    var distMaster = getDistinctDistributors(filteredRowsC);
+    var picMaster = getDistinctPics(filteredRowsC);
+    document.getElementById('filterSummaryC').innerHTML = 'Menampilkan <b>'+distMaster.length+'</b> distributor &amp; <b>'+picMaster.length+'</b> PIC (sesuai filter).';
+
+    var curZak = aggAllForMonth(filteredRowsC, cur, 'SPK_Zak');
+    var prevZak = aggAllForMonth(filteredRowsC, prev, 'SPK_Zak');
+    var curElite = aggAllForMonth(filteredRowsC, cur, 'Elite Crème');
+    var prevElite = aggAllForMonth(filteredRowsC, prev, 'Elite Crème');
+    var curTotalV = curZak.v + curElite.v, prevTotalV = prevZak.v + prevElite.v;
+
+    document.getElementById('kpiCNetCur').textContent = fmtRp(curTotalV, true);
+    document.getElementById('kpiCNetFoot').innerHTML = 'Bulan Lalu: '+fmtRp(prevTotalV,true)+' &middot; '+deltaHtml(curTotalV, prevTotalV);
+    document.getElementById('kpiCZakCur').textContent = fmtNum(curZak.qb) + ' zak';
+    document.getElementById('kpiCZakFoot').innerHTML = 'Bulan Lalu: '+fmtNum(prevZak.qb)+' zak &middot; '+deltaHtml(curZak.qb, prevZak.qb);
+    document.getElementById('kpiCEliteCur').textContent = fmtNum(curElite.qp) + ' pcs';
+    document.getElementById('kpiCEliteFoot').innerHTML = 'Bulan Lalu: '+fmtNum(prevElite.qp)+' pcs &middot; '+deltaHtml(curElite.qp, prevElite.qp);
+
+    var recapDistZak = buildMoMRecap(distMaster, filteredRowsC, function(r){return r.ad;}, 'SPK_Zak', cur, prev, 'qb', function(m){return m.dist;}, function(m){return m.pic;});
+    var recapDistElite = buildMoMRecap(distMaster, filteredRowsC, function(r){return r.ad;}, 'Elite Crème', cur, prev, 'qp', function(m){return m.dist;}, function(m){return m.pic;});
+    var recapPicZak = buildMoMRecap(picMaster, filteredRowsC, function(r){return r.pic;}, 'SPK_Zak', cur, prev, 'qb', function(m){return m.pic;});
+    var recapPicElite = buildMoMRecap(picMaster, filteredRowsC, function(r){return r.pic;}, 'Elite Crème', cur, prev, 'qp', function(m){return m.pic;});
+
+    renderCompareTable('tbodyCDistZak','tfootCDistZak', recapDistZak, function(v){return fmtNum(v)+' zak';}, true);
+    renderCompareTable('tbodyCDistElite','tfootCDistElite', recapDistElite, function(v){return fmtNum(v)+' pcs';}, true);
+    renderCompareTable('tbodyCPicZak','tfootCPicZak', recapPicZak, function(v){return fmtNum(v)+' zak';}, false);
+    renderCompareTable('tbodyCPicElite','tfootCPicElite', recapPicElite, function(v){return fmtNum(v)+' pcs';}, false);
+
+    var distCombined = combineTotals(recapDistZak, recapDistElite);
+    var picCombined = combineTotals(recapPicZak, recapPicElite);
+    var pts = buildCompareAnalysisPoints(curZak, prevZak, curElite, prevElite, distCombined, picCombined, curLabel, prevLabel);
+    document.getElementById('analysisPointsC').innerHTML = pts.map(function(p){ return '<li>'+p+'</li>'; }).join('');
+
+    setTagText(['tagCDistZak','tagCDistElite','tagCPicZak','tagCPicElite','tagCAnalysis'], curLabel+' vs '+prevLabel);
+  }
+  function initPerbaikanBoxGeneric(boxId, noteId, storageKey){
+    var box = document.getElementById(boxId);
+    var note = document.getElementById(noteId);
+    if(!box) return;
+    try{
+      var saved = localStorage.getItem(storageKey);
+      if(saved) box.value = saved;
+    }catch(e){}
+    var t;
+    box.addEventListener('input', function(){
+      clearTimeout(t);
+      t = setTimeout(function(){
+        try{
+          localStorage.setItem(storageKey, box.value);
+          if(note) note.textContent = 'Tersimpan otomatis di browser ini · ' + new Date().toLocaleTimeString('id-ID');
+        }catch(e){}
+      }, 400);
+    });
+  }
+  initPerbaikanBoxGeneric('perbaikanTextC', 'perbaikanSavedNoteC', 'sellin_perbaikan_notes_compare');
+
   // ---------- Summary page (always unfiltered) ----------
   function drawMonthlyBar(containerId, months, opts){
     opts = opts || {};
@@ -4330,6 +4714,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       else if(pageId === 'pageInvoice') renderInvoice();
       else if(pageId === 'pageDistGraph') renderDistGraph();
       else if(pageId === 'pagePicGraph') renderPicGraph();
+      else if(pageId === 'pageCompare') renderCompare();
       else if(pageId === 'pageTarget'){ drawTargetTable(); drawTargetSummary(); }
       else if(pageId === 'pageMaster'){ drawMasterTable(); }
       else render();
@@ -4344,6 +4729,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   renderInvoice();
   renderDistGraph();
   renderPicGraph();
+  renderCompare();
   drawTargetTable();
   drawTargetSummary();
   drawMasterTable();
