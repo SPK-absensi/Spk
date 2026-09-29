@@ -203,6 +203,8 @@
   #pageInvoice thead th{white-space:normal; line-height:1.25; padding:8px 8px;}
   #pageInvoice tbody td, #pageInvoice tfoot td{white-space:normal; padding:6px 8px;}
   #pageInvoice thead th:first-child, #pageInvoice tbody td:first-child, #pageInvoice tfoot td:first-child{white-space:nowrap;}
+  #pageExplain table{table-layout:fixed;}
+  #pageExplain thead th, #pageExplain tbody td{white-space:normal; line-height:1.35; word-break:break-word; vertical-align:top; padding:8px 8px;}
   .diff-neg{color:var(--warn);}
   .diff-pos{color:var(--good);}
 
@@ -313,6 +315,7 @@
     <button type="button" class="tab-btn" data-page="pageDistGraph">By Distributor</button>
     <button type="button" class="tab-btn" data-page="pagePicGraph">By PIC</button>
     <button type="button" class="tab-btn" data-page="pageCompare">Perbandingan Bulan</button>
+    <button type="button" class="tab-btn" data-page="pageExplain">Penjelasan</button>
     <button type="button" class="tab-btn" data-page="pageDetail">Detail Transaksi</button>
     <button type="button" class="tab-btn" data-page="pageInvoice">Invoice</button>
     <button type="button" class="tab-btn" data-page="pageTarget">Target</button>
@@ -1310,6 +1313,95 @@
     </div>
   </div>
   </div><!-- /pageCompare -->
+
+  <div class="page" id="pageExplain">
+  <div class="card filter-card" style="margin-bottom:20px;">
+    <div class="filter-head">
+      <span class="ico">&#9881;&#65039;</span>
+      <span class="ttl">Filter Data</span>
+      <span class="fcount" id="fcountE">0</span>
+      <div class="filter-head-actions">
+        <button type="button" id="btnExportPdfE" class="export-btn">&#128196; Export PDF</button>
+        <button type="button" id="resetFiltersE" class="reset-link">&#10005; Reset filter</button>
+      </div>
+    </div>
+    <div class="filters">
+      <span class="filter-group-label">Distribusi</span>
+      <div class="filter-dd" id="ddDistributorE">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Nama Distributor</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddStatusE">
+        <button type="button" class="filter-dd-btn"><span class="lbl">Status</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+      <div class="filter-dd" id="ddPicE">
+        <button type="button" class="filter-dd-btn"><span class="lbl">PIC</span><span class="count" hidden></span><span class="caret">&#9662;</span></button>
+        <div class="filter-dd-panel">
+          <div class="filter-dd-actions"><button type="button" data-act="all">Pilih semua</button><button type="button" data-act="clear">Kosongkan</button></div>
+          <div class="filter-dd-list"></div>
+        </div>
+      </div>
+    </div>
+    <p class="card-sub filter-active-line" id="filterActiveE" style="margin:12px 0 0; font-weight:600; color:var(--text-1);">Membandingkan: &mdash;</p>
+    <p class="card-sub" id="filterSummaryE" style="margin:12px 0 0;">&mdash;</p>
+  </div>
+
+  <div class="card">
+    <h2>Distributor dengan Penurunan Pencapaian<span class="chart-tag" id="tagEDist"></span></h2>
+    <p class="card-sub">Net Sales (SPK_Zak + Elite Cr&egrave;me) bulan ini lebih rendah dari bulan lalu</p>
+    <div class="table-scroll">
+      <table>
+        <colgroup>
+          <col style="width:14%"><col style="width:11%"><col style="width:10%"><col style="width:10%"><col style="width:7%"><col style="width:26%"><col style="width:22%">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Distributor</th>
+            <th>PIC</th>
+            <th class="num">Net Sales Bulan Lalu</th>
+            <th class="num">Net Sales Bulan Ini</th>
+            <th class="num">&Delta;</th>
+            <th>Analisa</th>
+            <th>Langkah Perbaikan <span style="font-weight:500;">(diisi PIC)</span></th>
+          </tr>
+        </thead>
+        <tbody id="tbodyEDist"></tbody>
+      </table>
+    </div>
+    <p class="card-sub" style="margin-top:8px; font-size:11px;">Kolom Langkah Perbaikan otomatis tersimpan di browser ini.</p>
+  </div>
+
+  <div class="card">
+    <h2>PIC dengan Penurunan Pencapaian<span class="chart-tag" id="tagEPic"></span></h2>
+    <p class="card-sub">Net Sales (SPK_Zak + Elite Cr&egrave;me) bulan ini lebih rendah dari bulan lalu</p>
+    <div class="table-scroll">
+      <table>
+        <colgroup>
+          <col style="width:14%"><col style="width:12%"><col style="width:12%"><col style="width:8%"><col style="width:29%"><col style="width:25%">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>PIC</th>
+            <th class="num">Net Sales Bulan Lalu</th>
+            <th class="num">Net Sales Bulan Ini</th>
+            <th class="num">&Delta;</th>
+            <th>Analisa</th>
+            <th>Langkah Perbaikan <span style="font-weight:500;">(diisi PIC)</span></th>
+          </tr>
+        </thead>
+        <tbody id="tbodyEPic"></tbody>
+      </table>
+    </div>
+    <p class="card-sub" style="margin-top:8px; font-size:11px;">Kolom Langkah Perbaikan otomatis tersimpan di browser ini.</p>
+  </div>
+  </div><!-- /pageExplain -->
 
   <div class="page" id="pageDetail">
   <div class="card filter-card" style="margin-bottom:20px;">
@@ -2335,7 +2427,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
                   ddDistributorI: new Set(), ddStatusI: new Set(), ddPicI: new Set(), ddCategoryI: new Set(),
                   ddDistributorG: new Set(), ddStatusG: new Set(), ddPicG: new Set(), ddCategoryG: new Set(),
                   ddDistributorP: new Set(), ddStatusP: new Set(), ddPicP: new Set(), ddCategoryP: new Set(),
-                  ddDistributorC: new Set(), ddStatusC: new Set(), ddPicC: new Set() };
+                  ddDistributorC: new Set(), ddStatusC: new Set(), ddPicC: new Set(),
+                  ddDistributorE: new Set(), ddStatusE: new Set(), ddPicE: new Set() };
   var periodRangeS = { from:'', to:'' };
   var sortKey = 'dt', sortDir = -1;
   var page = 0, pageSize = 25;
@@ -2372,7 +2465,8 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddDistributorI:'ad', ddStatusI:'status', ddPicI:'pic', ddCategoryI:'cat',
     ddDistributorG:'ad', ddStatusG:'status', ddPicG:'pic', ddCategoryG:'cat',
     ddDistributorP:'ad', ddStatusP:'status', ddPicP:'pic', ddCategoryP:'cat',
-    ddDistributorC:'ad', ddStatusC:'status', ddPicC:'pic'
+    ddDistributorC:'ad', ddStatusC:'status', ddPicC:'pic',
+    ddDistributorE:'ad', ddStatusE:'status', ddPicE:'pic'
   };
   var ddGroups = {
     ddDistributor:['ddDistributor','ddStatus','ddPic'],
@@ -2410,7 +2504,10 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     ddCategoryP:['ddCategoryP'],
     ddDistributorC:['ddDistributorC','ddStatusC','ddPicC'],
     ddStatusC:['ddDistributorC','ddStatusC','ddPicC'],
-    ddPicC:['ddDistributorC','ddStatusC','ddPicC']
+    ddPicC:['ddDistributorC','ddStatusC','ddPicC'],
+    ddDistributorE:['ddDistributorE','ddStatusE','ddPicE'],
+    ddStatusE:['ddDistributorE','ddStatusE','ddPicE'],
+    ddPicE:['ddDistributorE','ddStatusE','ddPicE']
   };
   function inPeriodRange(r){
     if(periodRangeS.from && r.ym < periodRangeS.from) return false;
@@ -2976,6 +3073,21 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   buildChecklist('ddDistributorC', 'ad', function(){ renderCompare(); });
   buildChecklist('ddStatusC', 'status', function(){ renderCompare(); });
   buildChecklist('ddPicC', 'pic', function(){ renderCompare(); });
+
+  // ---------- Filter tab Penjelasan (independen, tanpa periode: selalu bulan terakhir vs sebelumnya) ----------
+  document.getElementById('btnExportPdfE').addEventListener('click', function(){ window.print(); });
+  document.getElementById('resetFiltersE').addEventListener('click', function(){
+    var idsE = ['ddDistributorE','ddStatusE','ddPicE'];
+    idsE.forEach(function(id){ ddState[id].clear(); });
+    idsE.forEach(function(id){
+      var root = document.getElementById(id);
+      if(root && root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    });
+    renderExplain();
+  });
+  buildChecklist('ddDistributorE', 'ad', function(){ renderExplain(); });
+  buildChecklist('ddStatusE', 'status', function(){ renderExplain(); });
+  buildChecklist('ddPicE', 'pic', function(){ renderExplain(); });
 
   buildChecklist('ddDistributorW', 'ad', function(){ renderWeekly(); });
   buildChecklist('ddStatusW', 'status', function(){ renderWeekly(); });
@@ -4254,9 +4366,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   }
   function combineTotals(recapA, recapB){
     var map = {};
-    recapA.forEach(function(g){ map[g.key] = { name:g.name, v_cur:g.v_cur, v_prev:g.v_prev }; });
+    recapA.forEach(function(g){ map[g.key] = { key:g.key, name:g.name, v_cur:g.v_cur, v_prev:g.v_prev }; });
     recapB.forEach(function(g){
-      if(!map[g.key]) map[g.key] = { name:g.name, v_cur:0, v_prev:0 };
+      if(!map[g.key]) map[g.key] = { key:g.key, name:g.name, v_cur:0, v_prev:0 };
       map[g.key].v_cur += g.v_cur; map[g.key].v_prev += g.v_prev;
     });
     return Object.keys(map).map(function(k){ return map[k]; });
@@ -4403,6 +4515,125 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     });
   }
   initPerbaikanBoxGeneric('perbaikanTextC', 'perbaikanSavedNoteC', 'sellin_perbaikan_notes_compare');
+
+  // ---------- Tab Penjelasan: rekap PIC/Distributor dengan pencapaian minus vs bulan lalu ----------
+  function getExplainFilteredRows(){
+    var distSet = ddState.ddDistributorE, statusSet = ddState.ddStatusE, picSet = ddState.ddPicE;
+    return allRows.filter(function(r){
+      if(distSet.size && !distSet.has(r.ad)) return false;
+      if(statusSet.size && !statusSet.has(r.status)) return false;
+      if(picSet.size && !picSet.has(r.pic)) return false;
+      return true;
+    });
+  }
+  var LANGKAH_DIST_KEY = 'sellin_langkah_perbaikan_dist';
+  var LANGKAH_PIC_KEY = 'sellin_langkah_perbaikan_pic';
+  function loadLangkahMap(storageKey){
+    try{ var raw = localStorage.getItem(storageKey); return raw ? JSON.parse(raw) : {}; }catch(e){ return {}; }
+  }
+  function saveLangkahEntry(storageKey, key, value){
+    var map = loadLangkahMap(storageKey);
+    map[key] = value;
+    try{ localStorage.setItem(storageKey, JSON.stringify(map)); }catch(e){}
+  }
+  function declineAnalysisText(zak, elite, totalCur, totalPrev){
+    var totalDiff = totalCur - totalPrev;
+    var pct = pctChange(totalCur, totalPrev);
+    var zakDiff = (zak.v_cur||0) - (zak.v_prev||0);
+    var eliteDiff = (elite.v_cur||0) - (elite.v_prev||0);
+    var driver, driverDiff;
+    if(Math.abs(zakDiff) >= Math.abs(eliteDiff)){ driver = 'SPK_Zak'; driverDiff = zakDiff; }
+    else { driver = 'Elite Crème'; driverDiff = eliteDiff; }
+    var txt = 'Net Sales turun ' + fmtRp(Math.abs(totalDiff), true) + (pct!==null ? ' (' + pct.toFixed(1) + '%)' : '') + ' dibanding bulan lalu';
+    if(driverDiff < 0){
+      txt += ', terutama disebabkan penurunan kategori <b>' + driver + '</b> sebesar ' + fmtRp(Math.abs(driverDiff), true) + '.';
+    } else {
+      txt += '.';
+    }
+    return txt;
+  }
+  function renderExplainTable(tbodyId, recap, storageKey, showPic, colCount){
+    var tbody = document.getElementById(tbodyId);
+    if(!recap.length){
+      tbody.innerHTML = '<tr><td colspan="'+colCount+'" style="text-align:center; color:var(--text-muted);">Tidak ada yang mengalami penurunan pada periode ini &mdash; semua pencapaian naik/stabil dibanding bulan lalu.</td></tr>';
+      return;
+    }
+    var langkahMap = loadLangkahMap(storageKey);
+    tbody.innerHTML = recap.map(function(g){
+      var saved = langkahMap[g.key] || '';
+      return '<tr>' +
+        '<td>'+g.name+'</td>' +
+        (showPic ? '<td>'+g.pic+'</td>' : '') +
+        '<td class="num">'+fmtRp(g.v_prev, true)+'</td>' +
+        '<td class="num">'+fmtRp(g.v_cur, true)+'</td>' +
+        '<td class="num">'+deltaHtml(g.v_cur, g.v_prev)+'</td>' +
+        '<td>'+g.analysis+'</td>' +
+        '<td><textarea class="perbaikan-box langkah-input" style="min-height:56px;" data-key="'+String(g.key).replace(/"/g,'&quot;')+'" placeholder="Tulis langkah perbaikan di sini...">'+saved.replace(/</g,'&lt;')+'</textarea></td>' +
+      '</tr>';
+    }).join('');
+    tbody.querySelectorAll('.langkah-input').forEach(function(box){
+      var t;
+      box.addEventListener('input', function(){
+        clearTimeout(t);
+        var key = box.getAttribute('data-key');
+        t = setTimeout(function(){ saveLangkahEntry(storageKey, key, box.value); }, 400);
+      });
+    });
+  }
+  function renderExplain(){
+    var activeCountE = ['ddDistributorE','ddStatusE','ddPicE'].reduce(function(a,id){ return a + ddState[id].size; }, 0);
+    var fcE = document.getElementById('fcountE');
+    fcE.textContent = activeCountE; fcE.classList.toggle('show', activeCountE > 0);
+
+    var mt = lastTwoMonthKeys();
+    if(!mt){
+      document.getElementById('filterActiveE').textContent = 'Data belum cukup untuk perbandingan (minimal 2 bulan data).';
+      document.getElementById('filterSummaryE').textContent = '—';
+      document.getElementById('tbodyEDist').innerHTML = '<tr><td style="text-align:center; color:var(--text-muted);">Tidak ada data</td></tr>';
+      document.getElementById('tbodyEPic').innerHTML = '<tr><td style="text-align:center; color:var(--text-muted);">Tidak ada data</td></tr>';
+      return;
+    }
+    var cur = mt.cur, prev = mt.prev;
+    var curLabel = ymLabel(cur), prevLabel = ymLabel(prev);
+    document.getElementById('filterActiveE').innerHTML = 'Membandingkan: <b>'+curLabel+'</b> (Bulan Ini) vs <b>'+prevLabel+'</b> (Bulan Lalu)';
+
+    var filteredRowsE = getExplainFilteredRows();
+    var distMaster = getDistinctDistributors(filteredRowsE);
+    var picMaster = getDistinctPics(filteredRowsE);
+
+    var recapDistZak = buildMoMRecap(distMaster, filteredRowsE, function(r){return r.ad;}, 'SPK_Zak', cur, prev, 'qb', function(m){return m.dist;}, function(m){return m.pic;});
+    var recapDistElite = buildMoMRecap(distMaster, filteredRowsE, function(r){return r.ad;}, 'Elite Crème', cur, prev, 'qp', function(m){return m.dist;}, function(m){return m.pic;});
+    var recapPicZak = buildMoMRecap(picMaster, filteredRowsE, function(r){return r.pic;}, 'SPK_Zak', cur, prev, 'qb', function(m){return m.pic;});
+    var recapPicElite = buildMoMRecap(picMaster, filteredRowsE, function(r){return r.pic;}, 'Elite Crème', cur, prev, 'qp', function(m){return m.pic;});
+
+    var zakDistMap = {}; recapDistZak.forEach(function(g){ zakDistMap[g.key] = g; });
+    var eliteDistMap = {}; recapDistElite.forEach(function(g){ eliteDistMap[g.key] = g; });
+    var zakPicMap = {}; recapPicZak.forEach(function(g){ zakPicMap[g.key] = g; });
+    var elitePicMap = {}; recapPicElite.forEach(function(g){ elitePicMap[g.key] = g; });
+
+    var distCombined = combineTotals(recapDistZak, recapDistElite).map(function(g){
+      var src = zakDistMap[g.key] || eliteDistMap[g.key] || {};
+      return { key:g.key, name:g.name, pic: src.pic || '', v_prev:g.v_prev, v_cur:g.v_cur };
+    });
+    var picCombined = combineTotals(recapPicZak, recapPicElite);
+
+    var distDecline = distCombined.filter(function(g){ return g.v_cur < g.v_prev; }).sort(function(a,b){ return (a.v_cur-a.v_prev) - (b.v_cur-b.v_prev); });
+    var picDecline = picCombined.filter(function(g){ return g.v_cur < g.v_prev; }).sort(function(a,b){ return (a.v_cur-a.v_prev) - (b.v_cur-b.v_prev); });
+
+    distDecline.forEach(function(g){
+      g.analysis = declineAnalysisText(zakDistMap[g.key]||{v_cur:0,v_prev:0}, eliteDistMap[g.key]||{v_cur:0,v_prev:0}, g.v_cur, g.v_prev);
+    });
+    picDecline.forEach(function(g){
+      g.analysis = declineAnalysisText(zakPicMap[g.key]||{v_cur:0,v_prev:0}, elitePicMap[g.key]||{v_cur:0,v_prev:0}, g.v_cur, g.v_prev);
+    });
+
+    document.getElementById('filterSummaryE').innerHTML = 'Ditemukan <b>'+distDecline.length+'</b> dari '+distCombined.length+' distributor, dan <b>'+picDecline.length+'</b> dari '+picCombined.length+' PIC, dengan Net Sales turun dibanding bulan lalu.';
+
+    renderExplainTable('tbodyEDist', distDecline, LANGKAH_DIST_KEY, true, 7);
+    renderExplainTable('tbodyEPic', picDecline, LANGKAH_PIC_KEY, false, 6);
+
+    setTagText(['tagEDist','tagEPic'], curLabel+' vs '+prevLabel);
+  }
 
   // ---------- Summary page (always unfiltered) ----------
   function drawMonthlyBar(containerId, months, opts){
@@ -4715,6 +4946,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       else if(pageId === 'pageDistGraph') renderDistGraph();
       else if(pageId === 'pagePicGraph') renderPicGraph();
       else if(pageId === 'pageCompare') renderCompare();
+      else if(pageId === 'pageExplain') renderExplain();
       else if(pageId === 'pageTarget'){ drawTargetTable(); drawTargetSummary(); }
       else if(pageId === 'pageMaster'){ drawMasterTable(); }
       else render();
@@ -4730,6 +4962,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   renderDistGraph();
   renderPicGraph();
   renderCompare();
+  renderExplain();
   drawTargetTable();
   drawTargetSummary();
   drawMasterTable();
