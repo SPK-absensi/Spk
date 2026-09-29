@@ -3637,9 +3637,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     drawBars('distBarsEliteS', aggByKey(rs.filter(function(r){return r.cat === 'Elite Crème';}), distName), 'key', 'value', cv('--s1'));
     drawQtyTrend('qtyTrendPcs', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), cv('--s1'), 'pcs~1kg');
     drawQtyTrend('qtyTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), cv('--s7'), 'zak');
-    drawMonthlyBar('kgTrendElite', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), { metric:'qty_invoiced', color:cv('--s1'), fmt:fmtNum, fmtFull:function(v){return fmtNum(v)+' kg';}, tipLabel:'Qty' });
-    drawMonthlyBar('kgTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), { metric:'qty_invoiced', color:cv('--s7'), fmt:fmtNum, fmtFull:function(v){return fmtNum(v)+' kg';}, tipLabel:'Qty' });
-    drawMonthlyBar('kgTrend', aggMonthlyFilled(rs, rangeKeys), { metric:'qty_invoiced', color:cv('--s3'), fmt:fmtNum, fmtFull:function(v){return fmtNum(v)+' kg';}, tipLabel:'Qty' });
+    drawQtyTrend('kgTrendElite', aggMonthlyFilled(rs.filter(function(r){return r.cat==='Elite Crème';}), rangeKeys), cv('--s1'), 'kg', 'qty_invoiced');
+    drawQtyTrend('kgTrendZak', aggMonthlyFilled(rs.filter(function(r){return r.cat==='SPK_Zak';}), rangeKeys), cv('--s7'), 'kg', 'qty_invoiced');
+    drawQtyTrend('kgTrend', aggMonthlyFilled(rs, rangeKeys), cv('--s3'), 'kg', 'qty_invoiced');
     drawDonut('contribDonutElite', aggItem(rs.filter(function(r){return r.cat==='Elite Crème';})), null, true);
     drawDonut('contribDonutZak', aggItem(rs.filter(function(r){return r.cat==='SPK_Zak';})), null, true);
     drawDonut('contribDonutEliteSubcat', aggSubcat(rs.filter(function(r){return r.cat==='Elite Crème';})), null, true);
