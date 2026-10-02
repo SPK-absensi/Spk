@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="theme-color" content="#0266B4">
+<style>:root{color-scheme:light}body{margin:0;-webkit-text-size-adjust:100%}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 <title>Kinerja SPG Elite Crème</title>
@@ -149,7 +150,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding-block:8px}
 .page[hidden]{display:none}
 .chartbox.tall{height:380px}
 
-.pnav-row{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.pnav-row{padding-block:0!important;display:flex;align-items:center;gap:12px;justify-content:space-between}
 .pnav-in{min-width:0;flex:1 1 auto}
 .xbar{display:flex;gap:8px;flex:none;padding-block:6px}
 .xbtn{font:inherit;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:7px;border-radius:9px;padding:7px 12px;cursor:pointer;border:1px solid var(--blue);background:var(--blue);color:#FFFFFF;white-space:nowrap}
@@ -162,6 +163,61 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding-block:8px}
 .xmsg:empty{display:none}
 .xmsg:not(:empty){padding-block:0 8px}
 @media (max-width:640px){.pnav-row{flex-wrap:wrap;gap:0}.xbar{width:100%;padding-block:0 8px}}
+
+/* ranking cards (phone) */
+.rcards{display:none;gap:10px}
+.rcard{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--surface);cursor:pointer;display:grid;gap:10px}
+.rcard:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.rc-top{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.rc-top .who{min-width:0}.rc-top .who b{line-height:1.3}
+.rc-score{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.rc-score b{font-family:var(--f-display);font-size:22px;line-height:1}
+.rc-bar{height:6px;border-radius:5px;background:var(--line);overflow:hidden}.rc-bar i{display:block;height:100%;background:var(--blue)}
+.rc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;margin:0}
+.rc-stats div{min-width:0}
+.rc-stats dt{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.rc-stats dd{margin:0;font-weight:700;font-size:14px;white-space:nowrap}
+.rc-mix{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.short{display:none}
+.lg{display:inline}
+
+/* laptop: keep header compact on 13-14" screens */
+@media (max-width:1280px){ .band .wrap{padding-block:16px 18px} .logo img{height:56px} }
+
+/* phone (Android ~360–430px) */
+@media (max-width:680px){
+  .band .wrap{padding-block:12px 14px;gap:12px}
+  .band::after{right:-110px;top:-70px;width:200px;height:120px}
+  .logo{padding:4px 7px;border-radius:12px}.logo img{height:44px}
+  .ttl{flex:1 1 0}.ttl .eyebrow{display:none}.ttl h1{font-size:24px;margin-top:0}.ttl .sub{font-size:11.5px;line-height:1.35}
+  .controls{width:100%;display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
+  .ctl select,.ctl input{width:100%;min-height:40px;font-size:14px}
+  .controls .btn{align-self:end;min-height:40px;padding:8px 12px}
+  .status-msg{grid-column:1/-1;text-align:left}
+  .lg{display:none}
+  .pnav-row{flex-direction:column;align-items:stretch}
+  .pnav-in{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .pbtn{padding:12px 2px 9px;font-size:13.5px;text-align:center}
+  .xbar{padding-block:0 8px}.xbar .xbtn{flex:1;justify-content:center;min-height:38px}
+  main.wrap{margin-top:14px}.page{gap:14px}
+  .panel{padding:14px;border-radius:14px}
+  .panel h2{font-size:18px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .kpi{padding:11px 12px;border-radius:12px}.kpi .v{font-size:20px}.kpi .s{font-size:11.5px}
+  .kpi.hero{grid-column:1/-1}.kpi:last-child:nth-child(even){grid-column:1/-1}.kpi.hero .v{font-size:26px}
+  .chartbox{height:250px}.chartbox.tall{height:330px}
+  .insights li{grid-template-columns:1fr;gap:6px}.insights .tag{justify-self:start}
+  .rank-desk{display:none}.rcards{display:grid}
+  .dhead{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+  .dhead>div:first-child{grid-column:1/-1}
+  .dhead .v{font-size:17px}
+  .cal{gap:4px}.day{min-height:50px;padding:4px 5px;border-radius:8px;font-size:10px}.day .dn{font-size:11px}.day .om{white-space:nowrap}.day .late{top:4px;right:4px;width:7px;height:7px}
+  .detail-grid table{min-width:0}
+  .detail-grid th,.detail-grid td{padding:9px 6px}
+  .hm{display:none}.full{display:none}.short{display:inline}
+  .detail-grid td:first-child{white-space:normal}
+  .calkey{gap:6px 12px}
+}
 </style>
 
 <header class="band">
@@ -181,7 +237,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding-block:8px}
       </label>
       <label class="btn" for="fileIn" tabindex="0" role="button" id="upBtn" data-noprint>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
-        Upload Excel
+        <span><span class="lg">Upload </span>Excel</span>
       </label>
       <input id="fileIn" type="file" accept=".xlsx,.xls" hidden>
       <div class="status-msg" id="statusMsg"></div>
@@ -193,9 +249,9 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding-block:8px}
   <div class="wrap pnav-row">
   <div class="pnav-in" role="tablist">
     <button class="pbtn" role="tab" data-page="ringkasan">Ringkasan</button>
-    <button class="pbtn" role="tab" data-page="peringkat">Peringkat SPG</button>
-    <button class="pbtn" role="tab" data-page="penjualan">Penjualan &amp; Produk</button>
-    <button class="pbtn" role="tab" data-page="detail">Detail SPG</button>
+    <button class="pbtn" role="tab" data-page="peringkat">Peringkat<span class="lg"> SPG</span></button>
+    <button class="pbtn" role="tab" data-page="penjualan">Penjualan<span class="lg"> &amp; Produk</span></button>
+    <button class="pbtn" role="tab" data-page="detail">Detail<span class="lg"> SPG</span></button>
   </div>
   <div class="xbar" data-noprint>
     <button class="xbtn" id="pdfBtn" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3 3 3-3"/></svg><span id="pdfLbl">Export PDF</span></button>
@@ -229,7 +285,8 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding-block:8px}
       </div>
       <div class="legend"><span><i style="background:var(--blue)"></i>PWD</span><span><i style="background:var(--green)"></i>NDC</span></div>
     </div>
-    <div class="tscroll"><table id="rankTbl"></table></div>
+    <div class="tscroll rank-desk"><table id="rankTbl"></table></div>
+    <div class="rcards" id="rankCards"></div>
     <div class="weights" id="weights"></div>
   </section>
   </div>
@@ -450,6 +507,18 @@ function render() {
       <td class="r num">${hm(r.avgIn && Math.round(r.avgIn))}</td><td class="r num">${r.avgHrs ? (r.avgHrs / 60).toFixed(1) + ' j' : '—'}</td>
       <td class="r num">${r.visitedN}/${r.binaanN}</td></tr>`; }).join('') + '</tbody>';
   $('rankTbl').querySelectorAll('tbody tr').forEach(tr => tr.onclick = () => { selSpg = tr.dataset.area; showPage('detail'); });
+  $('rankCards').innerHTML = M.map(r => { const [c, l] = status(r.score); const p = r.omset ? Math.round(100 * r.pwd / r.omset) : 0; const dim = selArea !== 'ALL' && r.area !== selArea ? ' style="opacity:.45"' : '';
+    return `<div class="rcard" role="button" tabindex="0" data-area="${esc(r.area)}"${dim}>
+      <div class="rc-top"><span class="rank">${r.rank}</span><div class="who"><b>${esc(r.spg)}</b><span>${esc(r.area)}${r.partial ? ' · mulai tgl ' + r.a.days.find(d => d.status !== 'na').d : ''}</span></div>
+      <div class="rc-score"><b class="num">${r.score}</b><span class="pill ${c}">${l}</span></div></div>
+      <div class="rc-bar"><i style="width:${r.score}%"></i></div>
+      <dl class="rc-stats">
+        <div><dt>Omset</dt><dd class="num">${rpS(r.omset)}</dd></div><div><dt>Per hari</dt><dd class="num">${rpS(r.perDay)}</dd></div><div><dt>Qty</dt><dd class="num">${r.qty} pcs</dd></div>
+        <div><dt>Hari kerja</dt><dd class="num">${r.work}/${r.expected}</dd></div><div><dt>Telat</dt><dd class="num">${r.late ? `<span class="pill ${r.late > 8 ? 'bad' : 'warn'}">${r.late}×</span>` : '0'}</dd></div><div><dt>Toko</dt><dd class="num">${r.visitedN}/${r.binaanN}</dd></div>
+      </dl>
+      <div class="rc-mix"><div class="mix"><i style="width:${p}%"></i><i style="width:${100 - p}%"></i></div><span class="mixlab num">PWD ${p}% · NDC ${100 - p}% · masuk ${hm(r.avgIn && Math.round(r.avgIn))}</span></div>
+    </div>`; }).join('');
+  $('rankCards').querySelectorAll('.rcard').forEach(el => { const go = () => { selSpg = el.dataset.area; showPage('detail'); }; el.onclick = go; el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }; });
   $('weights').innerHTML = '<span style="border:0;padding-left:0">Bobot skor:</span>' + WEIGHTS.map(([n, w]) => `<span>${n} ${w * 100}%</span>`).join('') + '<span>Hari kerja dibanding standar 26 hari/bulan</span>';
 
   drawCharts(M, view);
@@ -542,17 +611,17 @@ function renderDetail(M) {
     else {
       const t = o / maxO, bg = o ? `background:${rgba(blue, (12 + t * 70) / 100)};${t > .5 ? 'color:#fff;' : ''}` : '';
       const late = d.in != null && d.in > LL;
-      h += `<div class="day${o ? '' : ' zero'}" style="${bg}" title="${esc(d.toko)} · masuk ${hm(d.in)} pulang ${hm(d.out)} · ${rp(o)}${d.note ? ' · ' + esc(d.note) : ''}">${late ? '<span class="late"></span>' : ''}<div class="dn">${d.d}</div><div class="om">${o ? rpS(o).replace('Rp ', '') : 'Rp 0'}</div><div class="tk"${t > .5 ? ' style="color:inherit;opacity:.85"' : ''}>${esc((d.toko || '').replace(/^Toko\s+/i, ''))}</div></div>`;
+      h += `<div class="day${o ? '' : ' zero'}" style="${bg}" title="${esc(d.toko)} · masuk ${hm(d.in)} pulang ${hm(d.out)} · ${rp(o)}${d.note ? ' · ' + esc(d.note) : ''}">${late ? '<span class="late"></span>' : ''}<div class="dn">${d.d}</div><div class="om">${o ? rpS(o).replace('Rp ', '').replace(' ', '') : '0'}</div><div class="tk"${t > .5 ? ' style="color:inherit;opacity:.85"' : ''}>${esc((d.toko || '').replace(/^Toko\s+/i, ''))}</div></div>`;
     }
   });
   $('cal').innerHTML = h;
   const tk = [...r.tokos].sort((a, b) => b.omset - a.omset);
-  $('tokoTbl').innerHTML = '<thead><tr><th>Toko</th><th class="r">Kunjungan</th><th class="r">Omset</th><th class="r">Per kunjungan</th></tr></thead><tbody>' +
-    tk.map(t => `<tr class="${t.visit === 0 ? 'zero-row' : ''}" style="cursor:default"><td>${esc(t.nama)}${t.binaan ? '' : ' <span class="note">(di luar daftar binaan)</span>'}</td><td class="r num">${t.visit || 'Belum'}</td><td class="r num">${rp(t.omset)}</td><td class="r num">${t.visit ? rpS(t.omset / t.visit) : '—'}</td></tr>`).join('') + '</tbody>';
+  $('tokoTbl').innerHTML = '<thead><tr><th>Toko</th><th class="r">Kunj.</th><th class="r">Omset</th><th class="r hm">Per kunjungan</th></tr></thead><tbody>' +
+    tk.map(t => `<tr class="${t.visit === 0 ? 'zero-row' : ''}" style="cursor:default"><td>${esc(t.nama)}${t.binaan ? '' : ' <span class="note">(di luar daftar binaan)</span>'}</td><td class="r num">${t.visit || 'Belum'}</td><td class="r num"><span class="full">${rp(t.omset)}</span><span class="short">${rpS(t.omset)}</span></td><td class="r num hm">${t.visit ? rpS(t.omset / t.visit) : '—'}</td></tr>`).join('') + '</tbody>';
   const pv = Object.entries(r.prod).sort((a, b) => b[1].omset - a[1].omset);
   const pt = pv.reduce((s, [, p]) => s + p.omset, 0);
-  $('varTbl').innerHTML = '<thead><tr><th>Varian</th><th>Jenis</th><th class="r">Qty</th><th class="r">Omset</th><th class="r">Porsi</th></tr></thead><tbody>' +
-    pv.map(([k, p]) => `<tr style="cursor:default"><td>${esc(k)}</td><td><span class="mixlab">${isPWD(k) ? 'PWD' : 'NDC'}</span></td><td class="r num">${p.q}</td><td class="r num">${rp(p.omset)}</td><td class="r num">${pt ? Math.round(100 * p.omset / pt) : 0}%</td></tr>`).join('') + '</tbody>';
+  $('varTbl').innerHTML = '<thead><tr><th>Varian</th><th class="hm">Jenis</th><th class="r">Qty</th><th class="r">Omset</th><th class="r">Porsi</th></tr></thead><tbody>' +
+    pv.map(([k, p]) => `<tr style="cursor:default"><td>${esc(k)}</td><td class="hm"><span class="mixlab">${isPWD(k) ? 'PWD' : 'NDC'}</span></td><td class="r num">${p.q}</td><td class="r num"><span class="full">${rp(p.omset)}</span><span class="short">${rpS(p.omset)}</span></td><td class="r num">${pt ? Math.round(100 * p.omset / pt) : 0}%</td></tr>`).join('') + '</tbody>';
 }
 
 function fillAreas() {
