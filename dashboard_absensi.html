@@ -485,7 +485,7 @@
 
   <section class="panel">
     <h2>Rekap absensi per tanggal, per nama karyawan</h2>
-    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System — 1 baris per karyawan per hari: Jam Masuk = absen masuk pertama, Jam Keluar = absen keluar terakhir. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk. Keterangan "Tidak Sesuai" muncul jika Jam Kerja di bawah 8 jam.</div>
+    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System — 1 baris per karyawan per hari: Jam Masuk = absen masuk pertama, Jam Keluar = absen keluar terakhir. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk. Keterangan "Tidak Sesuai" muncul jika Jam Kerja di bawah 8 jam (Senin–Jumat) atau di bawah 6 jam (Sabtu, jam kerja 08.00–14.00).</div>
     <div class="period-info"></div>
     <div class="table-scroll">
       <table id="tblRekapTanggal">
@@ -568,7 +568,17 @@ function parseTglJamAbsenSystem(s){
   return {tgl, jam};
 }
 
-function hitungTelat(t, jam){
+// Hari Sabtu: jam masuk tetap 08:00, pulang 14:00, target jam kerja 6 jam.
+// Hari lain: masuk 08:00, pulang 16:00, target jam kerja 8 jam.
+function isSabtu(tgl){
+  if(!tgl) return false;
+  const [y,m,d] = tgl.split('-').map(Number);
+  return new Date(y, m-1, d).getDay() === 6;
+}
+function targetMenitKerja(tgl){ return isSabtu(tgl) ? 360 : 480; }
+function jamPulangMenit(tgl){ return isSabtu(tgl) ? 14*60 : 16*60; }
+
+function hitungTelat(t, jam, tgl){
   if(!jam) return {telat:false, menit_telat:0};
   const [h,mn] = jam.split(':').map(Number);
   const menitAktual = h*60 + mn;
@@ -577,7 +587,7 @@ function hitungTelat(t, jam){
     const telatMenit = menitAktual - batas;
     return {telat: telatMenit > 0, menit_telat: telatMenit > 0 ? telatMenit : 0};
   } else {
-    const batas = 16*60; // jam pulang seharusnya 16:00
+    const batas = jamPulangMenit(tgl); // jam pulang 16:00 (Sabtu 14:00)
     const cepatMenit = batas - menitAktual;
     return {telat: cepatMenit > 0, menit_telat: cepatMenit > 0 ? cepatMenit : 0};
   }
@@ -586,7 +596,7 @@ function hitungTelat(t, jam){
 function mapRow(row, t){
   const absenSystemRaw = pick(row, ['Tanggal By System','Tgl Absen System','Tanggal Absen System']);
   const { tgl, jam } = parseTglJamAbsenSystem(absenSystemRaw);
-  const tel = hitungTelat(t, jam);
+  const tel = hitungTelat(t, jam, tgl);
   return {
     t,
     nama: (pick(row, ['Nama Karyawan']) || '').trim(),
@@ -895,7 +905,7 @@ function renderKPI(data, rawData){
   rekapTanggalRows.forEach(r => {
     const menit = hitungMenitKerja(r.jamMasuk, r.jamKeluar);
     if(menit === null) return;
-    if(menit < 480) jamTidakSesuai++; else jamSesuai++;
+    if(menit < targetMenitKerja(r.tgl)) jamTidakSesuai++; else jamSesuai++;
   });
 
   const cards = [
@@ -1097,7 +1107,7 @@ function buildRekapTanggal(data){
     jamKerja: hitungJamKerja(rec.jamMasuk, rec.jamKeluar),
     keterangan: (() => {
       const menit = hitungMenitKerja(rec.jamMasuk, rec.jamKeluar);
-      return menit !== null && menit < 480 ? 'Tidak Sesuai' : '';
+      return menit !== null && menit < targetMenitKerja(rec.tgl) ? 'Tidak Sesuai' : '';
     })(),
   }));
 }
