@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Kinerja SPG Elite Crème</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: brand band header with logo tile → KPI strip → ranking table → paired chart panels → per-SPG drill-down */
+:root{
+  --bg:#F2F6FB; --surface:#FFFFFF; --surface-2:#F7FAFE; --ink:#0E2340; --muted:#5A6E8A; --line:#DCE5F0;
+  --blue:#0266B4; --blue-deep:#01509F; --green:#4CB64A; --band:#0266B4; --band-ink:#FFFFFF;
+  --good:#17865A; --good-bg:#E3F4EC; --warn:#B07805; --warn-bg:#FBF1DC; --bad:#C2372C; --bad-bg:#FBE5E3;
+  --off:#E4EAF2; --na:#EEF1F5;
+  --f-display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --f-body:"Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0A1424; --surface:#111F35; --surface-2:#152842; --ink:#E5EDF8; --muted:#93A7C3; --line:#22395A;
+  --blue:#4A9BE6; --blue-deep:#2F7FCC; --green:#62C75E; --band:#0B3A6E; --band-ink:#EAF3FF;
+  --good:#4CC28E; --good-bg:#12362A; --warn:#E3B04A; --warn-bg:#3A2E12; --bad:#F07267; --bad-bg:#3E1A1A;
+  --off:#1C2D47; --na:#162540; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0A1424; --surface:#111F35; --surface-2:#152842; --ink:#E5EDF8; --muted:#93A7C3; --line:#22395A;
+  --blue:#4A9BE6; --blue-deep:#2F7FCC; --green:#62C75E; --band:#0B3A6E; --band-ink:#EAF3FF;
+  --good:#4CC28E; --good-bg:#12362A; --warn:#E3B04A; --warn-bg:#3A2E12; --bad:#F07267; --bad-bg:#3E1A1A;
+  --off:#1C2D47; --na:#162540; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;line-height:1.15}
+.num{font-variant-numeric:tabular-nums}
+
+/* header band */
+.band{background:var(--band);color:var(--band-ink);position:relative;overflow:hidden}
+.band::after{content:"";position:absolute;right:-150px;top:-120px;width:300px;height:190px;border-radius:50%;background:var(--green);opacity:.9;transform:rotate(-14deg)}
+.band .wrap{padding-block:20px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px;position:relative;z-index:1}
+.logo{background:#FFFFFF;border-radius:18px;padding:6px 10px;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.18);flex:none}
+.logo img{height:64px;width:auto;display:block}
+.ttl{flex:1 1 260px;min-width:0}
+.ttl .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:600}
+.ttl h1{font-size:clamp(26px,4vw,36px);font-weight:800;margin-top:2px}
+.ttl .sub{opacity:.85;font-size:13px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.ctl{display:flex;flex-direction:column;gap:4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.ctl select,.ctl input{font:inherit;font-size:14px;letter-spacing:0;text-transform:none;font-weight:500;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:var(--band-ink);border-radius:10px;padding:8px 10px;min-height:38px}
+.ctl select option{color:#0E2340;background:#fff}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 14px;min-height:38px;cursor:pointer;background:#FFFFFF;color:#01509F;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{background:#EAF3FF}
+.btn:focus-visible,.ctl select:focus-visible,.ctl input:focus-visible,.tab:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.status-msg{font-size:12px;opacity:.9;width:100%;text-align:right}
+
+/* sections */
+main.wrap{display:grid;gap:20px;margin-top:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}
+.panel h2{font-size:20px;font-weight:700}
+.panel .hint{color:var(--muted);font-size:12.5px;margin-top:2px}
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:8px;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:20px}
+
+/* KPI strip */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--f-display);font-size:clamp(20px,2.2vw,26px);white-space:nowrap;font-weight:800;margin-top:4px;line-height:1.1}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
+.kpi.hero{background:var(--blue-deep);border-color:var(--blue-deep);color:#FFFFFF}
+.kpi.hero .k,.kpi.hero .s{color:rgba(255,255,255,.82)}
+
+/* table */
+.tscroll{overflow-x:auto;margin-inline:-4px}
+table{border-collapse:collapse;width:100%;min-width:900px}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--surface-2);position:sticky;top:0}
+td.r,th.r{text-align:right}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr.sel{background:var(--surface-2);box-shadow:inset 3px 0 0 var(--blue)}
+.rank{font-family:var(--f-display);font-weight:800;font-size:18px;color:var(--blue);width:34px}
+.who b{display:block;font-weight:700}
+.who span{color:var(--muted);font-size:12px}
+.score{display:flex;align-items:center;gap:8px}
+.score .bar{width:70px;height:7px;border-radius:5px;background:var(--line);overflow:hidden}
+.score .bar i{display:block;height:100%;background:var(--blue);border-radius:5px}
+.score b{font-family:var(--f-display);font-size:17px;width:30px}
+.pill{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill.good{background:var(--good-bg);color:var(--good)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.mix{display:flex;width:90px;height:8px;border-radius:5px;overflow:hidden;background:var(--line)}
+.mix i:first-child{background:var(--blue)} .mix i:last-child{background:var(--green)}
+.mixlab{font-size:11px;color:var(--muted)}
+.weights{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.weights span{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+
+.chartbox{position:relative;height:300px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* insights */
+.insights{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.insights li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px 12px;border-radius:12px;background:var(--surface-2)}
+.insights .tag{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;margin-top:2px}
+.tag.good{background:var(--good-bg);color:var(--good)} .tag.warn{background:var(--warn-bg);color:var(--warn)} .tag.bad{background:var(--bad-bg);color:var(--bad)} .tag.info{background:var(--off);color:var(--blue)}
+
+/* detail */
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--blue);border-color:var(--blue);color:#FFFFFF}
+.dhead{display:flex;flex-wrap:wrap;gap:12px 28px;margin:16px 0 12px}
+.dhead div{min-width:0}
+.dhead .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.dhead .v{font-family:var(--f-display);font-size:20px;font-weight:700}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .dow{font-size:11px;color:var(--muted);text-align:center;font-weight:600}
+.day{border-radius:10px;padding:6px 7px;min-height:66px;border:1px solid var(--line);background:var(--surface);position:relative;font-size:11px;line-height:1.25;min-width:0;overflow:hidden}
+.day .dn{font-weight:700;font-size:12px}
+.day .om{font-variant-numeric:tabular-nums;font-weight:600;margin-top:2px}
+.day .tk{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.day.off{background:var(--off);border-color:transparent;color:var(--muted)}
+.day.na{background:repeating-linear-gradient(45deg,var(--na) 0 6px,var(--surface) 6px 12px);color:var(--muted)}
+.day.zero{border-color:var(--bad)}
+.day .late{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+.day.blank{border:0;background:transparent;min-height:0}
+.calkey{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:10px}
+.calkey i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px;border:1px solid var(--line)}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:20px;margin-top:6px}
+.detail-grid table{min-width:440px}
+.detail-grid h3{font-size:16px;margin-bottom:8px}
+.zero-row td{color:var(--bad)}
+.note{font-size:12px;color:var(--muted)}
+footer{color:var(--muted);font-size:12px;text-align:center;padding-block:8px}
+@media (max-width:560px){ .day{min-height:52px;padding:4px} .day .tk{display:none} .logo img{height:52px} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* page tabs */
+.pnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.pnav-in{display:flex;gap:4px;overflow-x:auto;padding-block:0;scrollbar-width:none}
+.pnav-in::-webkit-scrollbar{display:none}
+.pbtn{font:inherit;font-weight:600;font-size:14px;color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:14px 14px 11px;cursor:pointer;white-space:nowrap}
+.pbtn:hover{color:var(--ink)}
+.pbtn[aria-selected="true"]{color:var(--blue);border-bottom-color:var(--blue)}
+.pbtn:focus-visible{outline:3px solid var(--green);outline-offset:-3px}
+.page{display:grid;gap:20px;min-width:0}
+.page[hidden]{display:none}
+.chartbox.tall{height:380px}
+
+.pnav-row{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.pnav-in{min-width:0;flex:1 1 auto}
+.xbar{display:flex;gap:8px;flex:none;padding-block:6px}
+.xbtn{font:inherit;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:7px;border-radius:9px;padding:7px 12px;cursor:pointer;border:1px solid var(--blue);background:var(--blue);color:#FFFFFF;white-space:nowrap}
+.xbtn:hover{background:var(--blue-deep);border-color:var(--blue-deep)}
+.xbtn.ghost{background:transparent;color:var(--blue)}
+.xbtn.ghost:hover{background:var(--surface-2)}
+.xbtn:disabled{opacity:.55;cursor:progress}
+.xbtn:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.xmsg{font-size:12.5px;color:var(--muted);padding-block:0}
+.xmsg:empty{display:none}
+.xmsg:not(:empty){padding-block:0 8px}
+@media (max-width:640px){.pnav-row{flex-wrap:wrap;gap:0}.xbar{width:100%;padding-block:0 8px}}
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <div class="logo"><img src="data:image/jpeg;base64,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" alt="Elite Crème"></div>
+    <div class="ttl">
+      <div class="eyebrow">PT Santos Premium Krimer · Sales &amp; Distribution</div>
+      <h1>Kinerja SPG</h1>
+      <div class="sub" id="periodeTxt">Periode —</div>
+    </div>
+    <div class="controls">
+      <label class="ctl" for="fArea">Area
+        <select id="fArea"></select>
+      </label>
+      <label class="ctl" for="fLate">Batas jam masuk
+        <input id="fLate" type="time" value="09:00">
+      </label>
+      <label class="btn" for="fileIn" tabindex="0" role="button" id="upBtn" data-noprint>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
+        Upload Excel
+      </label>
+      <input id="fileIn" type="file" accept=".xlsx,.xls" hidden>
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+  </div>
+</header>
+
+<nav class="pnav" aria-label="Halaman dashboard">
+  <div class="wrap pnav-row">
+  <div class="pnav-in" role="tablist">
+    <button class="pbtn" role="tab" data-page="ringkasan">Ringkasan</button>
+    <button class="pbtn" role="tab" data-page="peringkat">Peringkat SPG</button>
+    <button class="pbtn" role="tab" data-page="penjualan">Penjualan &amp; Produk</button>
+    <button class="pbtn" role="tab" data-page="detail">Detail SPG</button>
+  </div>
+  <div class="xbar" data-noprint>
+    <button class="xbtn" id="pdfBtn" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3 3 3-3"/></svg><span id="pdfLbl">Export PDF</span></button>
+    <button class="xbtn ghost" id="pdfAllBtn" type="button" hidden>PDF semua SPG</button>
+  </div>
+  </div>
+  <div class="wrap xmsg" id="pdfMsg" role="status" aria-live="polite"></div>
+</nav>
+<main class="wrap">
+  <div class="page" data-page="ringkasan">
+  <section class="kpis" id="kpis" aria-label="Ringkasan"></section>
+  <div class="grid2">
+    <section class="panel">
+      <div class="phead"><div><h2>Sell-out per SPG</h2><div class="hint">Omset PWD dan NDC, Rupiah</div></div>
+        <div class="legend"><span><i style="background:var(--blue)"></i>PWD</span><span><i style="background:var(--green)"></i>NDC</span></div></div>
+      <div class="chartbox tall"><canvas id="cSpg" aria-label="Grafik omset per SPG"></canvas></div>
+    </section>
+    <section class="panel">
+      <div class="phead"><div><h2>Catatan &amp; tindak lanjut</h2><div class="hint">Disusun otomatis dari data bulan ini</div></div></div>
+      <ul class="insights" id="insights"></ul>
+    </section>
+  </div>
+  </div>
+
+  <div class="page" data-page="peringkat" hidden>
+  <section class="panel">
+    <div class="phead">
+      <div>
+        <h2>Peringkat SPG</h2>
+        <div class="hint">Klik baris untuk membuka Detail SPG. Skor dibandingkan dengan SPG terbaik di bulan yang sama.</div>
+      </div>
+      <div class="legend"><span><i style="background:var(--blue)"></i>PWD</span><span><i style="background:var(--green)"></i>NDC</span></div>
+    </div>
+    <div class="tscroll"><table id="rankTbl"></table></div>
+    <div class="weights" id="weights"></div>
+  </section>
+  </div>
+
+  <div class="page" data-page="penjualan" hidden>
+  <div class="grid2">
+    <section class="panel">
+      <div class="phead"><div><h2>Tren harian</h2><div class="hint" id="trendHint">Total sell-out per tanggal</div></div></div>
+      <div class="chartbox"><canvas id="cTrend" aria-label="Grafik tren harian"></canvas></div>
+    </section>
+    <section class="panel">
+      <div class="phead"><div><h2>Varian produk</h2><div class="hint" id="prodHint">Omset per varian dari rekap outlet</div></div>
+        <div class="legend"><span><i style="background:var(--blue)"></i>Elite Cream (PWD)</span><span><i style="background:var(--green)"></i>Non Dairy (NDC)</span></div></div>
+      <div class="chartbox"><canvas id="cProd" aria-label="Grafik omset per varian"></canvas></div>
+    </section>
+  </div>
+  </div>
+
+  <div class="page" data-page="detail" hidden>
+  <section class="panel" id="detail">
+    <div class="phead"><div><h2>Detail SPG</h2><div class="hint">Kalender kerja, absensi, dan kunjungan toko</div></div></div>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="dhead" id="dhead"></div>
+    <div class="cal" id="cal"></div>
+    <div class="calkey">
+      <span><i style="background:var(--blue);border-color:var(--blue)"></i>Omset lebih tinggi = warna lebih pekat</span>
+      <span><i style="background:var(--warn);border-radius:50%;border-color:var(--warn)"></i>Masuk lewat batas jam</span>
+      <span><i style="border-color:var(--bad)"></i>Hadir tanpa sell-out</span>
+      <span><i style="background:var(--off)"></i>OFF</span>
+      <span><i style="background:repeating-linear-gradient(45deg,var(--na) 0 3px,var(--surface) 3px 6px)"></i>Belum bergabung / tanpa data</span>
+    </div>
+    <div class="detail-grid" style="margin-top:20px">
+      <div style="min-width:0"><h3>Kunjungan toko binaan</h3><div class="tscroll"><table id="tokoTbl"></table></div></div>
+      <div style="min-width:0"><h3>Varian terjual</h3><div class="tscroll"><table id="varTbl"></table></div></div>
+    </div>
+  </section>
+  </div>
+  <footer id="foot"></footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// Parser workbook "Report SPG" -> struktur data dashboard. Butuh global XLSX (SheetJS).
+function parseSPGWorkbook(wb, XLSX) {
+  const clean = s => (s == null ? null : String(s).replace(/[⁠​]/g, '').replace(/\s+/g, ' ').trim());
+  const rowsOf = name => {
+    const ws = wb.Sheets[name]; if (!ws || !ws['!ref']) return [];
+    const e = XLSX.utils.decode_range(ws['!ref']).e;
+    return XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: null, blankrows: true, range: { s: { r: 0, c: 0 }, e } });
+  };
+  const isDate = v => v instanceof Date || (typeof v === 'number' && v > 40000 && v < 60000);
+  const toDate = v => (v instanceof Date ? v : new Date(Math.round((v - 25569) * 864e5)));
+  const toMin = v => {
+    if (v == null || v === 'OFF' || v === '') return null;
+    if (v instanceof Date) return v.getUTCHours() * 60 + v.getUTCMinutes();
+    if (typeof v === 'number') { const f = v % 1; return Math.round(f * 1440); }
+    const m = String(v).match(/(\d{1,2})[.:](\d{2})/); return m ? +m[1] * 60 + +m[2] : null;
+  };
+  const num = v => (typeof v === 'number' && isFinite(v) ? v : 0);
+
+  // SPG -> area & toko binaan
+  const spgMap = {};
+  if (wb.Sheets['Toko SPG']) {
+    rowsOf('Toko SPG').slice(1).forEach(r => {
+      if (r[0] && r[1] && r[2]) {
+        const a = clean(r[1]);
+        (spgMap[a] = spgMap[a] || { nama: clean(r[0]), toko: [] }).toko.push(clean(r[2]));
+      }
+    });
+  }
+  const areas = [];
+  let periode = '';
+  wb.SheetNames.forEach(sn => {
+    if (sn.startsWith('Outlet ') || sn === 'Toko SPG') return;
+    const rows = rowsOf(sn);
+    const areaName = clean((rows.find(r => r && clean(r[1]) === 'Area') || [])[2]) || sn;
+    const per = rows.find(r => r && clean(r[1]) === 'Periode');
+    if (per && per[2]) periode = clean(per[2]);
+    // toko list di kolom kanan (fallback bila tidak ada di "Toko SPG")
+    const sideToko = [];
+    rows.forEach(r => { const v = clean(r && r[13]); if (v && v !== 'OFF' && !/^Toko SPG/i.test(v) && /^Toko/i.test(v)) sideToko.push(v); });
+    const days = [];
+    rows.forEach(r => {
+      if (!r || !isDate(r[1])) return;
+      const d = toDate(r[1]);
+      const toko = clean(r[3]);
+      const off = toko === 'OFF' || r[4] === 'OFF';
+      const inn = toMin(r[4]), out = toMin(r[5]);
+      const pwd = num(r[6]), ndc = num(r[7]);
+      const status = off ? 'off' : (!toko && inn == null && pwd + ndc === 0) ? 'na' : 'kerja';
+      days.push({ d: d.getUTCDate(), hari: clean(r[2]), toko: status === 'kerja' ? toko : null, status,
+        in: inn, out, pwd, ndc, qp: num(r[9]), qn: num(r[10]), note: clean(r[12]) });
+    });
+    if (!days.length) return;
+    // detail produk per outlet
+    const outlet = {};
+    const os = wb.Sheets['Outlet ' + sn] ? rowsOf('Outlet ' + sn) : [];
+    os.forEach((row, i) => {
+      if (!row) return;
+      row.forEach((v, j) => {
+        if (v !== 'No' || clean(row[j + 1]) !== 'SEPTEMBER' && !/^[A-Z]+$/.test(clean(row[j + 1]) || '')) return;
+        const name = clean((os[i - 1] || [])[j]); if (!name) return;
+        const names = os[i + 1] || [], prices = os[i + 2] || [];
+        const prods = [];
+        for (let k = j + 2; k < Math.max(names.length, row.length); k++) {
+          if (k > j + 2 && row[k] === 'No') break;
+          const pn = clean(names[k]);
+          if (pn && typeof names[k] === 'string') prods.push([k, pn, num(prices[k])]);
+        }
+        let key = name, n = 2; while (outlet[key]) key = name + ' (' + n++ + ')';
+        const o = outlet[key] = {};
+        prods.forEach(([k, pn, pr]) => {
+          let q = 0, om = 0;
+          for (let rr = i + 3; rr < i + 3 + 35 && rr < os.length; rr++) {
+            const R = os[rr]; if (!R || !isDate(R[j + 1])) continue;
+            q += num(R[k + 2]); om += num(R[k + 3]);
+          }
+          o[pn] = { q, omset: om, harga: pr };
+        });
+      });
+    });
+    const sp = spgMap[areaName] || spgMap[sn];
+    areas.push({ area: areaName, spg: sp ? sp.nama : 'SPG ' + areaName, spgKnown: !!sp,
+      tokoList: sp ? sp.toko : sideToko, days, outlet });
+  });
+  return { periode: periode || 'September 2026', areas };
+}
+if (typeof module !== 'undefined') module.exports = parseSPGWorkbook;
+
+</script>
+<script>
+const SEED = {"periode":"September 2026","areas":[{"area":"Surabaya","spg":"Dinda Amalia Rachmadani","spgKnown":true,"tokoList":["Toko Nico","Toko Berkis","Toko Permata","Toko Pangan Jaya","Toko Sinar Yong","Toko Cle","Toko Mr. J","Toko Alpha Omega","Toko Alibaba","Toko Sumber Kehidupan"],"days":[{"d":1,"hari":"Selasa","toko":"Toko Nico","status":"kerja","in":534,"out":1040,"pwd":526000,"ndc":0,"qp":7,"qn":0,"note":null},{"d":2,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":3,"hari":"Kamis","toko":"Toko Berkis","status":"kerja","in":506,"out":1067,"pwd":695000,"ndc":175000,"qp":9,"qn":7,"note":null},{"d":4,"hari":"Jumat","toko":"Toko Berkis","status":"kerja","in":549,"out":1025,"pwd":386000,"ndc":0,"qp":5,"qn":0,"note":null},{"d":5,"hari":"Sabtu","toko":"Toko Permata","status":"kerja","in":551,"out":1046,"pwd":498500,"ndc":0,"qp":7,"qn":0,"note":null},{"d":6,"hari":"Minggu","toko":"Toko Permata","status":"kerja","in":545,"out":1132,"pwd":358500,"ndc":0,"qp":5,"qn":0,"note":null},{"d":7,"hari":"Senin","toko":"Toko Berkis","status":"kerja","in":511,"out":1069,"pwd":557000,"ndc":0,"qp":7,"qn":0,"note":null},{"d":8,"hari":"Selasa","toko":"Toko Berkis","status":"kerja","in":503,"out":1028,"pwd":612000,"ndc":0,"qp":8,"qn":0,"note":null},{"d":9,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":10,"hari":"Kamis","toko":"Toko Alibaba","status":"kerja","in":511,"out":1039,"pwd":224000,"ndc":0,"qp":3,"qn":0,"note":null},{"d":11,"hari":"Jumat","toko":"Toko Alibaba","status":"kerja","in":507,"out":1037,"pwd":148000,"ndc":0,"qp":2,"qn":0,"note":null},{"d":12,"hari":"Sabtu","toko":"Toko Alpha Omega","status":"kerja","in":560,"out":1081,"pwd":372000,"ndc":0,"qp":5,"qn":0,"note":null},{"d":13,"hari":"Minggu","toko":"Toko Alpha Omega","status":"kerja","in":595,"out":1060,"pwd":309000,"ndc":0,"qp":4,"qn":0,"note":null},{"d":14,"hari":"Senin","toko":"Toko Berkis","status":"kerja","in":509,"out":1046,"pwd":921000,"ndc":0,"qp":12,"qn":0,"note":null},{"d":15,"hari":"Selasa","toko":"Toko Sinar Yong","status":"kerja","in":524,"out":1023,"pwd":1597400,"ndc":0,"qp":20,"qn":0,"note":null},{"d":16,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":17,"hari":"Kamis","toko":"Toko Cle","status":"kerja","in":561,"out":1060,"pwd":482000,"ndc":0,"qp":6,"qn":0,"note":null},{"d":18,"hari":"Jumat","toko":"Toko Mr. J","status":"kerja","in":530,"out":1060,"pwd":519000,"ndc":0,"qp":6,"qn":0,"note":null},{"d":19,"hari":"Sabtu","toko":"Toko Mr. J","status":"kerja","in":543,"out":1085,"pwd":450500,"ndc":0,"qp":5,"qn":0,"note":null},{"d":20,"hari":"Minggu","toko":"Toko Permata","status":"kerja","in":500,"out":1086,"pwd":282000,"ndc":0,"qp":4,"qn":0,"note":null},{"d":21,"hari":"Senin","toko":"Toko Nico","status":"kerja","in":484,"out":1023,"pwd":734600,"ndc":0,"qp":10,"qn":0,"note":null},{"d":22,"hari":"Selasa","toko":"Toko Nico","status":"kerja","in":476,"out":1038,"pwd":877900,"ndc":0,"qp":12,"qn":0,"note":null},{"d":23,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":24,"hari":"Kamis","toko":"Toko Berkis","status":"kerja","in":497,"out":1035,"pwd":780000,"ndc":144000,"qp":10,"qn":5,"note":null},{"d":25,"hari":"Jumat","toko":"Toko Berkis","status":"kerja","in":511,"out":1055,"pwd":480000,"ndc":118000,"qp":6,"qn":4,"note":null},{"d":26,"hari":"Sabtu","toko":"Toko Permata","status":"kerja","in":521,"out":1021,"pwd":559000,"ndc":0,"qp":7,"qn":0,"note":null},{"d":27,"hari":"Minggu","toko":"Toko Permata","status":"kerja","in":583,"out":1060,"pwd":247000,"ndc":0,"qp":3,"qn":0,"note":null},{"d":28,"hari":"Senin","toko":"Toko Berkis","status":"kerja","in":512,"out":1029,"pwd":320000,"ndc":53000,"qp":4,"qn":2,"note":null},{"d":29,"hari":"Selasa","toko":"Toko Berkis","status":"kerja","in":501,"out":1026,"pwd":535000,"ndc":86000,"qp":7,"qn":3,"note":null},{"d":30,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null}],"outlet":{"Toko Nico - Sukodono Sidarjo":{"Choco":{"q":12,"omset":876000,"harga":73000},"Taro":{"q":5,"omset":326500,"harga":65300},"Matcha":{"q":12,"omset":936000,"harga":78000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Berkis - Sidoarjo":{"Choco":{"q":30,"omset":2310000,"harga":77000},"Taro":{"q":11,"omset":735000,"harga":66000},"Matcha":{"q":27,"omset":2241000,"harga":83000},"Light":{"q":16,"omset":411000,"harga":25000},"Regular":{"q":5,"omset":165000,"harga":33000},"Cold Soluble":{"q":0,"omset":0,"harga":32000}},"Toko Permata - Sidoarjo":{"Choco":{"q":12,"omset":884000,"harga":70000},"Taro":{"q":5,"omset":346500,"harga":65500},"Matcha":{"q":9,"omset":714500,"harga":76500},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Pangan Jaya - Surabaya":{"Choco":{"q":0,"omset":0,"harga":70000},"Taro":{"q":0,"omset":0,"harga":65600},"Matcha":{"q":0,"omset":0,"harga":76500},"Light":{"q":0,"omset":0,"harga":24500},"Regular":{"q":0,"omset":0,"harga":30100},"Cold Soluble":{"q":0,"omset":0,"harga":32300}},"Toko Sinar Yong - Surabaya":{"Choco":{"q":6,"omset":468000,"harga":78000},"Taro":{"q":4,"omset":289400,"harga":72350},"Matcha":{"q":10,"omset":840000,"harga":84000},"Light":{"q":0,"omset":0,"harga":27500},"Regular":{"q":0,"omset":0,"harga":33500},"Cold Soluble":{"q":0,"omset":0,"harga":35500}},"Toko Cle - Surabaya":{"Choco":{"q":3,"omset":237000,"harga":79000},"Taro":{"q":1,"omset":75000,"harga":75000},"Matcha":{"q":2,"omset":170000,"harga":85000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Mr. J - Surabaya":{"Choco":{"q":4,"omset":346000,"harga":86500},"Taro":{"q":2,"omset":161000,"harga":80500},"Matcha":{"q":5,"omset":462500,"harga":92500},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Alpha Omega - Surabaya":{"Choco":{"q":3,"omset":225000,"harga":75000},"Taro":{"q":3,"omset":210000,"harga":70000},"Matcha":{"q":3,"omset":246000,"harga":82000},"Light":{"q":0,"omset":0,"harga":24000},"Regular":{"q":0,"omset":0,"harga":29000},"Cold Soluble":{"q":0,"omset":0,"harga":32000}},"Toko Alibaba - Surabaya":{"Choco":{"q":3,"omset":228000,"harga":76000},"Taro":{"q":2,"omset":144000,"harga":72000},"Matcha":{"q":0,"omset":0,"harga":84000},"Light":{"q":0,"omset":0,"harga":25000},"Regular":{"q":0,"omset":0,"harga":30000},"Cold Soluble":{"q":0,"omset":0,"harga":33000}},"Toko Sumber Kehidupan - Surabaya":{"Choco":{"q":0,"omset":0,"harga":65000},"Taro":{"q":0,"omset":0,"harga":63000},"Matcha":{"q":0,"omset":0,"harga":70000},"Light":{"q":0,"omset":0,"harga":24000},"Regular":{"q":0,"omset":0,"harga":29000},"Cold Soluble":{"q":0,"omset":0,"harga":32000}}}},{"area":"Malang","spg":"Nurul Farikha","spgKnown":true,"tokoList":["Toko N&W","Toko Harmoni","Toko Crisant","Toko Dewa Dewi 1","Toko Dewa Dewi 2","Toko Candra","Toko Inti Aroma Sawojajar","Toko Inti Aroma Bugis"],"days":[{"d":1,"hari":"Selasa","toko":"Toko Dewa Dewi 2","status":"kerja","in":468,"out":1044,"pwd":829000,"ndc":0,"qp":11,"qn":0,"note":null},{"d":2,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":3,"hari":"Kamis","toko":"Toko Dewa Dewi 1","status":"kerja","in":488,"out":1057,"pwd":635500,"ndc":0,"qp":8,"qn":0,"note":null},{"d":4,"hari":"Jumat","toko":"Toko Dewa Dewi 1","status":"kerja","in":496,"out":1038,"pwd":711500,"ndc":0,"qp":9,"qn":0,"note":null},{"d":5,"hari":"Sabtu","toko":"Toko Candra","status":"kerja","in":473,"out":1039,"pwd":612000,"ndc":0,"qp":9,"qn":0,"note":null},{"d":6,"hari":"Minggu","toko":"Toko Dewa Dewi 2","status":"kerja","in":522,"out":1117,"pwd":986000,"ndc":0,"qp":13,"qn":0,"note":null},{"d":7,"hari":"Senin","toko":"Toko Harmoni","status":"kerja","in":486,"out":1044,"pwd":230000,"ndc":29500,"qp":6,"qn":1,"note":null},{"d":8,"hari":"Selasa","toko":"Toko Harmoni","status":"kerja","in":489,"out":1029,"pwd":167500,"ndc":29500,"qp":5,"qn":1,"note":null},{"d":9,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":10,"hari":"Kamis","toko":"Toko Harmoni","status":"kerja","in":506,"out":1041,"pwd":240000,"ndc":0,"qp":7,"qn":0,"note":null},{"d":11,"hari":"Jumat","toko":"Toko Harmoni","status":"kerja","in":534,"out":1116,"pwd":162500,"ndc":0,"qp":6,"qn":0,"note":null},{"d":12,"hari":"Sabtu","toko":"Toko Harmoni","status":"kerja","in":515,"out":1059,"pwd":167500,"ndc":0,"qp":5,"qn":0,"note":null},{"d":13,"hari":"Minggu","toko":"Toko Harmoni","status":"kerja","in":532,"out":1083,"pwd":167500,"ndc":29500,"qp":5,"qn":1,"note":null},{"d":14,"hari":"Senin","toko":"Toko Dewa Dewi 2","status":"kerja","in":456,"out":1033,"pwd":1056000,"ndc":0,"qp":14,"qn":0,"note":null},{"d":15,"hari":"Selasa","toko":"Toko Dewa Dewi 2","status":"kerja","in":465,"out":1032,"pwd":910500,"ndc":0,"qp":12,"qn":0,"note":null},{"d":16,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":17,"hari":"Kamis","toko":"Toko Dewa Dewi 1","status":"kerja","in":451,"out":1030,"pwd":554000,"ndc":0,"qp":7,"qn":0,"note":null},{"d":18,"hari":"Jumat","toko":"Toko Dewa Dewi 1","status":"kerja","in":454,"out":1031,"pwd":472500,"ndc":0,"qp":6,"qn":0,"note":null},{"d":19,"hari":"Sabtu","toko":"Toko Candra","status":"kerja","in":469,"out":1048,"pwd":338000,"ndc":0,"qp":5,"qn":0,"note":null},{"d":20,"hari":"Minggu","toko":"Toko Dewa Dewi 2","status":"kerja","in":466,"out":1041,"pwd":683000,"ndc":0,"qp":9,"qn":0,"note":null},{"d":21,"hari":"Senin","toko":"Toko Harmoni","status":"kerja","in":525,"out":1043,"pwd":167500,"ndc":0,"qp":5,"qn":0,"note":null},{"d":22,"hari":"Selasa","toko":"Toko Harmoni","status":"kerja","in":494,"out":1083,"pwd":177500,"ndc":0,"qp":6,"qn":0,"note":null},{"d":23,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":24,"hari":"Kamis","toko":"Toko Harmoni","status":"kerja","in":511,"out":1051,"pwd":167500,"ndc":0,"qp":5,"qn":0,"note":null},{"d":25,"hari":"Jumat","toko":"Toko Harmoni","status":"kerja","in":506,"out":1063,"pwd":265000,"ndc":0,"qp":8,"qn":0,"note":null},{"d":26,"hari":"Sabtu","toko":"Toko Harmoni","status":"kerja","in":524,"out":1027,"pwd":177500,"ndc":0,"qp":6,"qn":0,"note":null},{"d":27,"hari":"Minggu","toko":"Toko Harmoni","status":"kerja","in":521,"out":1031,"pwd":110000,"ndc":0,"qp":6,"qn":0,"note":null},{"d":28,"hari":"Senin","toko":"Toko Dewa Dewi 2","status":"kerja","in":454,"out":1036,"pwd":1073500,"ndc":0,"qp":14,"qn":0,"note":null},{"d":29,"hari":"Selasa","toko":"Toko Dewa Dewi 2","status":"kerja","in":453,"out":1028,"pwd":998000,"ndc":0,"qp":13,"qn":0,"note":null},{"d":30,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null}],"outlet":{"Toko Dewa Dewi 1 - Malang":{"Choco":{"q":13,"omset":988000,"harga":76000},"Taro":{"q":0,"omset":0,"harga":65000},"Matcha":{"q":17,"omset":1385500,"harga":81500},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Dewa Dewi 2 - Malang":{"Choco":{"q":40,"omset":3040000,"harga":76000},"Taro":{"q":22,"omset":1540000,"harga":70000},"Matcha":{"q":24,"omset":1956000,"harga":81500},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Harmoni - Tlogomas":{"Choco":{"q":10,"omset":607500,"harga":62500},"Taro":{"q":5,"omset":300000,"harga":60000},"Matcha":{"q":11,"omset":852500,"harga":77500},"Matcha Repack":{"q":44,"omset":440000,"harga":10000},"Light":{"q":0,"omset":0,"harga":27000},"Regular":{"q":3,"omset":88500,"harga":29500},"Cold Soluble":{"q":0,"omset":0,"harga":35000}},"Toko Inti Aroma Bugis - Malang":{"Choco":{"q":0,"omset":0,"harga":67000},"Taro":{"q":0,"omset":0,"harga":62000},"Matcha":{"q":0,"omset":0,"harga":73000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Inti Aroma Sawojajar - Malang":{"Choco":{"q":0,"omset":0,"harga":69500},"Taro":{"q":0,"omset":0,"harga":62000},"Matcha":{"q":0,"omset":0,"harga":76000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko N&W - Batu":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":68500},"Taro Repack":{"q":0,"omset":0,"harga":10000},"Matcha":{"q":0,"omset":0,"harga":72500},"Matcha Repack":{"q":0,"omset":0,"harga":10000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Candra - Malang":{"Choco":{"q":8,"omset":528000,"harga":66000},"Taro":{"q":1,"omset":62000,"harga":62000},"Matcha":{"q":5,"omset":360000,"harga":72000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Crisant - Tlogomas":{"Choco":{"q":0,"omset":0,"harga":70000},"Taro":{"q":0,"omset":0,"harga":65000},"Matcha":{"q":0,"omset":0,"harga":75000},"Matcha Repack":{"q":0,"omset":0,"harga":6000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}}}},{"area":"Jember","spg":"Intan Putri Yuliawarni","spgKnown":true,"tokoList":["Toko HMS","Toko Mocca","Toko Jecho","Toko Omah Kue","Toko Bundaku","Toko SMS","Toko Haqyna","Toko Larisso Ambulu","Toko Vanila Cay"],"days":[{"d":1,"hari":"Selasa","toko":"Toko Istana Kue","status":"kerja","in":540,"out":1037,"pwd":72000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":2,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":3,"hari":"Kamis","toko":"Toko HMS","status":"kerja","in":598,"out":1084,"pwd":75500,"ndc":51000,"qp":1,"qn":2,"note":null},{"d":4,"hari":"Jumat","toko":"Toko HMS","status":"kerja","in":604,"out":1103,"pwd":131000,"ndc":0,"qp":2,"qn":0,"note":null},{"d":5,"hari":"Sabtu","toko":"Toko Larisso Ambulu","status":"kerja","in":565,"out":1073,"pwd":334500,"ndc":0,"qp":5,"qn":0,"note":null},{"d":6,"hari":"Minggu","toko":"Toko Larisso Ambulu","status":"kerja","in":543,"out":1065,"pwd":364000,"ndc":0,"qp":5,"qn":0,"note":null},{"d":7,"hari":"Senin","toko":"Toko Omah Kue","status":"kerja","in":588,"out":1074,"pwd":72000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":8,"hari":"Selasa","toko":"Toko HMS","status":"kerja","in":489,"out":1040,"pwd":75500,"ndc":66000,"qp":1,"qn":2,"note":null},{"d":9,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":10,"hari":"Kamis","toko":"Toko Omah Kue","status":"kerja","in":546,"out":1038,"pwd":78000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":11,"hari":"Jumat","toko":"Toko Istana Kue","status":"kerja","in":546,"out":1036,"pwd":72000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":12,"hari":"Sabtu","toko":"Toko HMS","status":"kerja","in":559,"out":1033,"pwd":151000,"ndc":0,"qp":2,"qn":0,"note":null},{"d":13,"hari":"Minggu","toko":"Toko Omah Kue","status":"kerja","in":686,"out":1172,"pwd":66000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":14,"hari":"Senin","toko":"Toko Istana Kue","status":"kerja","in":544,"out":1065,"pwd":72000,"ndc":33500,"qp":1,"qn":1,"note":null},{"d":15,"hari":"Selasa","toko":"Toko HMS","status":"kerja","in":595,"out":1081,"pwd":75500,"ndc":61000,"qp":1,"qn":2,"note":null},{"d":16,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":17,"hari":"Kamis","toko":"Toko Omah Kue","status":"kerja","in":628,"out":1106,"pwd":78000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":18,"hari":"Jumat","toko":"Toko HMS","status":"kerja","in":639,"out":1117,"pwd":139000,"ndc":0,"qp":2,"qn":0,"note":null},{"d":19,"hari":"Sabtu","toko":"Toko Larisso Ambulu","status":"kerja","in":560,"out":1056,"pwd":291200,"ndc":0,"qp":4,"qn":0,"note":null},{"d":20,"hari":"Minggu","toko":"Toko Larisso Ambulu","status":"kerja","in":598,"out":1088,"pwd":200700,"ndc":0,"qp":3,"qn":0,"note":null},{"d":21,"hari":"Senin","toko":"Toko Istana Kue","status":"kerja","in":605,"out":1078,"pwd":0,"ndc":58500,"qp":0,"qn":2,"note":null},{"d":22,"hari":"Selasa","toko":"Toko Omah Kue","status":"kerja","in":744,"out":1170,"pwd":72000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":23,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":24,"hari":"Kamis","toko":"Toko HMS","status":"kerja","in":560,"out":1080,"pwd":75500,"ndc":25500,"qp":1,"qn":1,"note":null},{"d":25,"hari":"Jumat","toko":"Toko Jecho","status":"kerja","in":531,"out":1064,"pwd":78000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":26,"hari":"Sabtu","toko":"Toko Omah Kue","status":"kerja","in":691,"out":1199,"pwd":78000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":27,"hari":"Minggu","toko":"Toko Jecho","status":"kerja","in":623,"out":1122,"pwd":62500,"ndc":0,"qp":1,"qn":0,"note":null},{"d":28,"hari":"Senin","toko":"Toko Larisso Ambulu","status":"kerja","in":550,"out":1073,"pwd":218400,"ndc":0,"qp":3,"qn":0,"note":null},{"d":29,"hari":"Selasa","toko":"Toko Mocca","status":"kerja","in":491,"out":1044,"pwd":147000,"ndc":0,"qp":2,"qn":0,"note":null},{"d":30,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null}],"outlet":{"Toko HMS - Jember":{"Choco":{"q":1,"omset":67500,"harga":67500},"Taro":{"q":2,"omset":127000,"harga":63500},"Matcha":{"q":7,"omset":528500,"harga":75500},"Light":{"q":3,"omset":76500,"harga":25500},"Regular":{"q":2,"omset":61000,"harga":30500},"Cold Soluble":{"q":2,"omset":66000,"harga":33000}},"Toko Mocca - Jember":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":2,"omset":147000,"harga":73500},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Omah Kue - Jember":{"Choco":{"q":2,"omset":144000,"harga":72000},"Taro":{"q":1,"omset":66000,"harga":66000},"Matcha":{"q":3,"omset":234000,"harga":78000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":31500}},"Toko Bundaku - Jember":{"Choco":{"q":0,"omset":0,"harga":69200},"Taro":{"q":0,"omset":0,"harga":65000},"Matcha":{"q":0,"omset":0,"harga":75700},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":32500}},"Toko SMS - Lumajang":{"Choco":{"q":0,"omset":0,"harga":69000},"Taro":{"q":0,"omset":0,"harga":65000},"Matcha":{"q":0,"omset":0,"harga":75000},"Light":{"q":0,"omset":0,"harga":27500},"Regular":{"q":0,"omset":0,"harga":33000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Haqyna - Jember":{"Choco":{"q":0,"omset":0,"harga":67500},"Taro":{"q":0,"omset":0,"harga":63500},"Matcha":{"q":0,"omset":0,"harga":74000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":31500}},"Toko Larisso Ambulu - Jember":{"Choco":{"q":8,"omset":535200,"harga":66900},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":12,"omset":873600,"harga":72800},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Vanilla Cay - Jember":{"Choco":{"q":0,"omset":0,"harga":68500},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":75000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":30000},"Cold Soluble":{"q":0,"omset":0,"harga":31500}},"Toko Jecho - Jember":{"Choco":{"q":0,"omset":0,"harga":66000},"Taro":{"q":1,"omset":62500,"harga":62500},"Matcha":{"q":1,"omset":78000,"harga":78000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Istana Kue - Jember":{"Choco":{"q":3,"omset":216000,"harga":72000},"Taro":{"q":0,"omset":0,"harga":66000},"Matcha":{"q":0,"omset":0,"harga":77000},"Light":{"q":1,"omset":27000,"harga":27000},"Regular":{"q":1,"omset":31500,"harga":31500},"Cold Soluble":{"q":1,"omset":33500,"harga":33500}}}},{"area":"Bandung","spg":"Aprilia Supartini Morictsia","spgKnown":true,"tokoList":["Toko Asta","Toko EJC","Toko BSB","Toko Ratnasari Baking","Toko Sukasari Baking","Toko Vika Plastik","Toko Yandri Plastik","Toko Kaka Cake","Toko Budi Putra","Toko SB Plastik","Toko Tonic Plastik","Toko Cako","Toko Sampurna Plastik","Toko Candra Plastik","Toko Dika Plastik"],"days":[{"d":1,"hari":"Selasa","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":2,"hari":"Rabu","toko":"Toko Ratnasari Baking","status":"kerja","in":467,"out":972,"pwd":0,"ndc":250000,"qp":0,"qn":9,"note":null},{"d":3,"hari":"Kamis","toko":"Toko Cako","status":"kerja","in":554,"out":1039,"pwd":70000,"ndc":261000,"qp":1,"qn":9,"note":null},{"d":4,"hari":"Jumat","toko":"Toko BSB","status":"kerja","in":482,"out":963,"pwd":0,"ndc":307000,"qp":0,"qn":11,"note":null},{"d":5,"hari":"Sabtu","toko":"Toko Kaka Cake","status":"kerja","in":509,"out":1012,"pwd":656000,"ndc":0,"qp":9,"qn":0,"note":null},{"d":6,"hari":"Minggu","toko":"Toko SB Plastik","status":"kerja","in":473,"out":966,"pwd":304000,"ndc":214000,"qp":4,"qn":7,"note":null},{"d":7,"hari":"Senin","toko":"Toko Asta","status":"kerja","in":475,"out":964,"pwd":571500,"ndc":200100,"qp":8,"qn":7,"note":null},{"d":8,"hari":"Selasa","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":9,"hari":"Rabu","toko":"Toko Ratnasari Baking","status":"kerja","in":460,"out":953,"pwd":0,"ndc":197500,"qp":0,"qn":7,"note":null},{"d":10,"hari":"Kamis","toko":"Toko Yandri Plastik","status":"kerja","in":534,"out":1033,"pwd":0,"ndc":198000,"qp":0,"qn":6,"note":null},{"d":11,"hari":"Jumat","toko":"Toko BSB","status":"kerja","in":477,"out":967,"pwd":0,"ndc":309000,"qp":0,"qn":11,"note":null},{"d":12,"hari":"Sabtu","toko":"Toko SB Plastik","status":"kerja","in":470,"out":966,"pwd":508000,"ndc":0,"qp":7,"qn":0,"note":null},{"d":13,"hari":"Minggu","toko":"Toko Budi Putra","status":"kerja","in":452,"out":954,"pwd":575000,"ndc":30000,"qp":8,"qn":1,"note":null},{"d":14,"hari":"Senin","toko":"Toko Asta","status":"kerja","in":490,"out":971,"pwd":787200,"ndc":258200,"qp":11,"qn":10,"note":null},{"d":15,"hari":"Selasa","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":16,"hari":"Rabu","toko":"Toko Ratnasari Baking","status":"kerja","in":420,"out":907,"pwd":0,"ndc":230000,"qp":0,"qn":8,"note":null},{"d":17,"hari":"Kamis","toko":"Toko Vika Plastik","status":"kerja","in":479,"out":963,"pwd":585000,"ndc":50000,"qp":8,"qn":2,"note":null},{"d":18,"hari":"Jumat","toko":"Toko BSB","status":"kerja","in":472,"out":962,"pwd":0,"ndc":270000,"qp":0,"qn":10,"note":null},{"d":19,"hari":"Sabtu","toko":"Toko SB Plastik","status":"kerja","in":538,"out":1038,"pwd":468000,"ndc":0,"qp":6,"qn":0,"note":null},{"d":20,"hari":"Minggu","toko":"Toko Budi Putra","status":"kerja","in":481,"out":975,"pwd":360000,"ndc":0,"qp":5,"qn":0,"note":null},{"d":21,"hari":"Senin","toko":"Toko Asta","status":"kerja","in":487,"out":970,"pwd":1413900,"ndc":334700,"qp":20,"qn":12,"note":null},{"d":22,"hari":"Selasa","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":23,"hari":"Rabu","toko":"Toko Ratnasari Baking","status":"kerja","in":433,"out":939,"pwd":0,"ndc":217500,"qp":0,"qn":7,"note":null},{"d":24,"hari":"Kamis","toko":"Toko BSB","status":"kerja","in":464,"out":964,"pwd":0,"ndc":189000,"qp":0,"qn":7,"note":null},{"d":25,"hari":"Jumat","toko":"Toko BSB","status":"kerja","in":468,"out":968,"pwd":0,"ndc":207000,"qp":0,"qn":8,"note":null},{"d":26,"hari":"Sabtu","toko":"Toko SB Plastik","status":"kerja","in":505,"out":996,"pwd":453500,"ndc":0,"qp":6,"qn":0,"note":null},{"d":27,"hari":"Minggu","toko":"Toko Budi Putra","status":"kerja","in":511,"out":998,"pwd":0,"ndc":258000,"qp":0,"qn":8,"note":null},{"d":28,"hari":"Senin","toko":"Toko Asta","status":"kerja","in":485,"out":975,"pwd":1408600,"ndc":81200,"qp":18,"qn":3,"note":null},{"d":29,"hari":"Selasa","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":30,"hari":"Rabu","toko":"Toko Ratnasari Baking","status":"kerja","in":444,"out":936,"pwd":0,"ndc":260000,"qp":0,"qn":9,"note":null}],"outlet":{"Toko Asta - Dago":{"Choco":{"q":27,"omset":2005900,"harga":70200},"Taro":{"q":12,"omset":801900,"harga":65000},"Matcha":{"q":18,"omset":1373400,"harga":75300},"Light":{"q":19,"omset":465500,"harga":24500},"Regular":{"q":9,"omset":279900,"harga":31100},"Cold Soluble":{"q":4,"omset":128800,"harga":32200}},"Toko EJC - Balaendah":{"Choco":{"q":0,"omset":0,"harga":70000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":0,"omset":0,"harga":24000},"Regular":{"q":0,"omset":0,"harga":29500},"Cold Soluble":{"q":0,"omset":0,"harga":31000}},"Toko BSB - Bandung":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":28,"omset":700000,"harga":25000},"Regular":{"q":13,"omset":390000,"harga":30000},"Cold Soluble":{"q":6,"omset":192000,"harga":32000}},"Toko Ratnasari Baking - Bandung":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":11,"omset":275000,"harga":25000},"Regular":{"q":25,"omset":750000,"harga":30000},"Cold Soluble":{"q":4,"omset":130000,"harga":32500}},"Toko Sukasari Baking - Bandung":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":0,"omset":0,"harga":25000},"Regular":{"q":0,"omset":0,"harga":32000},"Cold Soluble":{"q":0,"omset":0,"harga":32000}},"Toko Vika Plastik - Bandung":{"Choco":{"q":3,"omset":210000,"harga":70000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":5,"omset":375000,"harga":75000},"Light":{"q":2,"omset":50000,"harga":25000},"Regular":{"q":0,"omset":0,"harga":30000},"Cold Soluble":{"q":0,"omset":0,"harga":32000}},"Toko Yandri Plastik - Bandung":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":0,"omset":0,"harga":25000},"Regular":{"q":6,"omset":198000,"harga":33000},"Cold Soluble":{"q":0,"omset":0,"harga":32000}},"Toko Kaka Cake - Bandung":{"Choco":{"q":2,"omset":143000,"harga":71500},"Taro":{"q":3,"omset":201000,"harga":67000},"Matcha":{"q":4,"omset":312000,"harga":78000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Budi Putra - Bandung":{"Choco":{"q":6,"omset":420000,"harga":70000},"Taro":{"q":1,"omset":65000,"harga":65000},"Matcha":{"q":6,"omset":450000,"harga":75000},"Light":{"q":0,"omset":0,"harga":25000},"Regular":{"q":3,"omset":90000,"harga":30000},"Cold Soluble":{"q":6,"omset":198000,"harga":33000}},"Toko SB Plastik - Bandung":{"Choco":{"q":5,"omset":369000,"harga":72000},"Taro":{"q":3,"omset":199500,"harga":65000},"Matcha":{"q":15,"omset":1165000,"harga":78000},"Light":{"q":2,"omset":54000,"harga":27000},"Regular":{"q":5,"omset":160000,"harga":32000},"Cold Soluble":{"q":0,"omset":0,"harga":33300}},"Toko Tonic Plastik - Bandung":{"Choco":{"q":0,"omset":0,"harga":75000},"Taro":{"q":0,"omset":0,"harga":75000},"Matcha":{"q":0,"omset":0,"harga":80000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Cako - Bandung":{"Choco":{"q":1,"omset":70000,"harga":70000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":76000},"Light":{"q":6,"omset":162000,"harga":27000},"Regular":{"q":0,"omset":0,"harga":32000},"Cold Soluble":{"q":3,"omset":99000,"harga":33000}},"Toko Sampurna Plastik - Bandung":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":0,"omset":0,"harga":25000},"Regular":{"q":0,"omset":0,"harga":30000},"Cold Soluble":{"q":0,"omset":0,"harga":31000}},"Toko Dika Plastik - Bandung":{"Choco":{"q":0,"omset":0,"harga":70000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":75000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Candra Plastik - Bandung":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":0,"omset":0,"harga":25000},"Regular":{"q":0,"omset":0,"harga":30000},"Cold Soluble":{"q":0,"omset":0,"harga":32500}},"Toko Maju Jaya - Bandung":{"Choco":{"q":0,"omset":0,"harga":70000},"Taro":{"q":0,"omset":0,"harga":65000},"Matcha":{"q":0,"omset":0,"harga":76000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":32000}}}},{"area":"Purwakarta","spg":"Aprilliani Ghozali","spgKnown":true,"tokoList":["Toko Cempaka Plastik","Toko Rahmat Buah","Toko RTM Putri","Toko Arya","Toko Family","Toko Berkah","Toko Cekas Plastik","Toko Bayu","Toko Sulaiman Plastik","Toko Intan"],"days":[{"d":1,"hari":"Selasa","toko":"Toko Berkah","status":"kerja","in":609,"out":1082,"pwd":507000,"ndc":64000,"qp":7,"qn":2,"note":null},{"d":2,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":3,"hari":"Kamis","toko":"Toko Rahmat Buah","status":"kerja","in":567,"out":1050,"pwd":0,"ndc":270000,"qp":0,"qn":10,"note":null},{"d":4,"hari":"Jumat","toko":"Toko Cempaka Plastik","status":"kerja","in":580,"out":1035,"pwd":136000,"ndc":260000,"qp":2,"qn":10,"note":null},{"d":5,"hari":"Sabtu","toko":"Toko Family","status":"kerja","in":550,"out":1021,"pwd":210000,"ndc":50000,"qp":3,"qn":2,"note":null},{"d":6,"hari":"Minggu","toko":"Toko Rahmat Buah","status":"kerja","in":597,"out":1067,"pwd":340000,"ndc":99000,"qp":4,"qn":3,"note":null},{"d":7,"hari":"Senin","toko":"Toko Sulaiman Plastik","status":"kerja","in":562,"out":1045,"pwd":214000,"ndc":139000,"qp":3,"qn":5,"note":null},{"d":8,"hari":"Selasa","toko":"Toko Family","status":"kerja","in":536,"out":1045,"pwd":148000,"ndc":66000,"qp":2,"qn":2,"note":null},{"d":9,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":10,"hari":"Kamis","toko":"Toko RTM Putri","status":"kerja","in":593,"out":1086,"pwd":234000,"ndc":199000,"qp":3,"qn":7,"note":null},{"d":11,"hari":"Jumat","toko":"Toko Rahmat Buah","status":"kerja","in":569,"out":1114,"pwd":255000,"ndc":54000,"qp":3,"qn":2,"note":null},{"d":12,"hari":"Sabtu","toko":"Toko Family","status":"kerja","in":569,"out":1057,"pwd":136000,"ndc":0,"qp":2,"qn":0,"note":null},{"d":13,"hari":"Minggu","toko":"Toko Cempaka Plastik","status":"kerja","in":482,"out":963,"pwd":704000,"ndc":31000,"qp":10,"qn":1,"note":null},{"d":14,"hari":"Senin","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":15,"hari":"Selasa","toko":"Toko Cekas Plastik","status":"kerja","in":515,"out":1070,"pwd":290000,"ndc":314000,"qp":4,"qn":11,"note":null},{"d":16,"hari":"Rabu","toko":"Toko RTM Putri","status":"kerja","in":578,"out":1078,"pwd":576000,"ndc":0,"qp":8,"qn":0,"note":null},{"d":17,"hari":"Kamis","toko":"Toko Bayu","status":"kerja","in":622,"out":1107,"pwd":0,"ndc":660000,"qp":0,"qn":24,"note":null},{"d":18,"hari":"Jumat","toko":"Toko Rahmat Buah","status":"kerja","in":541,"out":1028,"pwd":595000,"ndc":54000,"qp":7,"qn":2,"note":null},{"d":19,"hari":"Sabtu","toko":"Toko Cempaka Plastik","status":"kerja","in":600,"out":1081,"pwd":138000,"ndc":66000,"qp":2,"qn":2,"note":null},{"d":20,"hari":"Minggu","toko":"Toko Rahmat Buah","status":"kerja","in":596,"out":1100,"pwd":340000,"ndc":60000,"qp":4,"qn":2,"note":null},{"d":21,"hari":"Senin","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":22,"hari":"Selasa","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"anak sakit"},{"d":23,"hari":"Rabu","toko":"Toko Berkah","status":"kerja","in":549,"out":1069,"pwd":371000,"ndc":56000,"qp":5,"qn":2,"note":null},{"d":24,"hari":"Kamis","toko":"Toko Family","status":"kerja","in":537,"out":1077,"pwd":204000,"ndc":0,"qp":3,"qn":0,"note":null},{"d":25,"hari":"Jumat","toko":"Toko RTM Putri","status":"kerja","in":496,"out":1015,"pwd":0,"ndc":133000,"qp":0,"qn":5,"note":null},{"d":26,"hari":"Sabtu","toko":"Toko Cempaka Plastik","status":"kerja","in":539,"out":1033,"pwd":290000,"ndc":0,"qp":4,"qn":0,"note":null},{"d":27,"hari":"Minggu","toko":"Toko Rahmat Buah","status":"kerja","in":497,"out":996,"pwd":340000,"ndc":132000,"qp":4,"qn":4,"note":null},{"d":28,"hari":"Senin","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":29,"hari":"Selasa","toko":"Toko Multi","status":"kerja","in":497,"out":981,"pwd":78000,"ndc":400000,"qp":1,"qn":16,"note":null},{"d":30,"hari":"Rabu","toko":"Toko DNF","status":"kerja","in":535,"out":1021,"pwd":72000,"ndc":200000,"qp":1,"qn":8,"note":null}],"outlet":{"Toko Rahmat Buah - Purwakarta":{"Choco":{"q":10,"omset":850000,"harga":85000},"Taro":{"q":1,"omset":85000,"harga":85000},"Matcha":{"q":11,"omset":935000,"harga":85000},"Light":{"q":15,"omset":405000,"harga":27000},"Regular":{"q":3,"omset":99000,"harga":33000},"Cold Soluble":{"q":5,"omset":165000,"harga":33000}},"Toko RTM - Purwakarta":{"Choco":{"q":8,"omset":576000,"harga":72000},"Taro":{"q":0,"omset":0,"harga":68000},"Matcha":{"q":3,"omset":234000,"harga":78000},"Light":{"q":7,"omset":175000,"harga":25000},"Regular":{"q":4,"omset":124000,"harga":31000},"Cold Soluble":{"q":1,"omset":33000,"harga":33000}},"Toko Family - Purwakarta":{"Choco":{"q":4,"omset":272000,"harga":68000},"Taro":{"q":2,"omset":130000,"harga":65000},"Matcha":{"q":4,"omset":296000,"harga":74000},"Light":{"q":2,"omset":50000,"harga":25000},"Regular":{"q":0,"omset":0,"harga":31000},"Cold Soluble":{"q":2,"omset":66000,"harga":33000}},"Toko Cekas - Purwakarta":{"Choco":{"q":2,"omset":154000,"harga":77000},"Taro":{"q":2,"omset":136000,"harga":68000},"Matcha":{"q":0,"omset":0,"harga":78000},"Light":{"q":10,"omset":280000,"harga":28000},"Regular":{"q":1,"omset":34000,"harga":34000},"Cold Soluble":{"q":0,"omset":0,"harga":35000}},"Toko Berkah - Purwakarta":{"Choco":{"q":5,"omset":350000,"harga":70000},"Taro":{"q":1,"omset":66000,"harga":66000},"Matcha":{"q":6,"omset":462000,"harga":77000},"Light":{"q":1,"omset":25000,"harga":25000},"Regular":{"q":2,"omset":62000,"harga":31000},"Cold Soluble":{"q":1,"omset":33000,"harga":33000}},"Toko Sulaiman Plastik - Purwakarta":{"Choco":{"q":1,"omset":72000,"harga":72000},"Taro":{"q":1,"omset":68000,"harga":68000},"Matcha":{"q":1,"omset":74000,"harga":74000},"Light":{"q":3,"omset":75000,"harga":25000},"Regular":{"q":1,"omset":31000,"harga":31000},"Cold Soluble":{"q":1,"omset":33000,"harga":33000}},"Toko Multi - Purwakarta":{"Choco":{"q":0,"omset":0,"harga":72000},"Taro":{"q":0,"omset":0,"harga":68000},"Matcha":{"q":1,"omset":78000,"harga":78000},"Light":{"q":16,"omset":400000,"harga":25000},"Regular":{"q":0,"omset":0,"harga":31000},"Cold Soluble":{"q":0,"omset":0,"harga":33000}},"Toko Bayu - Purwakarta":{"Choco":{"q":0,"omset":0,"harga":72000},"Taro":{"q":0,"omset":0,"harga":68000},"Matcha":{"q":0,"omset":0,"harga":78000},"Light":{"q":14,"omset":350000,"harga":25000},"Regular":{"q":10,"omset":310000,"harga":31000},"Cold Soluble":{"q":0,"omset":0,"harga":33000}},"Toko DNF - Purwakarta":{"Choco":{"q":1,"omset":72000,"harga":72000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":8,"omset":200000,"harga":25000},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Cempaka Plastik - Purwakarta":{"Choco":{"q":5,"omset":343000,"harga":69000},"Taro":{"q":5,"omset":325000,"harga":65000},"Matcha":{"q":8,"omset":600000,"harga":75000},"Light":{"q":10,"omset":260000,"harga":26000},"Regular":{"q":1,"omset":31000,"harga":31000},"Cold Soluble":{"q":2,"omset":66000,"harga":33000}}}},{"area":"Bogor","spg":"Vera","spgKnown":true,"tokoList":["Toko Yoeks","Toko Kencana Makmur","Toko Nam Jaya","Toko Alim","Toko Kayla Curug","Toko LG Bojong Gede","Toko Dahlia","Toko Prima","Toko Shelly"],"days":[{"d":1,"hari":"Selasa","toko":"Toko Yoeks","status":"kerja","in":502,"out":980,"pwd":358500,"ndc":52000,"qp":5,"qn":2,"note":null},{"d":2,"hari":"Rabu","toko":"Toko Alim","status":"kerja","in":492,"out":971,"pwd":647000,"ndc":164000,"qp":9,"qn":5,"note":null},{"d":3,"hari":"Kamis","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":4,"hari":"Jumat","toko":"Toko Dahlia","status":"kerja","in":503,"out":983,"pwd":70000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":5,"hari":"Sabtu","toko":"Toko Shelly","status":"kerja","in":476,"out":960,"pwd":155000,"ndc":68000,"qp":2,"qn":2,"note":null},{"d":6,"hari":"Minggu","toko":"Toko Prima","status":"kerja","in":483,"out":962,"pwd":148000,"ndc":0,"qp":6,"qn":0,"note":null},{"d":7,"hari":"Senin","toko":"Toko Nam Jaya","status":"kerja","in":497,"out":996,"pwd":0,"ndc":26000,"qp":0,"qn":1,"note":null},{"d":8,"hari":"Selasa","toko":"Toko Alim","status":"kerja","in":496,"out":978,"pwd":1082100,"ndc":254000,"qp":14,"qn":8,"note":null},{"d":9,"hari":"Rabu","toko":"Toko LG Bojong Gede","status":"kerja","in":522,"out":1001,"pwd":70000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":10,"hari":"Kamis","toko":"Toko Kencana Makmur","status":"kerja","in":494,"out":974,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"No Sellout"},{"d":11,"hari":"Jumat","toko":"Toko Yoeks","status":"kerja","in":481,"out":962,"pwd":888000,"ndc":165500,"qp":12,"qn":5,"note":null},{"d":12,"hari":"Sabtu","toko":"Toko Alim","status":"kerja","in":494,"out":974,"pwd":845700,"ndc":124000,"qp":11,"qn":4,"note":null},{"d":13,"hari":"Minggu","toko":"Toko Dahlia","status":"kerja","in":491,"out":971,"pwd":76500,"ndc":0,"qp":1,"qn":0,"note":null},{"d":14,"hari":"Senin","toko":"Toko Nam Jaya","status":"kerja","in":488,"out":974,"pwd":0,"ndc":61000,"qp":0,"qn":2,"note":null},{"d":15,"hari":"Selasa","toko":"Toko Kencana Makmur","status":"kerja","in":467,"out":948,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":16,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":17,"hari":"Kamis","toko":"Toko Alim","status":"kerja","in":484,"out":966,"pwd":472800,"ndc":85500,"qp":6,"qn":3,"note":null},{"d":18,"hari":"Jumat","toko":"Toko Dahlia","status":"kerja","in":504,"out":985,"pwd":146500,"ndc":0,"qp":2,"qn":0,"note":null},{"d":19,"hari":"Sabtu","toko":"Toko Alim","status":"kerja","in":496,"out":976,"pwd":309600,"ndc":65000,"qp":4,"qn":2,"note":null},{"d":20,"hari":"Minggu","toko":"Toko Prima","status":"kerja","in":503,"out":982,"pwd":142500,"ndc":0,"qp":6,"qn":0,"note":null},{"d":21,"hari":"Senin","toko":"Toko Nam Jaya","status":"kerja","in":493,"out":972,"pwd":0,"ndc":34000,"qp":0,"qn":1,"note":null},{"d":22,"hari":"Selasa","toko":"Toko Alim","status":"kerja","in":497,"out":976,"pwd":149800,"ndc":150500,"qp":2,"qn":5,"note":null},{"d":23,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":24,"hari":"Kamis","toko":"Toko LG Bojong Gede","status":"kerja","in":508,"out":993,"pwd":142000,"ndc":32000,"qp":2,"qn":1,"note":null},{"d":25,"hari":"Jumat","toko":"Toko Kencana Makmur","status":"kerja","in":484,"out":967,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"No Sellout"},{"d":26,"hari":"Sabtu","toko":"Toko Yoeks","status":"kerja","in":479,"out":962,"pwd":596500,"ndc":34000,"qp":8,"qn":1,"note":null},{"d":27,"hari":"Minggu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"Sakit"},{"d":28,"hari":"Senin","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"Sakit"},{"d":29,"hari":"Selasa","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"Sakit"},{"d":30,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null}],"outlet":{"Toko Yoeks - Bogor":{"Choco":{"q":8,"omset":578000,"harga":73000},"Taro":{"q":6,"omset":408500,"harga":68000},"Matcha":{"q":11,"omset":856500,"harga":77500},"Light":{"q":2,"omset":52000,"harga":26000},"Regular":{"q":3,"omset":97500,"harga":32500},"Cold Soluble":{"q":3,"omset":102000,"harga":34000}},"Toko Kencana Makmur - Bogor":{"Choco":{"q":0,"omset":0,"harga":70000},"Taro":{"q":0,"omset":0,"harga":65500},"Matcha":{"q":0,"omset":0,"harga":76500},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Nam Jaya - Bogor":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":2,"omset":53000,"harga":27000},"Regular":{"q":0,"omset":0,"harga":32000},"Cold Soluble":{"q":2,"omset":68000,"harga":34000}},"Toko Alim - Bogor":{"Choco":{"q":14,"omset":1052600,"harga":76600},"Taro":{"q":8,"omset":550400,"harga":69900},"Matcha":{"q":24,"omset":1904000,"harga":79900},"Light":{"q":7,"omset":185500,"harga":26500},"Regular":{"q":16,"omset":518500,"harga":32500},"Cold Soluble":{"q":4,"omset":139000,"harga":35500}},"Toko Kayla Curug - Bogor":{"Choco":{"q":0,"omset":0,"harga":70000},"Taro":{"q":0,"omset":0,"harga":65500},"Matcha":{"q":0,"omset":0,"harga":76500},"Light":{"q":0,"omset":0,"harga":26000},"Regular":{"q":0,"omset":0,"harga":32000},"Cold Soluble":{"q":0,"omset":0,"harga":34000}},"Toko LG Bojong Gede - Bogor":{"Choco":{"q":2,"omset":146500,"harga":70000},"Taro":{"q":1,"omset":65500,"harga":65500},"Matcha":{"q":0,"omset":0,"harga":76500},"Light":{"q":0,"omset":0,"harga":26000},"Regular":{"q":1,"omset":32000,"harga":32000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Dahlia - Bogor":{"Choco":{"q":2,"omset":140000,"harga":70000},"Taro":{"q":0,"omset":0,"harga":65500},"Matcha":{"q":2,"omset":153000,"harga":76500},"Light":{"q":0,"omset":0,"harga":26000},"Regular":{"q":0,"omset":0,"harga":32000},"Cold Soluble":{"q":0,"omset":0,"harga":34000}},"Toko Shelly - Bogor":{"Choco":{"q":1,"omset":75000,"harga":75000},"Taro":{"q":0,"omset":0,"harga":68000},"Matcha":{"q":1,"omset":80000,"harga":80000},"Light":{"q":0,"omset":0,"harga":27000},"Regular":{"q":2,"omset":68000,"harga":34000},"Cold Soluble":{"q":0,"omset":0,"harga":36000}},"Toko Prima Kue - Bogor":{"Choco":{"q":1,"omset":70000,"harga":70000},"Choco Repack":{"q":5,"omset":80000,"harga":16000},"Taro":{"q":1,"omset":65500,"harga":65500},"Taro Repack":{"q":5,"omset":75000,"harga":15000},"Matcha":{"q":0,"omset":0,"harga":76500},"Matcha Repack":{"q":0,"omset":0,"harga":15000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}}}},{"area":"Bekasi","spg":"Maura Adelia","spgKnown":true,"tokoList":["Toko Akena Jatiasih","Toko Akena Duren Jaya","Toko Akena Setia Mekar","Toko Akena Jaka Setia","Toko Akena Kemandoran","Toko Akena Setu","Toko Akena Mustika Jaya","Toko Akena Pulo Ribung","Toko PTM Harapan Jaya","Toko Mega Baking","Toko Bahan Kue Laris"],"days":[{"d":1,"hari":"Selasa","toko":"Toko Akena Duren Jaya","status":"kerja","in":489,"out":968,"pwd":0,"ndc":91000,"qp":0,"qn":3,"note":null},{"d":2,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":3,"hari":"Kamis","toko":"Toko Akena Jatiasih","status":"kerja","in":503,"out":980,"pwd":247000,"ndc":238000,"qp":3,"qn":7,"note":null},{"d":4,"hari":"Jumat","toko":"Toko PTM Harapan Jaya","status":"kerja","in":475,"out":958,"pwd":0,"ndc":163500,"qp":0,"qn":5,"note":null},{"d":5,"hari":"Sabtu","toko":"Toko Akena Setia Mekar","status":"kerja","in":472,"out":953,"pwd":87000,"ndc":84000,"qp":1,"qn":3,"note":null},{"d":6,"hari":"Minggu","toko":"Toko Akena Setu","status":"kerja","in":475,"out":956,"pwd":174000,"ndc":0,"qp":2,"qn":0,"note":null},{"d":7,"hari":"Senin","toko":"Toko Akena Kemandoran","status":"kerja","in":483,"out":961,"pwd":167000,"ndc":0,"qp":2,"qn":0,"note":null},{"d":8,"hari":"Selasa","toko":"Toko Akena Pulo Ribung","status":"kerja","in":483,"out":963,"pwd":80000,"ndc":210000,"qp":1,"qn":6,"note":null},{"d":9,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":10,"hari":"Kamis","toko":"Toko Akena Mustika Jaya","status":"kerja","in":488,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"Izin Pulang Cepat (Orang Tua Sakit)"},{"d":11,"hari":"Jumat","toko":"Toko PTM Harapan Jaya","status":"kerja","in":508,"out":989,"pwd":330500,"ndc":142000,"qp":4,"qn":4,"note":null},{"d":12,"hari":"Sabtu","toko":"Toko Akena Duren Jaya","status":"kerja","in":495,"out":975,"pwd":87000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":13,"hari":"Minggu","toko":"Toko Akena Setia Mekar","status":"kerja","in":463,"out":944,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"No Sellout"},{"d":14,"hari":"Senin","toko":"Toko Akena Jatiasih","status":"kerja","in":481,"out":962,"pwd":167000,"ndc":112000,"qp":2,"qn":4,"note":null},{"d":15,"hari":"Selasa","toko":"Toko Akena Setu","status":"kerja","in":430,"out":910,"pwd":0,"ndc":35000,"qp":0,"qn":1,"note":null},{"d":16,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":17,"hari":"Kamis","toko":"Toko Akena Kemandoran","status":"kerja","in":481,"out":962,"pwd":87000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":18,"hari":"Jumat","toko":"Toko Akena Setia Mekar","status":"kerja","in":484,"out":963,"pwd":174000,"ndc":70000,"qp":2,"qn":2,"note":null},{"d":19,"hari":"Sabtu","toko":"Toko Akena Pulo Ribung","status":"kerja","in":482,"out":962,"pwd":421000,"ndc":224000,"qp":5,"qn":7,"note":null},{"d":20,"hari":"Minggu","toko":"Toko Akena Mustika Jaya","status":"kerja","in":477,"out":957,"pwd":675000,"ndc":105000,"qp":8,"qn":3,"note":null},{"d":21,"hari":"Senin","toko":"Toko Akena Jatiasih","status":"kerja","in":470,"out":959,"pwd":87000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":22,"hari":"Selasa","toko":"Toko Akena Kemandoran","status":"kerja","in":501,"out":980,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"No Sellout"},{"d":23,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":24,"hari":"Kamis","toko":"Toko Akena Duren Jaya","status":"kerja","in":483,"out":971,"pwd":0,"ndc":63000,"qp":0,"qn":2,"note":null},{"d":25,"hari":"Jumat","toko":"Toko PTM Harapan Jaya","status":"kerja","in":491,"out":974,"pwd":146500,"ndc":104500,"qp":2,"qn":3,"note":null},{"d":26,"hari":"Sabtu","toko":"Toko Akena Duren Jaya","status":"kerja","in":479,"out":962,"pwd":0,"ndc":98000,"qp":0,"qn":3,"note":null},{"d":27,"hari":"Minggu","toko":"Toko Akena Pulo Ribung","status":"kerja","in":447,"out":931,"pwd":87000,"ndc":35000,"qp":1,"qn":1,"note":null},{"d":28,"hari":"Senin","toko":"Toko Akena Setia Mekar","status":"kerja","in":480,"out":965,"pwd":167000,"ndc":28000,"qp":2,"qn":1,"note":null},{"d":29,"hari":"Selasa","toko":"Toko Akena Jatiasih","status":"kerja","in":425,"out":907,"pwd":87000,"ndc":0,"qp":1,"qn":0,"note":null},{"d":30,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null}],"outlet":{"Toko PTM Harapan Jaya - Bekasi":{"Choco":{"q":2,"omset":157000,"harga":78500},"Taro":{"q":1,"omset":68000,"harga":68000},"Matcha":{"q":3,"omset":252000,"harga":84000},"Light":{"q":5,"omset":147500,"harga":29500},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":7,"omset":262500,"harga":37500}},"Toko Akena Jatiasih - Bekasi":{"Choco":{"q":3,"omset":240000,"harga":80000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":4,"omset":348000,"harga":87000},"Light":{"q":5,"omset":140000,"harga":28000},"Regular":{"q":6,"omset":210000,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Akena Jaka Setia - Bekasi":{"Choco":{"q":0,"omset":0,"harga":80000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":87000},"Light":{"q":0,"omset":0,"harga":28000},"Regular":{"q":0,"omset":0,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Akena Setu - Bekasi":{"Choco":{"q":0,"omset":0,"harga":80000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":2,"omset":174000,"harga":87000},"Light":{"q":0,"omset":0,"harga":28000},"Regular":{"q":1,"omset":35000,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Akena Mustika Jaya - Bekasi":{"Choco":{"q":3,"omset":240000,"harga":80000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":5,"omset":435000,"harga":87000},"Light":{"q":0,"omset":0,"harga":28000},"Regular":{"q":3,"omset":105000,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Akena Kemandoran - Bekasi":{"Choco":{"q":1,"omset":80000,"harga":80000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":2,"omset":174000,"harga":87000},"Light":{"q":0,"omset":0,"harga":28000},"Regular":{"q":0,"omset":0,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Bahan Kue Laris - Bekasi":{"Choco":{"q":0,"omset":0,"harga":77000},"Taro":{"q":0,"omset":0,"harga":72000},"Matcha":{"q":0,"omset":0,"harga":84000},"Light":{"q":0,"omset":0,"harga":27000},"Regular":{"q":0,"omset":0,"harga":34000},"Cold Soluble":{"q":0,"omset":0,"harga":36000}},"Toko Akena Setia Mekar - Bekasi":{"Choco":{"q":1,"omset":80000,"harga":80000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":4,"omset":348000,"harga":87000},"Light":{"q":4,"omset":112000,"harga":28000},"Regular":{"q":2,"omset":70000,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Akena Duren Jaya - Bekasi":{"Choco":{"q":0,"omset":0,"harga":80000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":1,"omset":87000,"harga":87000},"Light":{"q":4,"omset":112000,"harga":28000},"Regular":{"q":4,"omset":140000,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Akena Pulo Ribung - Bekasi":{"Choco":{"q":3,"omset":240000,"harga":80000},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":4,"omset":348000,"harga":87000},"Light":{"q":3,"omset":84000,"harga":28000},"Regular":{"q":11,"omset":385000,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}}}},{"area":"Semarang","spg":"SPG Semarang","spgKnown":false,"tokoList":["Toko Sari Murni Tlogosari","Toko Adijaya 1 Pucang Gading","Toko Adijaya 2 Pucang Gading","Toko Cozy Mart","Toko Sumber Rezeki","Toko Sweet Fellas","Toko Sumber Sari","Toko Fortune"],"days":[{"d":1,"hari":"Selasa","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":2,"hari":"Rabu","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":3,"hari":"Kamis","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":4,"hari":"Jumat","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":5,"hari":"Sabtu","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":6,"hari":"Minggu","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":7,"hari":"Senin","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":8,"hari":"Selasa","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":9,"hari":"Rabu","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":10,"hari":"Kamis","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":11,"hari":"Jumat","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":12,"hari":"Sabtu","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":13,"hari":"Minggu","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":14,"hari":"Senin","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":15,"hari":"Selasa","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":16,"hari":"Rabu","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":17,"hari":"Kamis","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":18,"hari":"Jumat","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":19,"hari":"Sabtu","toko":null,"status":"na","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":20,"hari":"Minggu","toko":"Toko Sari Murni Tlogosari","status":"kerja","in":521,"out":1023,"pwd":0,"ndc":276000,"qp":0,"qn":7,"note":"New Joint"},{"d":21,"hari":"Senin","toko":"Toko Adijaya 1 Pucang Gading","status":"kerja","in":533,"out":1023,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":"No Sellout"},{"d":22,"hari":"Selasa","toko":"Toko Adijaya 2 Pucang Gading","status":"kerja","in":536,"out":1023,"pwd":87500,"ndc":0,"qp":1,"qn":0,"note":null},{"d":23,"hari":"Rabu","toko":"Toko Cozy Mart","status":"kerja","in":535,"out":1065,"pwd":150000,"ndc":330000,"qp":2,"qn":10,"note":null},{"d":24,"hari":"Kamis","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null},{"d":25,"hari":"Jumat","toko":"Toko Sumber Rezeki","status":"kerja","in":532,"out":1024,"pwd":0,"ndc":280000,"qp":0,"qn":8,"note":null},{"d":26,"hari":"Sabtu","toko":"Toko Sweet Fellas","status":"kerja","in":526,"out":1031,"pwd":85000,"ndc":165000,"qp":1,"qn":5,"note":null},{"d":27,"hari":"Minggu","toko":"Toko Sari Murni Tlogosari","status":"kerja","in":527,"out":1034,"pwd":175000,"ndc":236000,"qp":2,"qn":6,"note":null},{"d":28,"hari":"Senin","toko":"Toko Sumber Sari","status":"kerja","in":540,"out":1032,"pwd":0,"ndc":162000,"qp":0,"qn":5,"note":null},{"d":29,"hari":"Selasa","toko":"Toko Fortune","status":"kerja","in":528,"out":1025,"pwd":84000,"ndc":211800,"qp":1,"qn":6,"note":null},{"d":30,"hari":"Rabu","toko":null,"status":"off","in":null,"out":null,"pwd":0,"ndc":0,"qp":0,"qn":0,"note":null}],"outlet":{"Toko Sari Murni Tlogosari - Semarang":{"Choco":{"q":1,"omset":85000,"harga":85000},"Taro":{"q":0,"omset":0,"harga":80000},"Matcha":{"q":1,"omset":90000,"harga":90000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":4,"omset":152000,"harga":38000},"Cold Soluble":{"q":9,"omset":360000,"harga":40000}},"Toko Adijaya 1 Pucang Gading - Semarang":{"Choco":{"q":0,"omset":0,"harga":82500},"Taro":{"q":0,"omset":0,"harga":77500},"Matcha":{"q":0,"omset":0,"harga":87500},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Adijaya 1 Pucang Gading - Semarang (2)":{"Choco":{"q":0,"omset":0,"harga":82500},"Taro":{"q":0,"omset":0,"harga":77500},"Matcha":{"q":1,"omset":87500,"harga":87500},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Cozy Mart - Semarang":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":2,"omset":150000,"harga":75000},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":4,"omset":114000,"harga":28500},"Regular":{"q":3,"omset":105000,"harga":35000},"Cold Soluble":{"q":3,"omset":111000,"harga":37000}},"Toko Sumber Rezeki - Semarang":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":8,"omset":280000,"harga":35000}},"Toko Sweet Fellas":{"Choco":{"q":0,"omset":0,"harga":92000},"Taro":{"q":1,"omset":85000,"harga":85000},"Matcha":{"q":0,"omset":0,"harga":98000},"Light":{"q":5,"omset":165000,"harga":33000},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Sumber Sari - Salatiga":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":0,"omset":0,"harga":0},"Light":{"q":2,"omset":57000,"harga":28500},"Regular":{"q":3,"omset":105000,"harga":35000},"Cold Soluble":{"q":0,"omset":0,"harga":0}},"Toko Fortune - Semarang":{"Choco":{"q":0,"omset":0,"harga":0},"Taro":{"q":0,"omset":0,"harga":0},"Matcha":{"q":1,"omset":84000,"harga":84000},"Light":{"q":0,"omset":0,"harga":0},"Regular":{"q":0,"omset":0,"harga":0},"Cold Soluble":{"q":6,"omset":211800,"harga":35300}}}}]};
+let DATA = SEED, SOURCE = 'Report SPG September 2026 Updated.xlsx';
+try { const s = localStorage.getItem('spgData'); if (s) { const o = JSON.parse(s); DATA = o.data; SOURCE = o.source; } } catch (e) {}
+
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const rp = v => 'Rp ' + Math.round(v).toLocaleString('id-ID');
+const rpS = v => v >= 1e6 ? 'Rp ' + (v / 1e6).toLocaleString('id-ID', { maximumFractionDigits: 1 }) + ' jt' : v >= 1e3 ? 'Rp ' + Math.round(v / 1e3) + ' rb' : 'Rp ' + v;
+const hm = m => m == null ? '—' : String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+const rgba = (hex, a) => { const h = hex.replace('#', ''); const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a.toFixed(2)})`; };
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const normT = s => String(s || '').toLowerCase().replace(/\s*-\s*[^-]*$/, '').replace(/[^a-z0-9&]+/g, ' ').trim();
+const WEIGHTS = [['Produktivitas (omset/hari kerja)', .40], ['Total omset', .20], ['Kehadiran', .15], ['Tepat waktu', .15], ['Cakupan toko', .10]];
+const isPWD = n => /choco|taro|matcha/i.test(n);
+
+let selArea = 'ALL', selSpg = null, charts = {};
+
+function lateLimit() { const [h, m] = ($('fLate').value || '09:00').split(':').map(Number); return h * 60 + m; }
+
+function metrics() {
+  const LL = lateLimit();
+  const rows = DATA.areas.map(a => {
+    const work = a.days.filter(d => d.status === 'kerja');
+    const firstIdx = a.days.findIndex(d => d.status !== 'na');
+    const activeDays = firstIdx < 0 ? 0 : a.days.length - firstIdx;
+    const expected = Math.max(1, Math.round(activeDays * 26 / 30));
+    const pwd = work.reduce((s, d) => s + d.pwd, 0), ndc = work.reduce((s, d) => s + d.ndc, 0);
+    const qty = work.reduce((s, d) => s + d.qp + d.qn, 0);
+    const withIn = work.filter(d => d.in != null);
+    const late = withIn.filter(d => d.in > LL);
+    const hrs = work.filter(d => d.in != null && d.out != null && d.out > d.in).map(d => d.out - d.in);
+    const zero = work.filter(d => d.pwd + d.ndc === 0);
+    // toko
+    const tokoMap = {};
+    (a.tokoList || []).forEach(t => tokoMap[normT(t)] = { nama: t, visit: 0, omset: 0, qty: 0, binaan: true });
+    work.forEach(d => { const k = normT(d.toko); const t = tokoMap[k] = tokoMap[k] || { nama: d.toko, visit: 0, omset: 0, qty: 0, binaan: false }; t.visit++; t.omset += d.pwd + d.ndc; t.qty += d.qp + d.qn; });
+    const tokos = Object.values(tokoMap);
+    const binaan = tokos.filter(t => t.binaan), visited = binaan.filter(t => t.visit > 0);
+    // varian
+    const prod = {};
+    Object.values(a.outlet || {}).forEach(o => Object.entries(o).forEach(([n, p]) => { const k = n.replace(/\s+/g, ' '); (prod[k] = prod[k] || { q: 0, omset: 0 }); prod[k].q += p.q; prod[k].omset += p.omset; }));
+    return { a, area: a.area, spg: a.spg, work: work.length, activeDays, expected, pwd, ndc, omset: pwd + ndc, qty,
+      perDay: work.length ? (pwd + ndc) / work.length : 0, late: late.length, lateAvg: late.length ? late.reduce((s, d) => s + d.in - LL, 0) / late.length : 0,
+      onTime: withIn.length ? 1 - late.length / withIn.length : 0, avgIn: withIn.length ? withIn.reduce((s, d) => s + d.in, 0) / withIn.length : null,
+      avgHrs: hrs.length ? hrs.reduce((s, x) => s + x, 0) / hrs.length : null, attend: Math.min(1, work.length / expected), zero: zero.length,
+      tokos, binaanN: binaan.length, visitedN: visited.length, coverage: binaan.length ? visited.length / binaan.length : 1, prod, partial: firstIdx > 0 };
+  });
+  const maxPD = Math.max(...rows.map(r => r.perDay), 1), maxOm = Math.max(...rows.map(r => r.omset), 1);
+  rows.forEach(r => {
+    r.score = Math.round(100 * (.40 * r.perDay / maxPD + .20 * r.omset / maxOm + .15 * r.attend + .15 * r.onTime + .10 * r.coverage));
+  });
+  rows.sort((x, y) => y.score - x.score); rows.forEach((r, i) => r.rank = i + 1);
+  return rows;
+}
+const status = s => s >= 80 ? ['good', 'Unggul'] : s >= 60 ? ['warn', 'Cukup'] : ['bad', 'Perlu perhatian'];
+
+function render() {
+  const M = metrics();
+  const view = selArea === 'ALL' ? M : M.filter(r => r.area === selArea);
+  $('periodeTxt').textContent = 'Periode ' + DATA.periode + ' · ' + M.length + ' area · sumber: ' + SOURCE;
+
+  // KPI
+  const tot = view.reduce((s, r) => s + r.omset, 0), qty = view.reduce((s, r) => s + r.qty, 0), hk = view.reduce((s, r) => s + r.work, 0);
+  const wIn = view.reduce((s, r) => s + r.work, 0), lt = view.reduce((s, r) => s + r.late, 0);
+  const ndc = view.reduce((s, r) => s + r.ndc, 0);
+  const vis = view.reduce((s, r) => s + r.visitedN, 0), bin = view.reduce((s, r) => s + r.binaanN, 0);
+  $('kpis').innerHTML = [
+    ['hero', 'Total sell-out', rpS(tot), rp(tot) + ' · ' + qty.toLocaleString('id-ID') + ' pcs'],
+    ['', 'Rata-rata per hari kerja', rpS(hk ? tot / hk : 0), hk + ' hari kerja SPG'],
+    ['', 'SPG aktif', view.length, selArea === 'ALL' ? 'di ' + view.length + ' area' : view[0]?.spg],
+    ['', 'Tepat waktu', Math.round(100 * (wIn ? 1 - lt / wIn : 0)) + '%', lt + ' kali masuk lewat ' + $('fLate').value],
+    ['', 'Porsi NDC', Math.round(100 * (tot ? ndc / tot : 0)) + '%', rpS(ndc) + ' dari Non Dairy'],
+    ['', 'Toko binaan dikunjungi', vis + ' / ' + bin, Math.round(100 * (bin ? vis / bin : 0)) + '% cakupan'],
+  ].map(([c, k, v, s]) => `<div class="kpi ${c}"><div class="k">${k}</div><div class="v num">${v}</div><div class="s">${esc(s)}</div></div>`).join('');
+
+  // ranking
+  $('rankTbl').innerHTML = `<thead><tr><th>#</th><th>SPG</th><th>Skor</th><th>Status</th><th class="r">Omset</th><th class="r">Omset/hari</th><th class="r">Qty</th><th>PWD : NDC</th><th class="r">Hari kerja</th><th class="r">Telat</th><th class="r">Rata2 masuk</th><th class="r">Jam kerja</th><th class="r">Toko</th></tr></thead><tbody>` +
+    M.map(r => { const [c, l] = status(r.score); const p = r.omset ? Math.round(100 * r.pwd / r.omset) : 0; const dim = selArea !== 'ALL' && r.area !== selArea ? ' style="opacity:.45"' : '';
+      return `<tr data-area="${esc(r.area)}" class="${r.area === selSpg ? 'sel' : ''}"${dim}><td class="rank">${r.rank}</td><td class="who"><b>${esc(r.spg)}</b><span>${esc(r.area)}${r.partial ? ' · mulai tgl ' + r.a.days.find(d => d.status !== 'na').d : ''}</span></td>
+      <td><div class="score"><b class="num">${r.score}</b><div class="bar"><i style="width:${r.score}%"></i></div></div></td><td><span class="pill ${c}">${l}</span></td>
+      <td class="r num">${rp(r.omset)}</td><td class="r num">${rpS(r.perDay)}</td><td class="r num">${r.qty}</td>
+      <td><div class="mix" title="PWD ${p}% · NDC ${100 - p}%"><i style="width:${p}%"></i><i style="width:${100 - p}%"></i></div><div class="mixlab num">${p}% : ${100 - p}%</div></td>
+      <td class="r num">${r.work}<span class="mixlab"> / ${r.expected}</span></td><td class="r num">${r.late ? `<span class="pill ${r.late > 8 ? 'bad' : 'warn'}">${r.late}×</span>` : '0'}</td>
+      <td class="r num">${hm(r.avgIn && Math.round(r.avgIn))}</td><td class="r num">${r.avgHrs ? (r.avgHrs / 60).toFixed(1) + ' j' : '—'}</td>
+      <td class="r num">${r.visitedN}/${r.binaanN}</td></tr>`; }).join('') + '</tbody>';
+  $('rankTbl').querySelectorAll('tbody tr').forEach(tr => tr.onclick = () => { selSpg = tr.dataset.area; showPage('detail'); });
+  $('weights').innerHTML = '<span style="border:0;padding-left:0">Bobot skor:</span>' + WEIGHTS.map(([n, w]) => `<span>${n} ${w * 100}%</span>`).join('') + '<span>Hari kerja dibanding standar 26 hari/bulan</span>';
+
+  drawCharts(M, view);
+  renderInsights(M, view);
+  renderDetail(M);
+  $('foot').textContent = 'Data per toko diambil dari sheet area (absensi & sell-out harian) dan sheet Outlet (rincian varian). Batas jam masuk dan bobot skor bisa disesuaikan.';
+}
+
+function baseOpts(extra) {
+  const ink = css('--muted'), line = css('--line');
+  Chart.defaults.font.family = css('--f-body'); Chart.defaults.color = ink;
+  return Object.assign({ responsive: true, maintainAspectRatio: false, animation: matchMedia('(prefers-reduced-motion: reduce)').matches ? false : { duration: 400 },
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.dataset.label + ': ' + (c.dataset.fmt === 'q' ? c.raw + ' pcs' : rp(c.raw)) } } },
+    scales: { x: { grid: { color: line, drawTicks: false }, border: { display: false }, ticks: { color: ink } }, y: { grid: { color: line }, border: { display: false }, ticks: { color: ink, callback: v => rpS(v) } } } }, extra || {});
+}
+function mk(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart($(id), cfg); }
+
+function drawCharts(M, view) {
+  const blue = css('--blue'), green = css('--green'), ink = css('--muted'), line = css('--line');
+  const order = [...M].sort((a, b) => b.omset - a.omset);
+  const dim = (c, r) => selArea === 'ALL' || r.area === selArea ? c : c + '55';
+  mk('cSpg', { type: 'bar', data: { labels: order.map(r => r.area), datasets: [
+      { label: 'PWD', data: order.map(r => r.pwd), backgroundColor: order.map(r => dim(blue, r)), borderRadius: 4, stack: 's' },
+      { label: 'NDC', data: order.map(r => r.ndc), backgroundColor: order.map(r => dim(green, r)), borderRadius: 4, stack: 's' }] },
+    options: baseOpts({ indexAxis: 'y', scales: { x: { stacked: true, grid: { color: line }, border: { display: false }, ticks: { color: ink, callback: v => rpS(v) } }, y: { stacked: true, grid: { display: false }, border: { display: false }, ticks: { color: ink } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { title: c => order[c[0].dataIndex].spg + ' · ' + order[c[0].dataIndex].area, label: c => ' ' + c.dataset.label + ': ' + rp(c.raw) } } } }) });
+
+  const n = Math.max(...DATA.areas.map(a => a.days.length));
+  const labels = Array.from({ length: n }, (_, i) => i + 1);
+  const daily = labels.map(d => view.reduce((s, r) => { const x = r.a.days.find(z => z.d === d); return s + (x ? x.pwd + x.ndc : 0); }, 0));
+  const dailyN = labels.map(d => view.reduce((s, r) => { const x = r.a.days.find(z => z.d === d); return s + (x ? x.ndc : 0); }, 0));
+  const avg = daily.reduce((s, v) => s + v, 0) / daily.filter(v => v > 0).length || 0;
+  $('trendHint').textContent = (selArea === 'ALL' ? 'Semua area' : selArea) + ' · garis putus = rata-rata hari dengan penjualan (' + rpS(avg) + ')';
+  const ctx = $('cTrend').getContext('2d'); const g = ctx.createLinearGradient(0, 0, 0, 300); g.addColorStop(0, blue + '55'); g.addColorStop(1, blue + '00');
+  mk('cTrend', { type: 'line', data: { labels, datasets: [
+      { label: 'Total', data: daily, borderColor: blue, backgroundColor: g, fill: true, tension: .3, pointRadius: 2.5, pointBackgroundColor: blue, borderWidth: 2.5 },
+      { label: 'NDC', data: dailyN, borderColor: green, backgroundColor: 'transparent', tension: .3, pointRadius: 0, borderWidth: 2 },
+      { label: 'Rata-rata', data: labels.map(() => avg), borderColor: ink, borderDash: [5, 5], pointRadius: 0, borderWidth: 1.2, fill: false }] },
+    options: baseOpts({ interaction: { mode: 'index', intersect: false }, scales: { x: { grid: { display: false }, border: { display: false }, ticks: { color: ink, maxRotation: 0, autoSkip: true, autoSkipPadding: 8, callback: (v, i) => labels[i] } }, y: { grid: { color: line }, border: { display: false }, ticks: { color: ink, callback: v => rpS(v) }, beginAtZero: true } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { title: c => 'Tanggal ' + c[0].label + ' ' + DATA.periode, label: c => ' ' + c.dataset.label + ': ' + rp(c.raw) } } } }) });
+
+  const prod = {};
+  view.forEach(r => Object.entries(r.prod).forEach(([k, p]) => { prod[k] = prod[k] || { q: 0, omset: 0 }; prod[k].q += p.q; prod[k].omset += p.omset; }));
+  const pe = Object.entries(prod).filter(([, p]) => p.omset > 0 || p.q > 0).sort((a, b) => b[1].omset - a[1].omset);
+  $('prodHint').textContent = (selArea === 'ALL' ? 'Semua area' : selArea) + ' · ' + pe.reduce((s, [, p]) => s + p.q, 0).toLocaleString('id-ID') + ' pcs dari rekap outlet';
+  mk('cProd', { type: 'bar', data: { labels: pe.map(([k]) => k), datasets: [{ label: 'Omset', data: pe.map(([, p]) => p.omset), backgroundColor: pe.map(([k]) => isPWD(k) ? blue : green), borderRadius: 5 }] },
+    options: baseOpts({ indexAxis: 'y', scales: { x: { grid: { color: line }, border: { display: false }, ticks: { color: ink, callback: v => rpS(v) } }, y: { grid: { display: false }, border: { display: false }, ticks: { color: ink } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + rp(c.raw) + ' · ' + pe[c.dataIndex][1].q + ' pcs' } } } }) });
+}
+
+function renderInsights(M, view) {
+  const L = [];
+  const top = M[0], low = M[M.length - 1];
+  L.push(['good', 'Terbaik', `<b>${esc(top.spg)}</b> (${esc(top.area)}) memimpin dengan skor ${top.score}, omset ${rp(top.omset)} atau ${rpS(top.perDay)} per hari kerja.`]);
+  const byPD = [...M].filter(r => r.work >= 5).sort((a, b) => a.perDay - b.perDay)[0];
+  if (byPD) L.push(['bad', 'Produktivitas', `Omset per hari terendah ada di <b>${esc(byPD.area)}</b> (${esc(byPD.spg)}), ${rpS(byPD.perDay)}/hari. Evaluasi pemilihan toko penempatan dan aktivitas sampling.`]);
+  const lateR = [...M].filter(r => r.late >= 5).sort((a, b) => b.late - a.late);
+  if (lateR.length) L.push(['warn', 'Disiplin', lateR.map(r => `<b>${esc(r.area)}</b> ${r.late}× telat (rata-rata ${Math.round(r.lateAvg)} menit)`).join(', ') + ` dengan batas masuk ${$('fLate').value}. Perlu teguran dan konfirmasi jam buka toko.`]);
+  const unv = M.filter(r => r.binaanN - r.visitedN > 0);
+  if (unv.length) L.push(['warn', 'Cakupan', unv.map(r => `<b>${esc(r.area)}</b>: ${r.binaanN - r.visitedN} toko binaan belum dikunjungi`).join(', ') + '.']);
+  const zero = M.filter(r => r.zero > 0);
+  if (zero.length) L.push(['bad', 'Nol sell-out', zero.map(r => `<b>${esc(r.area)}</b> ${r.zero} hari`).join(', ') + ' hadir di toko tanpa penjualan. Cek ketersediaan stok di toko tersebut.']);
+  const conc = M.map(r => { const t = [...r.tokos].sort((a, b) => b.omset - a.omset); return { r, t: t[0], share: r.omset ? t[0].omset / r.omset : 0 }; }).filter(x => x.share >= .5);
+  if (conc.length) L.push(['info', 'Konsentrasi', conc.map(x => `<b>${esc(x.r.area)}</b> ${Math.round(100 * x.share)}% omset dari ${esc(x.t.nama)}`).join(', ') + '. Ketergantungan pada satu toko cukup tinggi.']);
+  const tot = view.reduce((s, r) => s + r.omset, 0), ndc = view.reduce((s, r) => s + r.ndc, 0);
+  const ndcLead = [...M].sort((a, b) => (b.ndc / (b.omset || 1)) - (a.ndc / (a.omset || 1)))[0];
+  L.push(['info', 'Varian NDC', `Porsi Non Dairy ${Math.round(100 * ndc / (tot || 1))}% dari total. Porsi tertinggi di <b>${esc(ndcLead.area)}</b> (${Math.round(100 * ndcLead.ndc / (ndcLead.omset || 1))}%); area lain bisa meniru pola penawarannya.`]);
+  const part = M.filter(r => r.partial);
+  if (part.length) L.push(['info', 'SPG baru', part.map(r => `<b>${esc(r.area)}</b> mulai tanggal ${r.a.days.find(d => d.status !== 'na').d}`).join(', ') + '. Skor memakai omset per hari agar adil, namun total omset tetap lebih kecil.']);
+  $('insights').innerHTML = L.map(([c, t, h]) => `<li><span class="tag ${c}">${t}</span><div>${h}</div></li>`).join('');
+}
+
+function renderDetail(M) {
+  if (!selSpg || !M.find(r => r.area === selSpg)) selSpg = selArea !== 'ALL' ? selArea : M[0].area;
+  const r = M.find(x => x.area === selSpg), LL = lateLimit();
+  $('tabs').innerHTML = M.map(x => `<button class="tab" role="tab" aria-selected="${x.area === selSpg}" data-a="${esc(x.area)}">${esc(x.area)}</button>`).join('');
+  $('tabs').querySelectorAll('.tab').forEach(b => b.onclick = () => { selSpg = b.dataset.a; render(); });
+  const [c, l] = status(r.score);
+  $('dhead').innerHTML = [['SPG', esc(r.spg)], ['Peringkat', '#' + r.rank + ' · <span class="pill ' + c + '">' + l + '</span>'], ['Omset', rp(r.omset)], ['Hari kerja', r.work + ' dari ' + r.expected], ['Telat', r.late + '×'], ['Rata-rata masuk', hm(r.avgIn && Math.round(r.avgIn))], ['Toko dikunjungi', r.visitedN + ' / ' + r.binaanN]]
+    .map(([k, v]) => `<div><div class="k">${k}</div><div class="v num">${v}</div></div>`).join('');
+  const days = r.a.days, maxO = Math.max(...days.map(d => d.pwd + d.ndc), 1);
+  const DOW = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+  const lead = Math.max(0, DOW.indexOf(days[0].hari));
+  const blue = css('--blue');
+  let h = DOW.map(d => `<div class="dow">${d.slice(0, 3)}</div>`).join('') + '<div class="day blank"></div>'.repeat(lead);
+  days.forEach(d => {
+    const o = d.pwd + d.ndc;
+    if (d.status === 'off') h += `<div class="day off"><div class="dn">${d.d}</div><div>OFF</div></div>`;
+    else if (d.status === 'na') h += `<div class="day na"><div class="dn">${d.d}</div><div>—</div></div>`;
+    else {
+      const t = o / maxO, bg = o ? `background:${rgba(blue, (12 + t * 70) / 100)};${t > .5 ? 'color:#fff;' : ''}` : '';
+      const late = d.in != null && d.in > LL;
+      h += `<div class="day${o ? '' : ' zero'}" style="${bg}" title="${esc(d.toko)} · masuk ${hm(d.in)} pulang ${hm(d.out)} · ${rp(o)}${d.note ? ' · ' + esc(d.note) : ''}">${late ? '<span class="late"></span>' : ''}<div class="dn">${d.d}</div><div class="om">${o ? rpS(o).replace('Rp ', '') : 'Rp 0'}</div><div class="tk"${t > .5 ? ' style="color:inherit;opacity:.85"' : ''}>${esc((d.toko || '').replace(/^Toko\s+/i, ''))}</div></div>`;
+    }
+  });
+  $('cal').innerHTML = h;
+  const tk = [...r.tokos].sort((a, b) => b.omset - a.omset);
+  $('tokoTbl').innerHTML = '<thead><tr><th>Toko</th><th class="r">Kunjungan</th><th class="r">Omset</th><th class="r">Per kunjungan</th></tr></thead><tbody>' +
+    tk.map(t => `<tr class="${t.visit === 0 ? 'zero-row' : ''}" style="cursor:default"><td>${esc(t.nama)}${t.binaan ? '' : ' <span class="note">(di luar daftar binaan)</span>'}</td><td class="r num">${t.visit || 'Belum'}</td><td class="r num">${rp(t.omset)}</td><td class="r num">${t.visit ? rpS(t.omset / t.visit) : '—'}</td></tr>`).join('') + '</tbody>';
+  const pv = Object.entries(r.prod).sort((a, b) => b[1].omset - a[1].omset);
+  const pt = pv.reduce((s, [, p]) => s + p.omset, 0);
+  $('varTbl').innerHTML = '<thead><tr><th>Varian</th><th>Jenis</th><th class="r">Qty</th><th class="r">Omset</th><th class="r">Porsi</th></tr></thead><tbody>' +
+    pv.map(([k, p]) => `<tr style="cursor:default"><td>${esc(k)}</td><td><span class="mixlab">${isPWD(k) ? 'PWD' : 'NDC'}</span></td><td class="r num">${p.q}</td><td class="r num">${rp(p.omset)}</td><td class="r num">${pt ? Math.round(100 * p.omset / pt) : 0}%</td></tr>`).join('') + '</tbody>';
+}
+
+function fillAreas() {
+  $('fArea').innerHTML = '<option value="ALL">Semua area</option>' + DATA.areas.map(a => `<option value="${esc(a.area)}">${esc(a.area)}</option>`).join('');
+  $('fArea').value = DATA.areas.some(a => a.area === selArea) ? selArea : 'ALL'; selArea = $('fArea').value;
+}
+$('fArea').onchange = e => { selArea = e.target.value; if (selArea !== 'ALL') selSpg = selArea; render(); };
+$('fLate').onchange = render;
+$('upBtn').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('fileIn').click(); } };
+$('fileIn').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  $('statusMsg').textContent = 'Membaca ' + f.name + '…';
+  try {
+    const wb = XLSX.read(await f.arrayBuffer(), { type: 'array', cellDates: false });
+    const d = parseSPGWorkbook(wb, XLSX);
+    if (!d.areas.length) throw new Error('Sheet area tidak ditemukan. Pastikan format sama dengan Report SPG (sheet per area + sheet "Outlet <area>").');
+    DATA = d; SOURCE = f.name; selSpg = null;
+    try { localStorage.setItem('spgData', JSON.stringify({ data: d, source: f.name })); } catch (er) {}
+    fillAreas(); render();
+    $('statusMsg').textContent = 'Data ' + f.name + ' dimuat (' + d.areas.length + ' area).';
+  } catch (err) { $('statusMsg').textContent = 'Gagal membaca file: ' + err.message; }
+  e.target.value = '';
+};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+/* ---------- Export PDF ---------- */
+const PAGE_NAME = { ringkasan: 'Ringkasan', peringkat: 'Peringkat SPG', penjualan: 'Penjualan & Produk', detail: 'Detail SPG' };
+let dl = null; const dlReady = (async () => { try { dl = await window.claude?.use?.('downloads'); } catch (e) { dl = null; } })();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const safeName = s => s.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim();
+function setMsg(m) { $('pdfMsg').textContent = m || ''; }
+async function snap() {
+  if (Chart && Chart.instances) Object.values(Chart.instances).forEach(c => c.stop && c.stop());
+  await sleep(80);
+  return html2canvas(document.body, {
+    scale: 2, useCORS: true, backgroundColor: css('--bg') || '#FFFFFF', windowWidth: Math.max(1100, document.documentElement.clientWidth),
+    ignoreElements: el => el.classList && (el.classList.contains('pnav') || el.hasAttribute('data-noprint')),
+  });
+}
+function addCanvas(pdf, cv, first) {
+  const W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight(), M = 8;
+  const iw = W - 2 * M, pxPerMm = cv.width / iw, sliceH = Math.floor((H - 2 * M - 6) * pxPerMm);
+  for (let y = 0, i = 0; y < cv.height; y += sliceH, i++) {
+    const h = Math.min(sliceH, cv.height - y);
+    const part = document.createElement('canvas'); part.width = cv.width; part.height = h;
+    const g = part.getContext('2d'); g.fillStyle = css('--bg') || '#FFFFFF'; g.fillRect(0, 0, part.width, h); g.drawImage(cv, 0, y, cv.width, h, 0, 0, cv.width, h);
+    if (!(first && i === 0)) pdf.addPage();
+    pdf.setFillColor(css('--bg') || '#FFFFFF'); pdf.rect(0, 0, W, H, 'F');
+    pdf.addImage(part.toDataURL('image/jpeg', 0.92), 'JPEG', M, M, iw, h / pxPerMm);
+  }
+}
+function footer(pdf) {
+  const n = pdf.getNumberOfPages(), W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight();
+  for (let i = 1; i <= n; i++) { pdf.setPage(i); pdf.setFontSize(8); pdf.setTextColor(120, 135, 160);
+    pdf.text('Elite Crème · Kinerja SPG · ' + DATA.periode, 8, H - 4); pdf.text('Hal. ' + i + ' / ' + n, W - 8, H - 4, { align: 'right' }); }
+}
+async function savePdf(pdf, filename) {
+  await dlReady;
+  if (!dl) { try { pdf.save(filename); setMsg('PDF diunduh: ' + filename); } catch (e) { setMsg('PDF gagal diunduh: ' + (e && e.message || e)); } return; }
+  try { await dl.save({ filename, data: pdf.output('blob') }); setMsg('PDF siap: ' + filename); }
+  catch (e) { setMsg(e && e.code === 'declined' ? 'Unduhan dibatalkan.' : e && e.code === 'rate_limited' ? 'Masih ada jendela unduhan yang terbuka. Coba lagi sebentar.' : 'PDF gagal dibuat: ' + (e && e.message || e)); }
+}
+async function runExport(all) {
+  const btns = [$('pdfBtn'), $('pdfAllBtn')]; btns.forEach(b => b.disabled = true);
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+    let filename;
+    if (all) {
+      const keep = selSpg, M = metrics();
+      for (let i = 0; i < M.length; i++) {
+        setMsg('Menyiapkan PDF ' + (i + 1) + ' dari ' + M.length + ' SPG…');
+        selSpg = M[i].area; render(); await sleep(150);
+        addCanvas(pdf, await snap(), i === 0);
+      }
+      selSpg = keep; render();
+      filename = safeName('Kinerja SPG - Semua SPG - ' + DATA.periode) + '.pdf';
+    } else {
+      setMsg('Menyiapkan PDF…');
+      addCanvas(pdf, await snap(), true);
+      const r = metrics().find(x => x.area === selSpg);
+      filename = safeName(curPage === 'detail' && r ? `Kinerja SPG - ${r.area} - ${r.spg} - ${DATA.periode}`
+        : `Kinerja SPG - ${PAGE_NAME[curPage]}${selArea !== 'ALL' ? ' - ' + selArea : ''} - ${DATA.periode}`) + '.pdf';
+    }
+    footer(pdf);
+    window.__lastPdf = { filename, size: pdf.output('arraybuffer').byteLength, pages: pdf.getNumberOfPages() };
+    await savePdf(pdf, filename);
+  } catch (e) { setMsg('PDF gagal dibuat: ' + (e && e.message || e)); }
+  finally { btns.forEach(b => b.disabled = false); }
+}
+$('pdfBtn').onclick = () => runExport(false);
+$('pdfAllBtn').onclick = () => runExport(true);
+
+const PAGES = ['ringkasan', 'peringkat', 'penjualan', 'detail'];
+let curPage = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'ringkasan';
+function showPage(p) {
+  curPage = p;
+  document.querySelectorAll('.page').forEach(el => el.hidden = el.dataset.page !== p);
+  document.querySelectorAll('.pbtn').forEach(b => b.setAttribute('aria-selected', b.dataset.page === p));
+  $('pdfAllBtn').hidden = p !== 'detail';
+  $('pdfLbl').textContent = p === 'detail' ? 'PDF SPG ini' : 'Export PDF';
+  try { history.replaceState(null, '', '#' + p); } catch (e) {}
+  render();
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll('.pbtn').forEach(b => b.onclick = () => showPage(b.dataset.page));
+fillAreas(); showPage(curPage);
+</script>
+
+</body>
+</html>
