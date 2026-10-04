@@ -499,7 +499,7 @@
 
   <section class="panel">
     <h2>Karyawan dengan absensi tidak lengkap terbanyak</h2>
-    <div class="panel-desc">5 karyawan (divisi Barista &amp; Part Timer) dengan jumlah hari absensi tidak lengkap terbanyak (hanya masuk saja atau hanya keluar saja).</div>
+    <div class="panel-desc">5 karyawan dengan jumlah hari absensi tidak lengkap terbanyak pada periode yang dipilih (hanya absen masuk saja atau hanya absen keluar saja).</div>
     <div class="period-info"></div>
     <div class="table-scroll">
       <table id="tblTidakLengkapRank">
@@ -1027,9 +1027,20 @@ function renderKPI(data, rawData){
     if(menit < targetMenitKerja(r.tgl)) jamTidakSesuai++; else jamSesuai++;
   });
 
+  // Jika absen keluar > absen masuk, tampilkan jumlah karyawan yang tidak absen masuk
+  // (punya absen keluar tapi tanpa absen masuk di hari yang sama), bukan persentase.
+  let subAbsenKeluar;
+  if(keluar.length > masuk.length){
+    const tanpaMasuk = new Set(buildTidakLengkap(data)
+      .filter(r => r.keterangan === 'Tidak ada absen masuk')
+      .map(r => r.nama));
+    subAbsenKeluar = `<span class="pct-highlight">${fmtNum(tanpaMasuk.size)}</span> Karyawan Tdk Absen Masuk`;
+  } else {
+    subAbsenKeluar = `<span class="pct-highlight">${masuk.length ? Math.round(keluar.length/masuk.length*100) : 0}%</span> dari absen masuk`;
+  }
   const cards = [
     {label:'Total absen masuk', value: fmtNum(masuk.length), sub:`${uniqueSorted(masuk.map(r=>r.nama)).length} karyawan`, cls:''},
-    {label:'Total absen keluar', value: fmtNum(keluar.length), sub:`<span class="pct-highlight">${masuk.length ? Math.round(keluar.length/masuk.length*100) : 0}%</span> dari absen masuk`, cls:''},
+    {label:'Total absen keluar', value: fmtNum(keluar.length), sub: subAbsenKeluar, cls:''},
     {label:'Jumlah HK', value: fmtNum(hkSet.size), sub:'hari terdeteksi absen masuk', cls:''},
     {label:'Jumlah Kunjungan TSR - SPK', value: fmtNum(kunjunganTSR.length), sub:`${fmtNum(outletTSR.length)} Lokasi dikunjungi`, cls:''},
     {label:'Jumlah Kunjungan SPG Elite Creme', value: fmtNum(kunjunganSPG.length), sub:`${fmtNum(outletSPG.length)} outlet dikunjungi`, cls:''},
@@ -1126,7 +1137,7 @@ let tidakLengkapRankSort = {key:'keterangan', dir:'desc'};
 let rekapTanggalSort = {key:'tgl', dir:'desc'};
 
 function renderTidakLengkapRanking(data){
-  const scoped = data.filter(r => r.divisi === 'Barista' || r.divisi === 'Part Timer');
+  const scoped = data; // semua karyawan sesuai filter & periode yang dipilih
   const rows = buildTidakLengkap(scoped);
   const agg = {};
   rows.forEach(r => {
@@ -1407,7 +1418,7 @@ function exportToExcel(){
   const data = dedupHarian(applyFilters());
 
   // 1. Top 5 karyawan absensi tidak lengkap
-  const scoped = data.filter(r => r.divisi === 'Barista' || r.divisi === 'Part Timer');
+  const scoped = data; // semua karyawan sesuai filter & periode yang dipilih
   const tidakLengkapRows = buildTidakLengkap(scoped);
   const aggRank = {};
   tidakLengkapRows.forEach(r => {
