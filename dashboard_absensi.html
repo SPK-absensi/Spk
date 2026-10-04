@@ -449,8 +449,7 @@
     </div>
   </div>
   <div class="meta">
-    <div class="meta-pill update"><div class="k"><span class="dot"></span>Update terakhir</div><strong id="updateLabel">–</strong></div>
-    <div class="meta-pill"><div class="k">Rentang data</div><strong id="periodLabel">–</strong></div>
+    <div class="meta-pill update"><div class="k"><span class="dot"></span>Data Update</div><strong id="updateLabel">–</strong></div>
   </div>
 </header>
 
@@ -683,6 +682,50 @@ function hitungTelat(t, jam, tgl){
   }
 }
 
+// Kota tetap untuk TSR (berdasarkan kata kunci nama, huruf kecil).
+// TSR selalu memakai kota ini, di mana pun lokasi absennya.
+const KOTA_TSR = [
+  ['jov',   'KOTA MEDAN'],
+  ['wahyu', 'KOTA MAKASSAR'],
+  ['erick', 'KOTA JAKARTA'],
+  ['tara',  'KOTA BANDUNG'],
+  ['yoky',  'KOTA SURABAYA'],
+  ['yoki',  'KOTA SURABAYA'],
+  ['ariq',  'KOTA SEMARANG'],
+];
+// Cadangan untuk SPG yang sama sekali tidak punya data Kota di sheet.
+const KOTA_SPG_CADANGAN = {
+  'clara ariyanti': 'KOTA SEMARANG',
+};
+function namaKunci(nama){ return (nama||'').trim().toLowerCase().replace(/\s+/g,' '); }
+function kotaTSR(nama){
+  const kata = namaKunci(nama).split(' ');
+  const hit = KOTA_TSR.find(([k]) => kata.includes(k));
+  return hit ? hit[1] : '';
+}
+// Dipanggil setelah nama dinormalisasi:
+//  - TSR - SPK  -> kota tetap dari KOTA_TSR
+//  - SPG        -> kota yang paling sering muncul di absen karyawan tsb
+function terapkanKota(records){
+  const hitung = {};
+  records.forEach(r => {
+    if(r.divisi === 'TSR - SPK' || !r.kota_norm) return;
+    (hitung[r.nama] = hitung[r.nama] || {})[r.kota_norm] = (hitung[r.nama][r.kota_norm]||0) + 1;
+  });
+  const kotaUtama = {};
+  Object.entries(hitung).forEach(([nama, m]) => {
+    kotaUtama[nama] = Object.entries(m).sort((x,y) => y[1]-x[1])[0][0];
+  });
+  records.forEach(r => {
+    if(r.divisi === 'TSR - SPK'){
+      const k = kotaTSR(r.nama);
+      if(k) r.kota_norm = k;
+    } else if(r.divisi === 'SPG Elite Creme'){
+      r.kota_norm = kotaUtama[r.nama] || KOTA_SPG_CADANGAN[namaKunci(r.nama)] || r.kota_norm;
+    }
+  });
+}
+
 function mapRow(row, t){
   const absenSystemRaw = pick(row, ['Tanggal By System','Tgl Absen System','Tanggal Absen System']);
   let { tgl, jam } = parseTglJamAbsenSystem(absenSystemRaw);
@@ -865,6 +908,7 @@ function populateBulan(){
 function init(){
   const map = buildNamaCanonicalMap(RAW_DATA);
   RAW_DATA.forEach(r => { r.nama = map[r.nama] || r.nama; });
+  terapkanKota(RAW_DATA);
 
   // ---------- Init filter options ----------
   allDates = uniqueSorted(RAW_DATA.map(r => r.tgl));
@@ -876,10 +920,9 @@ function init(){
   document.getElementById('fDariTgl').max = maxDate;
   document.getElementById('fSampaiTgl').min = minDate;
   document.getElementById('fSampaiTgl').max = maxDate;
-  document.getElementById('periodLabel').textContent = `${fmtDate(minDate)} — ${fmtDate(maxDate)}`;
   // Tanggal update = absen terakhir (masuk maupun keluar) berdasarkan tanggal + jam absen
   const lastRec = RAW_DATA.reduce((best, r) => (!best || (r.tgl + ' ' + r.jam) > (best.tgl + ' ' + best.jam)) ? r : best, null);
-  document.getElementById('updateLabel').textContent = lastRec ? fmtTanggalJam(lastRec.tgl, lastRec.jam) : '–';
+  document.getElementById('updateLabel').textContent = lastRec ? fmtTanggalJam(lastRec.tgl, lastRec.jam) + ' WIB' : '–';
 
   // fKota, fOutlet, fDivisi options are populated by refreshDependentOptions() below.
   monthValues = uniqueSorted(RAW_DATA.map(r => r.tgl.slice(0,7)));
