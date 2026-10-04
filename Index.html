@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Dashboard Absensi — PT Santos Premium Krimer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FCEFDC'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%236E4A1C' stroke-width='7' stroke-dasharray='94 40' stroke-linecap='round' transform='rotate(35 32 32)'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23F2C28A'/%3E%3C/svg%3E">
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#FCEFDC;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#3F2A10}
+  .box{text-align:center;padding:24px;max-width:420px;line-height:1.5}
+  .spin{width:40px;height:40px;border:4px solid #F2C28A;border-top-color:#6E4A1C;border-radius:50%;animation:r 1s linear infinite;margin:0 auto 14px}
+  @keyframes r{to{transform:rotate(360deg)}}
+  .err{color:#9B2C24}
+  button{margin-top:14px;padding:10px 18px;border:0;border-radius:10px;background:#6E4A1C;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="box" id="box"><div class="spin"></div>Memuat dashboard…</div>
+
+<script>
+// ================== PENGATURAN ==================
+// 1) Link Web App Apps Script SPK (yang berakhiran /exec)
+var API_URL = 'https://script.google.com/macros/s/AKfycbxSyy2JjMYsXiVKbGfF757DxHXeX0nJmuEqJkRFOqssUCc2vl1ryvaOMQ3zYsNNfps8/exec';
+// 2) Halaman yang dibuka:  ''  = absen karyawan,  'izin' = langsung tab izin,  'dashboard' = dashboard
+var HALAMAN = 'dashboard';
+// ================================================
+// Ikon & logo SPK tidak perlu ditaruh di file ini: halaman absen memakai ikon dari Index.html,
+// dashboard mengambil logo lewat getLogo() di Kode.gs.
+
+// Pengganti google.script.run: semua panggilan diteruskan ke doPost() di Apps Script
+function pasangJembatan(apiUrl) {
+  function runner(onOk, onFail) {
+    return new Proxy({}, {
+      get: function (_, nama) {
+        if (typeof nama !== 'string' || nama === 'then' || nama === 'toJSON') return undefined;
+        if (nama === 'toString' || nama === 'valueOf') return function () { return 'google.script.run'; };
+        if (nama === 'withSuccessHandler') return function (f) { return runner(f, onFail); };
+        if (nama === 'withFailureHandler') return function (f) { return runner(onOk, f); };
+        if (nama === 'withUserObject') return function () { return runner(onOk, onFail); };
+        return function () {
+          var args = Array.prototype.slice.call(arguments);
+          fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ fn: nama, args: args })
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (res) {
+              if (res && res.ok) { if (onOk) onOk(res.data); }
+              else if (onFail) onFail(new Error((res && res.error) || 'Terjadi kesalahan di server.'));
+            })
+            .catch(function () {
+              if (onFail) onFail(new Error('Tidak dapat terhubung ke server. Periksa koneksi internet.'));
+            });
+        };
+      }
+    });
+  }
+  window.google = { script: { run: runner(null, null) } };
+}
+
+(function muat() {
+  var box = document.getElementById('box');
+  function gagal(pesan) {
+    box.innerHTML = '<div class="err">' + pesan + '</div><button onclick="location.reload()">Coba lagi</button>';
+  }
+  if (API_URL.indexOf('/exec') < 0) {
+    return gagal('Link Web App SPK belum diisi. Buka file ini di GitHub dan isi baris API_URL.');
+  }
+  // ?page=izin atau ?page=dashboard di alamat browser juga bisa dipakai
+  var page = new URLSearchParams(location.search).get('page') || HALAMAN;
+  var url = API_URL + '?raw=1' + (page ? '&page=' + encodeURIComponent(page) : '');
+
+  pasangJembatan(API_URL);
+  fetch(url)
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(function (html) {
+      if (html.indexOf('<html') < 0) throw new Error('Isi tidak valid');
+      // jembatan disisipkan ke halaman baru agar google.script.run tetap aktif
+      var sisip = '<script>(' + pasangJembatan.toString() + ')(' + JSON.stringify(API_URL) + ');<\/script>';
+      html = html.replace(/<head[^>]*>/i, function (m) { return m + sisip; });
+      document.open();
+      document.write(html);
+      document.close();
+    })
+    .catch(function () {
+      gagal('Aplikasi gagal dimuat.<br>Periksa internet, atau pastikan Web App di-deploy dengan akses <b>"Anyone / Siapa saja"</b>.');
+    });
+})();
+</script>
+</body>
+</html>
