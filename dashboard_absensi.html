@@ -626,22 +626,35 @@ const BULAN_MAP = {
 // karyawan submit absen, mis. "15 September 2026 pukul 07.53 WIB". Ini sumber
 // yang dipakai untuk tanggal (tgl) & jam absen (jam) — bukan kolom "Tanggal"
 // (yang cuma jadwal tetap jam 07.00) atau kolom "JAM" terpisah.
+const BULAN_EN = {
+  january:1, february:2, march:3, april:4, may:5, june:6, july:7, august:8,
+  september:9, october:10, november:11, december:12,
+  jan:1, feb:2, mar:3, apr:4, jun:6, jul:7, agu:8, aug:8, agt:8, sep:9, okt:10, oct:10, nov:11, des:12, dec:12
+};
+// Menerima berbagai format, mis.:
+//  "15 September 2026 pukul 07.53 WIB" | "5 October 2026 07:53"
+//  "05/10/2026 07:53:12" (dd/mm/yyyy, format Google Sheets Indonesia)
+//  "2026-10-05 07:53:12"
 function parseTglJamAbsenSystem(s){
   if(!s) return {tgl:'', jam:''};
   const str = String(s).trim();
-  const mTgl = str.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
-  const mJam = str.match(/(\d{1,2})[.:](\d{2})/);
-  let tgl = '';
-  if(mTgl){
-    const day = parseInt(mTgl[1],10);
-    const bulan = BULAN_MAP[mTgl[2].toLowerCase()];
-    const year = parseInt(mTgl[3],10);
-    if(bulan) tgl = `${year}-${String(bulan).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  let tgl = '', sisa = str, m;
+  const pad = n => String(n).padStart(2,'0');
+  if((m = str.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/))){
+    const nm = m[2].toLowerCase();
+    const bulan = BULAN_MAP[nm] || BULAN_EN[nm];
+    if(bulan) tgl = `${m[3]}-${pad(bulan)}-${pad(m[1])}`;
+    sisa = str.replace(m[0], ' ');
+  } else if((m = str.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/))){
+    tgl = `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
+    sisa = str.replace(m[0], ' ');
+  } else if((m = str.match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})/))){
+    tgl = `${m[3]}-${pad(m[2])}-${pad(m[1])}`; // dd/mm/yyyy
+    sisa = str.replace(m[0], ' ');
   }
   let jam = '';
-  if(mJam){
-    jam = `${mJam[1].padStart(2,'0')}:${mJam[2]}`;
-  }
+  const mJam = sisa.match(/(\d{1,2})[.:](\d{2})/);
+  if(mJam) jam = `${pad(mJam[1])}:${mJam[2]}`;
   return {tgl, jam};
 }
 
@@ -672,7 +685,14 @@ function hitungTelat(t, jam, tgl){
 
 function mapRow(row, t){
   const absenSystemRaw = pick(row, ['Tanggal By System','Tgl Absen System','Tanggal Absen System']);
-  const { tgl, jam } = parseTglJamAbsenSystem(absenSystemRaw);
+  let { tgl, jam } = parseTglJamAbsenSystem(absenSystemRaw);
+  // Cadangan: kalau kolom tanggal system kosong / formatnya tidak terbaca,
+  // pakai Timestamp bawaan Google Form supaya baris baru tidak hilang.
+  if(!tgl || !jam){
+    const alt = parseTglJamAbsenSystem(pick(row, ['Timestamp','Stempel waktu','Cap waktu']));
+    if(!tgl) tgl = alt.tgl;
+    if(!jam) jam = alt.jam;
+  }
   const tel = hitungTelat(t, jam, tgl);
   return {
     t,
@@ -715,10 +735,21 @@ async function loadData(){
       loadCsv(SHEET_IN_URL),
       loadCsv(SHEET_OUT_URL),
     ]);
-    RAW_DATA = [
+    const semua = [
       ...inRows.map(r => mapRow(r, 'masuk')),
       ...outRows.map(r => mapRow(r, 'keluar')),
-    ].filter(r => r.nama && r.tgl && r.jam);
+    ];
+    RAW_DATA = semua.filter(r => r.nama && r.tgl && r.jam);
+    const terbuang = semua.filter(r => r.nama && !(r.tgl && r.jam));
+    console.info(`Data dimuat: IN ${inRows.length} baris, OUT ${outRows.length} baris, dipakai ${RAW_DATA.length}.`);
+    if(terbuang.length){
+      console.warn('Baris dilewati karena tanggal/jam tidak terbaca:', terbuang);
+      document.querySelector('main').insertAdjacentHTML('afterbegin',
+        `<div style="background:#FBF0DB;color:#8A5A12;padding:12px 16px;border-radius:8px;margin-bottom:16px;">
+          ${terbuang.length} baris absen tidak ditampilkan karena kolom tanggal/jam absen kosong atau formatnya tidak dikenali
+          (contoh: ${escapeHtml(terbuang[0].nama)}). Cek kolom "Tanggal By System" di sheet IN/OUT.
+        </div>`);
+    }
   } catch(err) {
     console.error('Gagal memuat data dari Google Sheets (IN/OUT):', err);
     document.querySelector('main').insertAdjacentHTML('afterbegin',
@@ -796,6 +827,7 @@ function buildNamaCanonicalMap(records){
   for(let i=0;i<keys.length;i++){
     for(let j=i+1;j<keys.length;j++){
       if(Math.abs(keys[i].length - keys[j].length) > 2) continue;
+      if(Math.min(keys[i].length, keys[j].length) < 6) continue; // nama pendek (Rina/Rini) jangan digabung
       if(levenshtein(keys[i], keys[j]) <= 1) union(keys[i], keys[j]);
     }
   }
@@ -1400,18 +1432,6 @@ function exportToExcel(){
     'Jumlah Hari Tidak Lengkap': r.keterangan,
   }));
 
-  // 2. Jam buka outlet (di atas jam 08:00, sama seperti yang tampil di tabel)
-  const jamBukaRows = buildJamBuka(data)
-    .filter(r => r.jam > '08:00')
-    .map(r => ({...r, keterangan: kategoriJamBuka(r.jam)}));
-  const sheetJamBuka = jamBukaRows.map(r => ({
-    'Tanggal': fmtDate(r.tgl),
-    'Nama Outlet': r.outlet,
-    'Jam Buka': r.jam,
-    'Nama Karyawan': r.nama,
-    'Keterangan': r.keterangan,
-  }));
-
   // 3. Rekap absensi karyawan
   const absensiRows = buildAbsensiKaryawan(data);
   const sheetAbsensi = absensiRows.map((r,i) => ({
@@ -1461,7 +1481,6 @@ function exportToExcel(){
     XLSX.utils.book_append_sheet(wb, ws, name);
   };
   addSheet(sheetTop5, 'Top 5 Tidak Lengkap', 'Tidak ada data sesuai filter');
-  addSheet(sheetJamBuka, 'Jam Buka Outlet', 'Tidak ada data sesuai filter');
   addSheet(sheetAbsensi, 'Rekap Absensi Karyawan', 'Tidak ada data sesuai filter');
   addSheet(sheetDetail, 'Detail Tidak Lengkap', 'Tidak ada data sesuai filter');
   addSheet(sheetRekapTanggal, 'Rekap Per Tanggal Karyawan', 'Tidak ada data sesuai filter');
