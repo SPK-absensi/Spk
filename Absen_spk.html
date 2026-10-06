@@ -437,9 +437,8 @@ $('lgForm').onsubmit = function(e){
   var u = $('lgUser').value.trim(), pw = $('lgPass').value;
   if(!u || !pw){ $('lgErr').textContent = 'Isi username dan password.'; $('lgErr').hidden = false; return; }
   $('lgBtn').disabled = true; $('lgBtn').textContent = 'Memeriksa…'; $('lgErr').hidden = true;
-  if(!IS_GAS){   // mode pratinjau: login apa saja
-    var k = MASTER.karyawan[0];
-    return setTimeout(function(){ masuk('demo', { username:u, nama:k.nama, divisi:k.divisi, outlet:k.outlet }); }, 500);
+  if(!IS_GAS){   // mode pratinjau: tidak tersambung ke server -> jangan login sebagai orang lain
+    return tampilLogin('Halaman ini tidak tersambung ke server (mode pratinjau). Buka aplikasi lewat link resmi (GitHub / link /exec).');
   }
   mcsRun('loginKaryawan', u, pw).then(function(r){
     if(r && r.ok) return masuk(r.token, r.profil);
