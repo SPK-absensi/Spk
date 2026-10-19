@@ -561,7 +561,7 @@
 
   <section class="panel">
     <h2>Rekap absensi per tanggal, per nama karyawan</h2>
-    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System — 1 baris per karyawan per hari: Jam Masuk = absen masuk pertama, Jam Keluar = absen keluar terakhir. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk. Keterangan "Tidak Sesuai" muncul jika Jam Kerja di bawah 8 jam (Senin–Jumat) atau di bawah 6 jam (Sabtu, jam kerja 08.00–14.00).</div>
+    <div class="panel-desc">Jam Masuk &amp; Jam Keluar diambil dari Tgl Absen System — 1 baris per karyawan per hari: Jam Masuk = absen masuk pertama, Jam Keluar = absen keluar terakhir. Jam Kerja dihitung dari Jam Keluar dikurangi Jam Masuk. Keterangan "Tidak Sesuai" muncul jika Jam Kerja di bawah 8 jam (Senin–Jumat) atau di bawah 6 jam (Sabtu, jam kerja 08.00–14.00). Untuk Kota Makassar, jam absen sudah disesuaikan ke WITA (+1 jam dari jam system).</div>
     <div class="period-info"></div>
     <div class="table-scroll">
       <table id="tblRekapTanggal">
@@ -723,6 +723,30 @@ function terapkanKota(records){
     } else if(r.divisi === 'SPG Elite Creme'){
       r.kota_norm = kotaUtama[r.nama] || KOTA_SPG_CADANGAN[namaKunci(r.nama)] || r.kota_norm;
     }
+  });
+}
+
+// Makassar memakai WITA (UTC+8), sedangkan jam di system memakai WIB (UTC+7).
+// Semua absen (masuk & keluar) yang kotanya Makassar ditambah 1 jam.
+// Kalau hasilnya lewat 24:00, tanggal ikut maju ke hari berikutnya.
+// Status telat / pulang cepat dihitung ulang dari jam baru.
+// HARUS dipanggil setelah terapkanKota() supaya kota sudah final.
+function sesuaikanZonaWaktu(records){
+  const pad = n => String(n).padStart(2,'0');
+  records.forEach(r => {
+    if(!r.jam || !/makassar/i.test(r.kota_norm || '')) return;
+    let [h, m] = r.jam.split(':').map(Number);
+    h += 1;
+    if(h >= 24){
+      h -= 24;
+      const [y, mo, d] = r.tgl.split('-').map(Number);
+      const dt = new Date(y, mo - 1, d + 1);
+      r.tgl = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+    }
+    r.jam = `${pad(h)}:${pad(m)}`;
+    const tel = hitungTelat(r.t, r.jam, r.tgl);
+    r.telat = tel.telat;
+    r.menit_telat = tel.menit_telat;
   });
 }
 
@@ -909,6 +933,7 @@ function init(){
   const map = buildNamaCanonicalMap(RAW_DATA);
   RAW_DATA.forEach(r => { r.nama = map[r.nama] || r.nama; });
   terapkanKota(RAW_DATA);
+  sesuaikanZonaWaktu(RAW_DATA); // Makassar: +1 jam (WIB -> WITA)
 
   // ---------- Init filter options ----------
   allDates = uniqueSorted(RAW_DATA.map(r => r.tgl));
