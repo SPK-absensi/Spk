@@ -261,6 +261,27 @@
     .pr-presets{border-left:none; padding-left:0; margin-left:0; width:100%; padding-top:4px; border-top:1px solid var(--border); margin-top:4px;}
   }
 
+
+  /* ===== Penyesuaian tampilan laptop (1280–1600px) ===== */
+  .wrap{max-width:1440px; padding:24px 28px 64px;}
+  .tabs{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; gap:2px;
+        position:sticky; top:0; z-index:40; background:var(--page); padding-top:4px;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{white-space:nowrap; margin-right:0; padding:11px 12px; font-size:13.5px; flex:0 0 auto;}
+  .bar-name{width:auto; flex:0 0 clamp(150px, 40%, 260px);}
+  .bar-num{width:118px; flex:0 0 118px;}
+  .kpi{min-width:0;}
+  .kpi .value, .kpi .label{overflow-wrap:anywhere;}
+  .row2 > *, .row2b > *{min-width:0;}
+  .table-scroll table td, .table-scroll table th{font-variant-numeric:tabular-nums;}
+  @media (min-width:1100px) and (max-width:1366px){
+    .card{padding:18px 20px;}
+    .kpi{padding:14px 16px;}
+  }
+  @media (max-width:820px){
+    .wrap{padding:20px 16px 48px;}
+    .bar-name{flex-basis:120px;}
+  }
   @media print{
     :root, :root[data-theme="dark"]{
       --page:#ffffff; --surface:#ffffff; --surface-raised:#ffffff;
@@ -2519,6 +2540,37 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   // ---------- Global filter state ----------
   var allRows = DATA.detail.slice();
   allRows.forEach(function(r){ r.ym = r.dt.slice(0,7); });
+  // ---------- PIC dari Master Data ----------
+  // PIC di tab Master Data menjadi acuan utama. Pencocokan nama distributor tidak
+  // peka huruf besar/kecil, mengabaikan PT/CV/tanda baca, dan juga dicocokkan ke
+  // nama customer asli (r.c). Jika tidak ada di Master Data, PIC bawaan dipakai.
+  function normAd(s){ return String(s||'').toUpperCase().replace(/\b(PT|CV|TBK|UD)\b\.?/g,' ').replace(/[^A-Z0-9]+/g,' ').trim(); }
+  allRows.forEach(function(r){ r._pic0 = r.pic; });
+  function applyMasterPic(list){
+    var exact = {}, entries = [];
+    (list||[]).forEach(function(m){
+      var k = normAd(m && m.ad), p = String((m && m.pic)||'').trim();
+      if(k && p){ exact[k] = p; entries.push([k, p]); }
+    });
+    allRows.forEach(function(r){
+      var k1 = normAd(r.ad), k2 = normAd(r.c);
+      var p = exact[k1] || exact[k2];
+      if(!p){
+        for(var i=0;i<entries.length && !p;i++){
+          var e = entries[i][0];
+          if(e.length < 5) continue;
+          [k1, k2].forEach(function(k){
+            if(!p && k.length >= 5 && (k.indexOf(e) === 0 || e.indexOf(k) === 0)) p = entries[i][1];
+          });
+        }
+      }
+      r.pic = p || r._pic0;
+    });
+  }
+  try{
+    var _savedMaster = JSON.parse(localStorage.getItem('sellin_master_dist_v1') || 'null');
+    if(Array.isArray(_savedMaster)) applyMasterPic(_savedMaster);
+  }catch(e){}
   var totalPoAll = computeKpi(allRows).total_po;
   var ddState = { ddDistributor: new Set(), ddStatus: new Set(), ddPic: new Set(), ddCategory: new Set(), ddSubcat: new Set(), ddItem: new Set(),
                   ddDistributorS: new Set(), ddStatusS: new Set(), ddPicS: new Set(),
@@ -2664,13 +2716,19 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     var btn = root.querySelector('.filter-dd-btn');
     var countEl = root.querySelector('.count');
     var listEl = root.querySelector('.filter-dd-list');
-    var overallCounts = {};
-    allRows.forEach(function(r){ overallCounts[r[key]] = (overallCounts[r[key]]||0) + 1; });
-    var values = Object.keys(overallCounts);
-    if(opts.sort === 'chrono'){ values.sort(); }
-    else { values.sort(function(a,b){ return overallCounts[b]-overallCounts[a]; }); }
+    var values = [];
+    function computeValues(){
+      var overallCounts = {};
+      allRows.forEach(function(r){ overallCounts[r[key]] = (overallCounts[r[key]]||0) + 1; });
+      values = Object.keys(overallCounts);
+      if(opts.sort === 'chrono'){ values.sort(); }
+      else { values.sort(function(a,b){ return overallCounts[b]-overallCounts[a]; }); }
+      // buang pilihan filter yang sudah tidak ada di data
+      Array.from(ddState[ddId]).forEach(function(v){ if(!(v in overallCounts)) ddState[ddId].delete(v); });
+    }
 
     function refreshList(){
+      computeValues();
       var rows = crossFilteredRows(ddId);
       var counts = {};
       rows.forEach(function(r){ counts[r[key]] = (counts[r[key]]||0) + 1; });
@@ -4031,6 +4089,16 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       }
     }catch(e){ masterData = seedMasterData(); }
   }
+  function refreshAfterMaster(){
+    applyMasterPic(masterData);
+    document.querySelectorAll('.filter-dd').forEach(function(root){
+      if(root.__refresh){ root.__refresh(); root.__updateBtn(); }
+    });
+    [renderSummary, render, renderWeekly, renderDaily, renderDetail, renderInvoice,
+     renderDistGraph, renderPicGraph, renderCompare, renderExplain].forEach(function(fn){
+      try{ fn(); }catch(e){ console.error(e); }
+    });
+  }
   function saveMasterData(){
     try{
       localStorage.setItem(MASTER_KEY, JSON.stringify(masterData));
@@ -4040,6 +4108,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
       var st2 = document.getElementById('masterStatus');
       if(st2){ st2.textContent = 'Gagal menyimpan (penyimpanan browser penuh/tidak tersedia).'; st2.classList.remove('saved'); }
     }
+    refreshAfterMaster();
   }
 
   function drawMasterTable(){
@@ -4118,6 +4187,7 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
     e.target.value = '';
   });
   loadMasterData();
+  applyMasterPic(masterData);
 
   // ---------- Export halaman Summary (PDF & Excel/CSV) ----------
   function stripHtml(s){ return String(s).replace(/<[^>]+>/g, ''); }
@@ -4430,8 +4500,9 @@ if(xr(e,"index.xml"))throw new Error("Unsupported NUMBERS 09 file");throw new Er
   window.addEventListener('resize', function(){
     clearTimeout(window.__rt);
     window.__rt = setTimeout(function(){
-      var summaryActive = document.getElementById('pageSummary').classList.contains('active');
-      if(summaryActive) renderSummary(); else render();
+      // gambar ulang grafik pada tab yang sedang aktif sesuai lebar layar baru
+      var activeTab = document.querySelector('.tab-btn.active');
+      if(activeTab) activeTab.click(); else renderSummary();
     }, 150);
   });
 
