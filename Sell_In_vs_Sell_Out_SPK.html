@@ -109,6 +109,9 @@ body.printing .flu th:first-child,body.printing .flu td:first-child,body.printin
 .flu td.n,.flu th.n{min-width:70px}
 .flu td.zero{color:var(--muted)}
 #tFsOm td,#tFsOm th{padding:7px 7px}
+#tFsAll td,#tFsAll th{padding:6px 5px}
+#tFsAll td.n,#tFsAll th.n{min-width:30px}
+#tFsAll .mb{border-left:2px solid var(--line)}
 .flu th:first-child,.flu td:first-child{position:sticky;left:0;background:var(--surface);z-index:1}
 .flu th:first-child{z-index:2;background:var(--surface2)}
 .flu tr.tot td:first-child{background:var(--surface2)}
@@ -275,12 +278,13 @@ body.printing .flu th:first-child,body.printing .flu td:first-child,body.printin
     <div class="panel">
       <h2>Fluktuasi Sell Out per Area / Salesman</h2>
       <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 10px">
-        <div class="fld"><label>Kelompok</label><div class="seg" id="fsM"><button data-m="om" class="on">Omset</button><button data-m="ol">Outlet Transaksi</button><button data-m="ro">Repeat Order</button><button data-m="noa">NOA</button></div></div>
+        <div class="fld"><label>Kelompok</label><div class="seg" id="fsM"><button data-m="om" class="on">Omset</button><button data-m="ol">Outlet Transaksi</button><button data-m="ro">Repeat Order</button><button data-m="noa">NOA</button><button data-m="all">Gabungan OT · RO · NOA</button></div></div>
         <div class="fld"><label>Per</label><div class="seg" id="fsBy"><button data-b="dp" class="on">Area / Depo</button><button data-b="sl">Salesman</button></div></div>
         <div class="sub" id="fsInfo" style="margin:0"></div></div>
       <div class="fsblk" data-m="om"><h2 style="margin-top:6px;color:var(--so)">Omset (Rp)</h2><div class="tblwrap"><table id="tFsOm" class="flu" style="font-size:12.5px"></table></div></div>
       <div class="fsblk" data-m="ol" hidden><h2 style="margin-top:6px;color:var(--si)">Outlet Transaksi</h2><div class="tblwrap"><table id="tFsOl" class="flu"></table></div></div>
       <div class="fsblk" data-m="ro" hidden><h2 style="margin-top:6px;color:var(--stock)">Repeat Order (outlet)</h2><div class="tblwrap"><table id="tFsRo" class="flu"></table></div></div>
+      <div class="fsblk" data-m="all" hidden><h2 style="margin-top:6px">Gabungan: OT (Outlet Transaksi) · RO (Repeat Order) · NOA (Outlet Baru)</h2><div class="tblwrap"><table id="tFsAll" class="flu" style="font-size:12px"></table></div></div>
       <div class="fsblk" data-m="noa" hidden><h2 style="margin-top:6px;color:var(--good)">NOA — Outlet Baru Transaksi</h2><div class="tblwrap"><table id="tFsNoa" class="flu"></table></div></div>
       <p class="note" style="margin-top:8px"><b>NOA (New Outlet Active)</b> = outlet yang pertama kali transaksi dalam periode yang dipilih; outlet dihitung 1 kali saja di bulan transaksi pertamanya (contoh: Outlet A beli Jan, lalu beli lagi Feb dst → hanya masuk NOA Januari). Total NOA = jumlah outlet unik dalam periode.<br><b>Omset</b> = nilai Sell Out (harga jual distributor ke outlet). <b>Outlet transaksi</b> = outlet unik yang membeli di bulan tersebut; kolom Total = outlet unik selama periode. <b>Repeat Order</b> per bulan = outlet yang membeli di bulan tersebut dan sudah pernah membeli di bulan sebelumnya (sejak awal data); kolom Total = outlet unik yang membeli di 2 bulan atau lebih dalam periode.</p>
     </div>
@@ -1066,6 +1070,14 @@ function renderFso(){
   tbl('tFsOm',(r,m)=>r.om[m]||0,r=>r.omT,'--so',v=>nf(v));
   tbl('tFsOl',(r,m)=>r.ol[m]?r.ol[m].size:0,r=>r.olT,'--si',v=>nf(v));
   tbl('tFsRo',(r,m)=>r.ro[m]?r.ro[m].size:0,r=>r.roT,'--stock',v=>nf(v));
+  {const g=[['OT',r=>m=>r.ol[m]?r.ol[m].size:0,r=>r.olT,'--si'],['RO',r=>m=>r.ro[m]?r.ro[m].size:0,r=>r.roT,'--stock'],['NOA',r=>m=>r.noa[m]?r.noa[m].size:0,r=>r.olT,'--good']];
+   const c=(v,col,first)=>'<td class="n'+(first?' mb':'')+(v?'':' zero')+'"'+(v?' style="color:var('+col+');font-weight:600"':'')+'>'+(v?nf(v):'–')+'</td>';
+   let h='<thead><tr><th rowspan="2">Distributor</th><th rowspan="2">'+lab+'</th>'+ms.map(m=>'<th class="n mb" colspan="3" style="text-align:center">'+pls(m)+'</th>').join('')+'<th class="n mb" colspan="3" style="text-align:center">Total</th></tr><tr>'+ms.concat(['T']).map(()=>g.map((x,i)=>'<th class="n'+(i?'':' mb')+'" style="color:var('+x[3]+')">'+x[0]+'</th>').join('')).join('')+'</tr></thead><tbody>';
+   const cells=r=>ms.map(m=>g.map((x,i)=>c(x[1](r)(m),x[3],!i)).join('')).join('')+g.map((x,i)=>'<td class="n'+(i?'':' mb')+'"><b>'+nf(x[2](r))+'</b></td>').join('');
+   X.rows.forEach((r,i)=>{const first=i===0||X.rows[i-1].d!==r.d;h+='<tr><td style="white-space:normal;max-width:130px">'+(first?'<b>'+esc(r.d)+'</b>':'')+'</td><td style="white-space:normal;max-width:150px">'+esc(r.g)+'</td>'+cells(r)+'</tr>';
+     if(i===X.rows.length-1||X.rows[i+1].d!==r.d)h+='<tr class="cat"><td colspan="2">Subtotal '+esc(r.d)+'</td>'+cells(X.D.get(r.d))+'</tr>';});
+   if(X.rows.length)h+='<tr class="tot"><td colspan="2">TOTAL</td>'+cells(X.T)+'</tr>';
+   $('#tFsAll').innerHTML=h+'</tbody>';}
   tbl('tFsNoa',(r,m)=>r.noa[m]?r.noa[m].size:0,r=>r.olT,'--good',v=>nf(v));
 }
 let fsM='om';
@@ -1251,7 +1263,17 @@ function exportExcel(){
        X.rows.forEach((r,i)=>{aoa.push([r.d,r.g].concat(ms.map(m=>get(r,m)||null),[tot(r)]));if(i===X.rows.length-1||X.rows[i+1].d!==r.d){const d=X.D.get(r.d);aoa.push(['Subtotal '+r.d,''].concat(ms.map(m=>get(d,m)||null),[tot(d)]));}});
        aoa.push(['TOTAL',''].concat(ms.map(m=>get(X.T,m)||null),[tot(X.T)]));aoa.push([]);});
      const f={};for(let j=2;j<ms.length+3;j++)f[j]=N0;
-     XLSX.utils.book_append_sheet(wb,sheetOf(aoa,f),sn);});}
+     XLSX.utils.book_append_sheet(wb,sheetOf(aoa,f),sn);});
+   {const aoa=[],G=[['OT',(r,m)=>r.ol[m]?r.ol[m].size:0,r=>r.olT],['RO',(r,m)=>r.ro[m]?r.ro[m].size:0,r=>r.roT],['NOA',(r,m)=>r.noa[m]?r.noa[m].size:0,r=>r.olT]];
+    [[XA,'Area / Depo'],[XS,'Salesman']].forEach(([X,lb])=>{
+      aoa.push(['GABUNGAN OT · RO · NOA · per '+lb]);
+      aoa.push(['',''].concat(...ms.map(m=>[pl(m),'','']),['Total','','']));
+      aoa.push(['Distributor',lb].concat(...ms.concat(['T']).map(()=>G.map(x=>x[0]))));
+      const row=(a,b,r)=>[a,b].concat(...ms.map(m=>G.map(x=>x[1](r,m)||null)),G.map(x=>x[2](r)));
+      X.rows.forEach((r,i)=>{aoa.push(row(r.d,r.g,r));if(i===X.rows.length-1||X.rows[i+1].d!==r.d)aoa.push(row('Subtotal '+r.d,'',X.D.get(r.d)));});
+      aoa.push(row('TOTAL','',X.T));aoa.push([]);});
+    const f={};for(let j=2;j<ms.length*3+5;j++)f[j]=N0;
+    XLSX.utils.book_append_sheet(wb,sheetOf(aoa,f),'FSO Gabungan');}}
   // 6a. Produk vs Area (SKU x distributor, SI & SO, satuan sesuai pilihan)
   {const u=effUnit(),fm=u==='rp'?RP:N0,ds=allDists().filter(d=>!st.dists.length||st.dists.indexOf(d)>-1);
    const hd=['Sub Kategori','SKU','Data'];ds.forEach(d=>hd.push(d,d+' %'));hd.push('Total');
